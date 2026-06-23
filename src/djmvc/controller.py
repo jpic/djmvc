@@ -18,6 +18,15 @@ class Routes(list):
 
         super().__init__(routes)
 
+    def __getitem__(self, codename_or_index):
+        try:
+            return super().__getitem__(codename_or_index)
+        except TypeError:
+            for route in self:
+                if route.codename == codename_or_index:
+                    return route
+            raise Exception()
+
 
 class Controller(Clonable, Route):
     def __init__(self, *args, **kwargs):

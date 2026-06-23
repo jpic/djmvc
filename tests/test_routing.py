@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse
+from djmvc_example.example_urls import Site
 
 
 @pytest.mark.urls('djmvc_example.example_urls')
@@ -17,7 +18,6 @@ def test_routing(name, url):
 
 @pytest.mark.urls('djmvc_example.example_urls')
 def test_view_controller():
-    from djmvc_example.example_urls import Site
     site = Site()
 
     view = site.routes[0]
@@ -25,14 +25,18 @@ def test_view_controller():
     assert view.controller.root is site
     assert view.url == '/controller/view/'
 
-    sub_view = site.routes[1].routes[0]
     sub_controller = site.routes[1]
+    assert site.routes['sub-controller'] == sub_controller
+
+    sub_view = site.routes[1].routes[0]
     assert sub_view.controller is sub_controller
     assert sub_view.controller.root is site
     assert sub_view.url == '/controller/sub-controller/sub-view/'
 
-    sub_sub_view = site.routes[1].routes[1].routes[0]
     sub_sub_controller = site.routes[1].routes[1]
+    assert sub_controller.routes['sub-view'] == sub_view
+
+    sub_sub_view = site.routes[1].routes[1].routes[0]
     assert sub_sub_view.controller is sub_sub_controller
     assert sub_sub_view.controller.root is site
     assert (
