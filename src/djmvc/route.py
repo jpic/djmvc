@@ -1,3 +1,4 @@
+from django.urls import reverse
 
 
 class Route:
@@ -19,3 +20,12 @@ class Route:
     @property
     def urlpatterns(self):
         raise NotImplementedError('Use Controller or View classes')
+
+    @property
+    def url(self):
+        name = self.urlname
+        current = self
+        while parent := getattr(current, 'controller', None):
+            name = f'{parent.urlname}:{name}'
+            current = parent
+        return reverse(name)
