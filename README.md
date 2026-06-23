@@ -1,29 +1,37 @@
 ## Routing
 
+Skip manual URL routing definition by nesting views and controllers:
+
 ```python
 from djmvc.controller import Controller
 from djmvc.view import View
 
 
+# definition by sub-classing
+class SubController(Controller):
+    name = 'sub-controller'
+    routes = [
+        View.clone(
+            name='sub-view',
+        )
+    ]
+
+
+# or just define by cloning
 Site = Controller.clone(
     name='controller',
     routes=[
         View.clone(
             name='view',
         ),
-        Controller.clone(
-            name='sub-controller',
-            routes=[
-                View.clone(
-                    name='sub-view',
-                )
-            ]
-        ),
+        SubController,
     ]
 )
 
+# define some importable url patterns to include
 urlpatterns = Site().urlpatterns
 
+# it will define reverseable urls
 assert reverse('controller:view') == '/controller/view/'
 assert reverse('controller:sub-controller:sub-view') == '/controller/sub-controller/sub-view/'
 ```
