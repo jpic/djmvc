@@ -13,6 +13,12 @@ class ViewMixin(Clonable, Route):
             path(self.urlpath, view_func, name=self.urlname)
         ]
 
+    @property
+    def name(self):
+        name = type(self).__name__
+        name = name.replace('View', '')
+        return name
+
 
 class View(ViewMixin, generic.View):
     def has_permission(self):

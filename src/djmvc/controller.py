@@ -34,6 +34,12 @@ class Controller(Clonable, Route):
         if not isinstance(self.routes, Routes):
             self.routes = Routes(self, self.routes)
 
+    @property
+    def name(self):
+        name = type(self).__name__
+        name = name.replace('Controller', '')
+        return name
+
     def get_tagged_views(self, tag, **kwargs):
         def process(controller):
             views = []
