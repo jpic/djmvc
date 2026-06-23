@@ -5,6 +5,9 @@ class Route:
     def name(self):
         return type(self).__name__
 
+    def __str__(self):
+        return self.name
+
     @property
     def urlpath(self):
         return self.name.lower() + '/'

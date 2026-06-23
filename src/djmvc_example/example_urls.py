@@ -13,6 +13,14 @@ Site = Controller.clone(
             routes=[
                 View.clone(
                     name='sub-view',
+                ),
+                Controller.clone(
+                    name='sub-sub-controller',
+                    routes=[
+                        View.clone(
+                            name='sub-sub-view',
+                        )
+                    ]
                 )
             ]
         ),
