@@ -2,11 +2,14 @@
 
 Get more out of less with a few design patterns:
 
-- MVC to skip manual URL Routing definition and menu generation
+- Skip manual URL routing with MVC pattern and sane defaults
+- Dynamic navigation menus with tagged views
 - Skip `get_context_data` overrides by consuming the `view` object directly in
   templates
 - `{% eval %}` template tag to skip making template tags every time you want to
   call a function or method (like in Jinja2)
+- Secure by default: views allow only superusers by default, it's up to you to
+  open permissions as-needed.
 
 ## Routing
 
@@ -80,4 +83,48 @@ Becomes available as:
 {% load eval %}
 {% eval view.some_method "some test var" view.request.user as result %}
 {{ result }}
+```
+
+## Dynamic menus
+
+Add any tags you like to your views:
+
+```python
+class YourView(generic.TemplateView):
+    tags = ['topbar']
+
+    def has_permission(self):
+        return self.request.user.is_authenticated  # the default
+```
+
+And use the `get_tagged_view()` method of the controller to get all views
+tagged `"topbar"` as such:
+
+```jinja2
+{% eval view.root_controller.get_tagged_views 'topbar' request=request as topbar_menu %}
+```
+
+Here, we're passing the `request` kwarg to `get_tagged_views()` which will
+instanciate the view object with passed kwargs and call `has_permission()`
+prior to returning the tagged view.
+
+It also works with per-object permissions as such:
+
+```python
+class YourModelDetailView(generic.DetailView):
+    tags = ['object']
+
+    def has_permission(self):
+        return (
+            self.request.user.is_superuser
+            or self.object.owner == self.request.user
+        )
+```
+
+Which will make that view show conditionnaly based on the request user, so that
+you can get all the views authorized for a user on a given object in the
+"object" tag as such:
+
+```jinja2
+{% eval view.root_controller.get_tagged_views 'object' request=request object=object as object_menu %}
 ```

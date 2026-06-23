@@ -15,4 +15,5 @@ class ViewMixin(Clonable, Route):
 
 
 class View(ViewMixin, generic.View):
-    pass
+    def has_permission(self):
+        return self.request.user.is_superuser

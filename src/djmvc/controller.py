@@ -25,6 +25,23 @@ class Controller(Clonable, Route):
         if not isinstance(self.routes, Routes):
             self.routes = Routes(self, self.routes)
 
+    def get_tagged_views(self, tag, **kwargs):
+        def process(controller):
+            views = []
+            for route in controller.routes:
+                if isinstance(route, Controller):
+                    views += process(route)
+                    continue
+
+                if tag not in getattr(route, 'tags', []):
+                    continue
+
+                view = type(route)(**kwargs)
+                if view.has_permission():
+                    views.append(view)
+            return views
+        return process(self)
+
     @property
     def root(self):
         controller = getattr(self, 'controller', None)
