@@ -8,7 +8,7 @@ class Route:
 
     @property
     def codename(self):
-        return self.name.replace(' ', '_').lower()
+        return type(self).__name__.replace(' ', '_').lower()
 
     def __str__(self):
         return self.name

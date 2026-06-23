@@ -35,10 +35,8 @@ class Controller(Clonable, Route):
             self.routes = Routes(self, self.routes)
 
     @property
-    def name(self):
-        name = type(self).__name__
-        name = name.replace('Controller', '')
-        return name
+    def codename(self):
+        return super().codename.replace('controller', '')
 
     def get_tagged_views(self, tag, **kwargs):
         def process(controller):
