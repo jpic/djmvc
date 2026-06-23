@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "djmvc"
+dynamic = ["version"]
+description = "Django CRUD utilities"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "django>=5.1",
+    "django-tables2>=2.7",
+    "django-crispy-forms>=2.0",
+    "crispy-bootstrap5>=1.0",  # for djmvc_bootstrap frontend
+]
+
+[project.optional-dependencies]
+bulma = [
+    "django-crispy-forms>=2.0",
+    "crispy-bulma>=0.1",  # provides bulma template pack (uni_form.html, field.html, layout/ etc); CRISPY_TEMPLATE_PACK="bulma"
+]
+bootstrap = [
+    "crispy-bootstrap5>=1.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-django>=4.5",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+namespaces = false
+
+[tool.setuptools_scm]
+# Git-based versioning configuration
+# This will automatically determine the version from git tags
+# Tag format should be: v1.0.0, v0.1.0, etc.
+fallback_version = "0.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+DJANGO_SETTINGS_MODULE = "djmvc_example.settings"
+pythonpath = ["src/djmvc_example"]
+addopts = [
+    "--reuse-db",
+    "--strict-markers",
+    "-ra",
+]
+markers = [
+    "bulma: marks tests specific to the Bulma frontend",
+    "bootstrap: marks tests specific to the Bootstrap frontend",
+    "django_db: mark test that requires Django database",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"

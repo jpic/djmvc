@@ -1,0 +1,6 @@
+__pycache__
+.claude/
+build/
+dist/
+node_modules/
+*egg-info*
