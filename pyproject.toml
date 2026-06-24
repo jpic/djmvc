@@ -28,16 +28,12 @@ dependencies = [
     "django>=5.1",
     "django-tables2>=2.7",
     "django-crispy-forms>=2.0",
-    "crispy-bootstrap5>=1.0",  # for djmvc_bootstrap frontend
 ]
 
 [project.optional-dependencies]
 bulma = [
     "django-crispy-forms>=2.0",
-    "crispy-bulma>=0.1",  # provides bulma template pack (uni_form.html, field.html, layout/ etc); CRISPY_TEMPLATE_PACK="bulma"
-]
-bootstrap = [
-    "crispy-bootstrap5>=1.0",
+    "crispy-bulma>=0.1",
 ]
 dev = [
     "pytest>=7.0",

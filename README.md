@@ -11,6 +11,12 @@ Get more out of less with a few design patterns:
 - Secure by default: views allow only superusers by default, it's up to you to
   open permissions as-needed.
 
+Install with:
+
+```
+pip install djmvc[bulma]
+```
+
 ## Routing
 
 Skip manual URL routing definition by nesting views and controllers:
