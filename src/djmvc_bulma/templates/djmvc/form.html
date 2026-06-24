@@ -1,0 +1,74 @@
+{% extends 'djmvc/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-8-tablet is-6-desktop">
+        {% block modal_wrapper %}
+        <div class="box" up-main="modal">
+            <div class="level mb-4">
+                {% block header %}
+                <div class="level-left">
+                    <h2 class="title is-4">
+                        {% block title %}
+                        {{ view.name }}
+                        {% endblock %}
+                    </h2>
+                </div>
+                <div class="level-right">
+                    {% block title_actions %}{% endblock %}
+                </div>
+                {% endblock %}
+            </div>
+
+            {% block before_form %}{% endblock %}
+
+            <form method="post"
+                {% block form_attrs %}
+                {% for key, value in view.form_attributes.items %}
+                {{ key }}="{{ value }}"
+                {% endfor %}
+                {% endblock %}
+                {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                {% csrf_token %}
+
+                POST {{ request.POST.next }}
+                <br>
+                GET {{ request.GET.next }}
+                <br>
+                REFERER {{ request.META.HTTP_REFERER }}
+
+                {% if view.message %}
+                <p>{{ view.message }}</p>
+                {% endif %}
+
+                <input type="hidden" name="next" value="{% if request.POST.next %}{{ request.POST.next }}{% elif request.GET.next %}{{ request.GET.next }}{% elif request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}/{% endif %}">
+
+                {% block form_content %}
+                {% block form_fields %}
+                {{ form|crispy }}
+                {% endblock %}
+                {% endblock %}
+
+                <div class="field is-grouped is-grouped-right mt-4">
+                    {% block form_buttons %}
+                    {% if view.cancel_url %}
+                    <p class="control">
+                        <button type="button" class="button" up-dismiss>Cancel</button>
+                    </p>
+                    {% endif %}
+                    <p class="control">
+                        <button type="submit" class="button is-primary">
+                            {% block submit_button_label %}
+                            {{ view.submit_button_label }}
+                            {% endblock %}
+                        </button>
+                    </p>
+                    {% endblock %}
+                </div>
+            </form>
+        </div>
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

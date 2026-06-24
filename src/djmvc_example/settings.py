@@ -37,7 +37,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "djmvc",
+    "djmvc_bulma",
+    # used by djmvc_bulma
+    "crispy_forms",
+    "crispy_bulma",
+    "django_tables2",
+
+    "djmvc_example",  # load a custom user model
 ]
+
+AUTH_USER_MODEL = "djmvc_example.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -62,6 +73,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "string_if_invalid": "⚠️ UNDEFINED: %s ⚠️",
         },
     },
 ]
@@ -75,7 +87,7 @@ WSGI_APPLICATION = "djmvc_example.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / ".." / "db.sqlite3",
     }
 }
 

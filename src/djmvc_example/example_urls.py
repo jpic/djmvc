@@ -1,20 +1,19 @@
-from djmvc.controller import Controller
-from djmvc.view import View
+import djmvc
 
 
 # definition by sub-class
-class SubController(Controller):
-    name = 'sub-controller'
+class SubController(djmvc.Controller):
+    codename = 'sub-controller'
     routes = [
         # definition on-the-fly with clone
-        View.clone(
-            name='sub-view',
+        djmvc.View.clone(
+            codename='sub-view',
         ),
-        Controller.clone(
-            name='sub-sub-controller',
+        djmvc.Controller.clone(
+            codename='sub-sub-controller',
             routes=[
-                View.clone(
-                    name='sub-sub-view',
+                djmvc.View.clone(
+                    codename='sub-sub-view',
                 )
             ]
         )
@@ -22,11 +21,11 @@ class SubController(Controller):
 
 
 # defining a root controller
-Site = Controller.clone(
-    name='controller',
+Site = djmvc.Controller.clone(
+    codename='controller',
     routes=[
-        View.clone(
-            name='view',
+        djmvc.View.clone(
+            codename='view',
         ),
         SubController,
     ]

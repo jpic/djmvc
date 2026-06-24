@@ -1,0 +1,48 @@
+{% load django_tables2 %}
+
+{% if actions %}
+{# Desktop/Tablet: Icon buttons with tooltips #}
+<div class="is-hidden-mobile">
+    {% for action in actions %}
+    <a href="{% url action.urlfullname pk=record.pk %}"
+       class="button is-small is-{{ action.color|default:'primary' }} is-rounded"
+       title="{{ action.name }}"
+       {% if action.action %}{{ action.action }}{% endif %}
+       {% if action.urlname == 'create' or action.urlname == 'edit' or action.urlname == 'delete' %}
+       up-layer="new modal" up-size="medium" up-accept-location="{{ request.path }}"
+       {% elif action.up_target %}
+       up-target="{{ action.up_target }}"
+       {% endif %}>
+        {% if action.icon %}<span class="icon is-small"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
+    </a>
+    {% endfor %}
+</div>
+
+{# Mobile: Dropdown menu #}
+<bulma-dropdown class="dropdown is-right is-hidden-tablet actions-dropdown">
+    <div class="dropdown-trigger">
+        <button class="button is-small is-outlined" aria-haspopup="true" aria-controls="dropdown-menu" aria-label="Actions">
+            <span class="icon is-small">
+                <i class="bi bi-list"></i>
+            </span>
+        </button>
+    </div>
+    <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+            {% for action in actions %}
+            <a href="{% url action.urlfullname pk=record.pk %}"
+               class="dropdown-item has-text-{{ action.color|default:'primary' }}"
+               {% if action.action %}{{ action.action }}{% endif %}
+               {% if action.urlname == 'create' or action.urlname == 'edit' or action.urlname == 'delete' %}
+               up-layer="new modal" up-size="medium" up-accept-location="{{ request.path }}"
+               {% elif action.up_target %}
+               up-target="{{ action.up_target }}"
+               {% endif %}>
+                {% if action.icon %}<span class="icon is-small"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
+                <span>{{ action.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</bulma-dropdown>
+{% endif %}

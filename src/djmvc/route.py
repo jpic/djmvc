@@ -26,10 +26,17 @@ class Route:
         raise NotImplementedError('Use Controller or View classes')
 
     @property
-    def url(self):
+    def urlfullname(self):
         name = self.urlname
         current = self
         while parent := getattr(current, 'controller', None):
             name = f'{parent.urlname}:{name}'
             current = parent
-        return reverse(name)
+        return name
+
+    @property
+    def url(self):
+        return self.reverse()
+
+    def reverse(self, *args, **kwargs):
+        return reverse(self.urlfullname, *args, **kwargs)

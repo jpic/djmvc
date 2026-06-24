@@ -1,3 +1,4 @@
+from django import http
 from django.views import generic
 from django.urls import path
 
@@ -21,7 +22,19 @@ class ViewMixin(Clonable, Route):
     def codename(self):
         return super().codename.replace('view', '')
 
+    def dispatch(self, *args, **kwargs):
+        if not self.has_permission():
+            if not self.request.user.is_authenticated:
+                return http.HttpResponseRedirect(
+                    reverse('login') + '?next=' + request.path_info,
+                )
+            else:
+                return http.HttpResponseForbidden()
+        return super().dispatch(*args, **kwargs)
 
-class View(ViewMixin, generic.View):
     def has_permission(self):
         return self.request.user.is_superuser
+
+
+class View(ViewMixin, generic.View):
+    pass

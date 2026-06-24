@@ -1,9 +1,9 @@
-from djmvc.views.generic import TemplateView
+import djmvc
 from djmvc_example.urls import site
 
 
 def test_get_context_data():
-    view = TemplateView()
+    view = djmvc.generic.TemplateView()
     assert view.get_context_data()['view'] is view
 
 
