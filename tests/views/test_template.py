@@ -9,8 +9,10 @@ def test_get_context_data():
 
 def test_get_template_names():
     assert site.routes['auth'].routes['login'].get_template_names() == [
+        'djmvc/site/auth/login.html',
         'djmvc/auth/login.html',
         'djmvc/form.html',
+        'site/auth/login.html',
         'auth/login.html',
         'form.html',
     ]

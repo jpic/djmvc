@@ -20,9 +20,9 @@ class TemplateMixin:
         template_name = f'{self.codename.lower()}.html'
         while parent := getattr(current, 'controller', None):
             if not parent.codename:
-                break
+                continue
             template_name = f'{parent.codename.lower()}/{template_name}'
-            template_names.insert(1, template_name)
+            template_names.insert(0, template_name)
             current = parent
 
         # give a chance to a default_template_name
