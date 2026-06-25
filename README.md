@@ -39,7 +39,6 @@ class Site(djmvc.Controller):
             model=YourModel,
         ),
     ]
-)
 
 site = Site()
 
@@ -49,6 +48,22 @@ urlpatterns = site.urlpatterns
 # it will define reverseable urls
 assert reverse('site:home') == '/'
 assert reverse('controller:sub-controller:sub-view') == '/controller/sub-controller/sub-view/'
+```
+
+### Runtime route customization
+
+`djmvc.site.routes` is a `Registry` — routes declared on the class are cloned
+into it at access time. You can customize it at runtime:
+
+```python
+# register a route (e.g. from AppConfig.ready())
+djmvc.site.routes.register(AuthController())
+
+# swap a whole entry
+djmvc.site.routes['home'] = Dashboard.clone(urlpath='')
+
+# remove a route
+del djmvc.site.routes['delete']
 ```
 
 ## Templates

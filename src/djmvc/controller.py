@@ -1,36 +1,29 @@
 from django.urls import include, path
 
 from .clonable import Clonable
+from .registry import Registry
 from .route import Route
 
 
-class Routes(list):
-    def __init__(self, controller, routes=None):
-        self.controller = controller
-        super().__init__()
-        for route in routes or []:
-            self.append(route)
-
-    def __getitem__(self, codename_or_index):
-        try:
-            return super().__getitem__(codename_or_index)
-        except TypeError:
-            for route in self:
-                if route.codename == codename_or_index:
-                    return route
-            raise KeyError(codename_or_index)
-
-    def append(self, route):
-        if isinstance(route, type):
-            route = route()
-        route.controller = self.controller
-        super().append(route)
+class ControllerMeta(type):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        routes = namespace.get('routes')
+        if isinstance(routes, (list, tuple)):
+            namespace['_declared_routes'] = namespace.pop('routes')
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
 
 
-class Controller(Clonable, Route):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.routes = Routes(self, getattr(self, 'routes', None))
+class Controller(Clonable, Route, metaclass=ControllerMeta):
+    @property
+    def routes(self):
+        if '_registry' not in self.__dict__:
+            declared = None
+            for cls in type(self).__mro__:
+                if '_declared_routes' in cls.__dict__:
+                    declared = cls.__dict__['_declared_routes']
+                    break
+            self.__dict__['_registry'] = Registry(self, declared or ())
+        return self.__dict__['_registry']
 
     @property
     def codename(self):

@@ -28,21 +28,21 @@ def test_get_tagged_views(rf, admin_user):
     request.user = AnonymousUser()
     result = site.get_tagged_views('topbar', request=request)
     assert len(result) == 1
-    assert type(result[0]) == LoginView
+    assert type(result[0]).__name__ == 'LoginView'
     assert result[0].request is request
 
     request.user = admin_user
     result = site.get_tagged_views('topbar', request=request)
     assert len(result) == 1
-    assert type(result[0]) == LogoutView
+    assert type(result[0]).__name__ == 'LogoutView'
 
 
 def test_routes():
-    from djmvc.controller import Routes
+    from djmvc.registry import Registry
 
     class MyController(Controller):
         routes = [View]
 
     controller = MyController()
-    assert isinstance(controller.routes, Routes)
+    assert isinstance(controller.routes, Registry)
     assert not hasattr(View, 'controller')

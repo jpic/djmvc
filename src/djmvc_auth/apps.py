@@ -7,4 +7,4 @@ class DjmvcAuthConfig(AppConfig):
 
     def ready(self):
         from .views import AuthController
-        djmvc.site.routes.append(AuthController())
+        djmvc.site.routes.register(AuthController)

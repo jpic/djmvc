@@ -7,4 +7,4 @@ class Stage0Config(AppConfig):
 
     def ready(self):
         from .views import Stage0Controller
-        djmvc.site.routes.append(Stage0Controller())
+        djmvc.site.routes.register(Stage0Controller)
