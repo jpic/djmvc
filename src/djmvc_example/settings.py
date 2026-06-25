@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,14 +39,23 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # core
     "djmvc",
+
+    # load the auth controller in djmvc.site:
+    "djmvc_auth",
+
+    # template pack
     "djmvc_bulma",
-    # used by djmvc_bulma
+    # used by djmvc_bulma:
     "crispy_forms",
     "crispy_bulma",
     "django_tables2",
 
-    "djmvc_example",  # load a custom user model
+    # our bunch of examples
+    "djmvc_example.stage0",
+    # load a custom user model
+    "djmvc_example",
 ]
 
 AUTH_USER_MODEL = "djmvc_example.User"
@@ -87,7 +97,7 @@ WSGI_APPLICATION = "djmvc_example.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / ".." / "db.sqlite3",
+        "NAME": Path(os.path.dirname(__file__)) / "db.sqlite3",
     }
 }
 

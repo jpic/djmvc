@@ -22,36 +22,32 @@ pip install djmvc[bulma]
 Skip manual URL routing definition by nesting views and controllers:
 
 ```python
-from djmvc.controller import Controller
-from djmvc.view import View
+import djmvc
 
 
-# definition by sub-classing
-class SubController(Controller):
-    name = 'sub-controller'
-    routes = [
-        View.clone(
-            name='sub-view',
-        )
-    ]
+class Home(djmvc.TemplateView):
+    urlpath = ''
+    def your_stuff(self):
+        return stuff_for_the_template()
 
 
-# or just define by cloning
-Site = Controller.clone(
-    name='controller',
+class Site(djmvc.Controller):
     routes=[
-        View.clone(
-            name='view',
+        Home,
+        # nest a CRUD controller
+        djmvc.ModelController(
+            model=YourModel,
         ),
-        SubController,
     ]
 )
 
+site = Site()
+
 # define some importable url patterns to include
-urlpatterns = Site().urlpatterns
+urlpatterns = site.urlpatterns
 
 # it will define reverseable urls
-assert reverse('controller:view') == '/controller/view/'
+assert reverse('site:home') == '/'
 assert reverse('controller:sub-controller:sub-view') == '/controller/sub-controller/sub-view/'
 ```
 

@@ -19,26 +19,7 @@ from django.contrib import admin
 from django.urls import path
 
 import djmvc
-from djmvc_auth.controller import AuthController
-
-class Site(djmvc.Controller):
-    name = 'Example project'
-    urlpath = ''
-    routes = [
-        djmvc.generic.TemplateView.clone(
-            icon='home',
-            template_name='home.html',
-            name='Home',
-            menus=['topbar'],
-            urlname='home',
-            urlpath='',
-            has_permission=lambda view: True,  # allow non-authenticated
-        ),
-        AuthController,
-    ]
-
-site = Site()
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-] + site.urlpatterns
+] + djmvc.site.urlpatterns

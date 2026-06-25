@@ -5,18 +5,11 @@ from .route import Route
 
 
 class Routes(list):
-    def __init__(self, controller, routes):
+    def __init__(self, controller, routes=None):
         self.controller = controller
-
-        for route in routes:
-            route.controller = self.controller
-
-        routes = [
-            route() if isinstance(route, type) else route
-            for route in routes
-        ]
-
-        super().__init__(routes)
+        super().__init__()
+        for route in routes or []:
+            self.append(route)
 
     def __getitem__(self, codename_or_index):
         try:
@@ -25,14 +18,19 @@ class Routes(list):
             for route in self:
                 if route.codename == codename_or_index:
                     return route
-            raise Exception()
+            raise KeyError(codename_or_index)
+
+    def append(self, route):
+        if isinstance(route, type):
+            route = route()
+        route.controller = self.controller
+        super().append(route)
 
 
 class Controller(Clonable, Route):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not isinstance(self.routes, Routes):
-            self.routes = Routes(self, self.routes)
+        self.routes = Routes(self, getattr(self, 'routes', None))
 
     @property
     def codename(self):

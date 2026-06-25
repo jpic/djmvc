@@ -18,6 +18,7 @@ class TemplateMixin:
         # build various combinations, from most specifc to least specific
         current = self
         template_name = f'{self.codename.lower()}.html'
+        template_names.append(template_name)
         while parent := getattr(current, 'controller', None):
             if not parent.codename:
                 continue

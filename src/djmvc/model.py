@@ -21,8 +21,6 @@ class ModelMixin:
             try:
                 current = current.controller
             except AttributeError:
-                # reached root
-                breakpoint()
                 raise Exception('Model not found')
         return current.model
 
@@ -31,9 +29,3 @@ class ModelMixin:
         # because django template won't allow ._meta because it starts with an
         # underscore ...
         return self.model._meta
-
-
-class ModelController(ModelMixin, Controller):
-    @property
-    def codename(self):
-        return self.model.__name__.lower()
