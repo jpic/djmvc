@@ -17,8 +17,8 @@ class ViewMixin(Clonable, Route):
         ]
 
     @property
-    def name(self):
-        return super().name.replace('View', '')
+    def title(self):
+        return super().title.replace('View', '')
 
     @property
     def codename(self):

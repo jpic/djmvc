@@ -6,7 +6,7 @@
     {% for action in actions %}
     <a href="{% url action.urlfullname pk=record.pk %}"
        class="button is-small is-{{ action.color|default:'primary' }} is-rounded"
-       title="{{ action.name }}"
+       title="{{ action.title }}"
        {% if action.action %}{{ action.action }}{% endif %}
        {% if action.urlname == 'create' or action.urlname == 'edit' or action.urlname == 'delete' %}
        up-layer="new modal" up-size="medium" up-accept-location="{{ request.path }}"
@@ -39,7 +39,7 @@
                up-target="{{ action.up_target }}"
                {% endif %}>
                 {% if action.icon %}<span class="icon is-small"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
-                <span>{{ action.name }}</span>
+                <span>{{ action.title }}</span>
             </a>
             {% endfor %}
         </div>

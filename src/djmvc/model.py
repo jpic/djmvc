@@ -6,8 +6,8 @@ class ModelMixin:
     Allows setting model on the class, or uses the controller model if any.
     """
     @property
-    def name(self):
-        return super().name.replace(self.model.__name__, '')
+    def title(self):
+        return super().title.replace(self.model.__name__, '')
 
     @property
     def codename(self):

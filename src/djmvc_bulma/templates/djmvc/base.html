@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ view.controller.root.name }}{% endblock %}</title>
+    <title>{% block title %}{{ view.controller.root.title }}{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://unpkg.com/unpoly@3.9.2/unpoly.css" rel="stylesheet">
@@ -22,9 +22,9 @@
 
         <div class="navbar-menu">
             <div class="navbar-start">
-                {% if view.controller.root.name %}
+                {% if view.controller.root.title %}
                     <div class="navbar-item">
-                        <strong>{{ view.controller.root.name }}</strong>
+                        <strong>{{ view.controller.root.title }}</strong>
                     </div>
                 {% endif %}
             </div>
@@ -36,7 +36,7 @@
                 {% for menu_item in topbar_menu %}
                     <a class="navbar-item" href="{{ menu_item.url }}" up-follow up-target="[up-main]">
                         {% if menu_item.icon %}<span class="icon"><i class="bi bi-{{ menu_item.icon }}"></i></span>{% endif %}
-                        <span>{{ menu_item.name }}</span>
+                        <span>{{ menu_item.title }}</span>
                     </a>
                 {% endfor %}
             </div>
@@ -55,7 +55,7 @@
                        up-follow
                        up-target="[up-main]">
                        {% if menu_item.icon %}<span class="icon{% if menu_item.color %} has-text-{{ menu_item.color }}{% endif %}"><i class="bi bi-{{ menu_item.icon }}"></i></span>{% endif %}
-                        <span>{{ menu_item.name }}</span>
+                        <span>{{ menu_item.title }}</span>
                     </a>
                 </li>
                 {% endfor %}

@@ -3,7 +3,7 @@ from django.urls import reverse
 
 class Route:
     @property
-    def name(self):
+    def title(self):
         return type(self).__name__
 
     @property
@@ -11,7 +11,7 @@ class Route:
         return type(self).__name__.replace(' ', '_').lower()
 
     def __str__(self):
-        return self.name
+        return self.title
 
     @property
     def urlpath(self):

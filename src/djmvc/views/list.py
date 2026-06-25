@@ -11,7 +11,7 @@ class ListMixin:
     urlpath = ''
 
     @property
-    def name(self):
+    def title(self):
         return self.model._meta.verbose_name_plural.capitalize()
 
 

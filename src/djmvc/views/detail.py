@@ -16,7 +16,7 @@ class DetailView(ModelMixin, TemplateMixin, ViewMixin, generic.DetailView):
     exclude = []
 
     @property
-    def name(self):
+    def title(self):
         return f'{self.object} {self.model._meta.verbose_name.capitalize()} detail'
 
     @property

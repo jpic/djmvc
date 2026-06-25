@@ -15,7 +15,7 @@ class FormMixin:
 
     @property
     def submit_button_label(self):
-        return self.name
+        return self.title
 
     def get_form_class(self):
         return getattr(self, 'form_class', None) or Form

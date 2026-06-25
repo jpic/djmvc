@@ -8,7 +8,7 @@
         <div>
             <h1 class="title is-3">
                 {% if view.icon %}<span class="icon{% if view.color %} has-text-{{ view.color }}{% endif %}"><i class="bi bi-{{ view.icon }}"></i></span>{% endif %}
-                {{ view.name }}
+                {{ view.title }}
             </h1>
         </div>
     </div>
@@ -27,7 +27,7 @@
                 up-accept-location="{{ request.path }}"
             >
                {% if action.icon %}<span class="icon"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
-               <span>{{ action.name }}</span>
+               <span>{{ action.title }}</span>
             </a>
             {% endfor %}
         </div>
