@@ -1,6 +1,8 @@
 from django import http
+from django.conf import settings
+from django.shortcuts import resolve_url
 from django.views import generic
-from django.urls import path, reverse
+from django.urls import path
 
 from .clonable import Clonable
 from .route import Route
@@ -25,8 +27,10 @@ class ViewMixin(Clonable, Route):
     def dispatch(self, *args, **kwargs):
         if not self.has_permission():
             if not self.request.user.is_authenticated:
-                return http.HttpResponseRedirect(
-                    reverse('site:auth:login') + '?next=' + self.request.path_info,
+                from django.contrib.auth.views import redirect_to_login
+
+                return redirect_to_login(
+                    self.request.get_full_path(),
                 )
             else:
                 return http.HttpResponseForbidden()
