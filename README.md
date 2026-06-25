@@ -83,7 +83,7 @@ Becomes available as:
 
 ```jinja2
 {% load eval %}
-{% eval view.some_method "some test var" view.request.user as result %}
+{% eval view.some_method "some test var" user=view.request.user as result %}
 {{ result }}
 ```
 
