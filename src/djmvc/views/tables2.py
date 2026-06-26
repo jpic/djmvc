@@ -1,15 +1,18 @@
 import functools
+
 import django_tables2
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+
 
 class ActionsColumn(django_tables2.Column):
-    empty_values = ()  # Always render column
+    empty_values = ()
     template_name = 'djmvc/_actions_column.html'
     exclude_from_export = True
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('verbose_name', 'Actions')
-        kwargs.setdefault('orderable', False)  # Ensure column cannot be sorted
+        kwargs.setdefault('orderable', False)
         super().__init__(*args, **kwargs)
 
     def render(self, record, table):
@@ -26,23 +29,55 @@ class ActionsColumn(django_tables2.Column):
         return render_to_string(self.template_name, context, request=table.view.request)
 
 
+class CheckboxColumn(django_tables2.Column):
+    empty_values = ()
+    template_name = 'djmvc/_checkbox_column.html'
+    exclude_from_export = True
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('verbose_name', mark_safe(
+            render_to_string('djmvc/_checkbox_header.html')
+        ))
+        kwargs.setdefault('orderable', False)
+        super().__init__(*args, **kwargs)
+
+    def render(self, record, table):
+        actions = table.view.controller.get_tagged_views(
+            'list_action',
+            request=table.view.request,
+            object=record,
+        )
+        if not actions:
+            return ''
+        return render_to_string(
+            self.template_name,
+            {'record': record},
+            request=table.view.request,
+        )
+
+
 class Tables2Mixin:
     table_template = 'djmvc/_tables2.html'
 
-    @functools.cached_property
-    def table_fields(self):
-        # Get all concrete fields in declaration/ Meta order
+    def _declared_table_fields(self):
+        for cls in type(self).__mro__:
+            if 'table_fields' in cls.__dict__:
+                value = cls.__dict__['table_fields']
+                if isinstance(value, list):
+                    return list(value)
+                break
+        return None
+
+    def _auto_table_fields(self):
         all_fields = [
             f.name for f in self.model_meta.get_fields()
-            if f.concrete and not f.is_relation  # avoid relations for basic tables
+            if f.concrete and not f.is_relation
         ]
-        # Ensure 'id' or 'pk' is first if present
         pk_field = self.model_meta.pk.name if self.model_meta.pk else 'id'
         fields = [pk_field]
 
-        # Add up to first 3 other fields (avoiding pk duplicate)
         for f in all_fields:
-            if f not in fields and len(fields) < 4:  # id + 3 others = 4 max
+            if f not in fields and len(fields) < 4:
                 fields.append(f)
                 if len(fields) == 4:
                     break
@@ -53,13 +88,26 @@ class Tables2Mixin:
         return fields
 
     @functools.cached_property
+    def table_fields(self):
+        if declared := self._declared_table_fields():
+            return declared
+        return self._auto_table_fields()
+
+    @functools.cached_property
+    def resolved_table_fields(self):
+        fields = list(self.table_fields)
+        if self.add_checkbox and 'checkbox' not in fields:
+            fields.insert(0, 'checkbox')
+        return fields
+
+    @functools.cached_property
     def table_meta(self):
         return type(
             'Meta',
             tuple(),
             dict(
                 model=self.model,
-                fields=self.table_fields,
+                fields=self.resolved_table_fields,
                 template_name=self.table_template,
             ),
         )
@@ -75,6 +123,12 @@ class Tables2Mixin:
             and 'actions' not in attributes
         ):
             attributes['actions'] = ActionsColumn()
+
+        if (
+            'checkbox' in attributes['Meta'].fields
+            and 'checkbox' not in attributes
+        ):
+            attributes['checkbox'] = CheckboxColumn()
 
         cls = type(
             f'{self.model.__name__}Table',
@@ -98,6 +152,10 @@ class Tables2Mixin:
         for v in self.controller.routes:
             if 'object' in getattr(v, 'tags', []):
                 return True
+
+    @functools.cached_property
+    def add_checkbox(self):
+        return bool(getattr(self, 'list_actions', []))
 
     def sort_url(self, column):
         return self.querystring(**{

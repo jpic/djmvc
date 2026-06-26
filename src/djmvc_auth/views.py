@@ -99,6 +99,7 @@ class AuthController(djmvc.Controller):
                     form_class=get_custom_user_change_form(),
                 ),
                 djmvc.generic.DeleteView,
+                djmvc.generic.DeleteObjectsView,
             ],
         ),
     ]

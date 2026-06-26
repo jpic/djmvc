@@ -8,5 +8,6 @@ from .template import TemplateView, TemplateViewMixin
 from .list import ListView
 from .detail import DetailView
 from .update import UpdateView
-from .delete import DeleteView
 from .create import CreateView
+from .delete import DeleteMixin, DeleteView, DeleteObjectsView
+from .list_action import ListActionMixin, ListActionView

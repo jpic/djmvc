@@ -13,6 +13,7 @@ class ModelController(ModelMixin, Controller):
         generic.DetailView,
         generic.UpdateView,
         generic.DeleteView,
+        generic.DeleteObjectsView,
         generic.CreateView,
     ]
 

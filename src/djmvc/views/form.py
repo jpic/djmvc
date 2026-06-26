@@ -9,7 +9,7 @@ class FormMixin:
         'up-submit': True,
         'up-layer': 'any',
         'up-accept-location': '*',
-        'up-on-accepted': 'up.visit(value.response.url)',
+        'up-on-accepted': 'up.visit(response.url)',
     }
 
     @property

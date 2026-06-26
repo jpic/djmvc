@@ -37,3 +37,17 @@ def test_stage0_crud(client, admin_user):
     assert client.get(reverse('site:stage0:delete', args=[obj.pk])).status_code == 200
     client.post(reverse('site:stage0:delete', args=[obj.pk]))
     assert not Stage0.objects.filter(pk=obj.pk).exists()
+
+
+@pytest.mark.django_db
+def test_stage0_bulk_delete(client, admin_user):
+    client.force_login(admin_user)
+    client.post(reverse('site:stage0:create'), {'name': 'A'})
+    client.post(reverse('site:stage0:create'), {'name': 'B'})
+    a = Stage0.objects.get(name='A')
+    b = Stage0.objects.get(name='B')
+
+    url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
+    assert client.get(url).status_code == 200
+    client.post(url, {'next': reverse('site:stage0:list')})
+    assert Stage0.objects.count() == 0

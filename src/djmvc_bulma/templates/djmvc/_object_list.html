@@ -1,0 +1,20 @@
+{% if view.deleted_objects %}
+{% include "djmvc/_deletion_preview.html" %}
+{% elif view.object_list %}
+<ul class="djmvc-object-list">
+    {% for object in view.object_list %}
+    <li>
+        {% if view.detail_urlname %}
+        <a href="{% url view.detail_urlname pk=object.pk %}"
+           up-layer="new modal"
+           up-size="large">{{ object }}</a>
+        {% else %}
+        {{ object }}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% for pk in view.pks %}
+<input type="hidden" name="pks" value="{{ pk }}">
+{% endfor %}
+{% endif %}

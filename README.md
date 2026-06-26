@@ -177,3 +177,60 @@ you can get all the views authorized for a user on a given object in the
 {% load djmvc %}
 {% eval view.root_controller.get_tagged_views 'object' request=request object=object as object_menu %}
 ```
+
+### List actions
+
+List actions are form views tagged `list_action` that operate on selected table
+rows. `ListActionMixin` provides selection plumbing (`pks`, `object_list`,
+`invalid_pks`), redirects back to the list on success, and wires Unpoly for the
+floating action bar. Your bulk logic goes in `form_valid()`:
+
+```python
+import djmvc
+
+
+class ArchiveObjectsView(djmvc.generic.ListActionView):
+    title = 'Archive'
+    icon = 'archive'
+    color = 'warning'
+    message = 'Archive the selected items?'
+
+    def form_valid(self, form):
+        self.object_list.update(archived=True)
+        return super().form_valid(form)
+
+
+class YourModelController(djmvc.ModelController):
+    model = YourModel
+    routes = [
+        djmvc.generic.ListView,
+        djmvc.generic.DetailView,
+        djmvc.generic.UpdateView,
+        djmvc.generic.DeleteView,
+        djmvc.generic.CreateView,
+        ArchiveObjectsView,
+    ]
+```
+
+Register the view on your controller `routes` — list views discover permitted
+actions as `view.list_actions`. The default Bulma `list.html` already renders
+`<list-action-bar>` with `unpoly_attributes:'list_action_bar'`; custom list
+templates can loop over `view.list_actions` the same way.
+
+Override `has_permission()` on the list action view for per-row checkbox
+visibility — same pattern as the `object` tag.
+
+#### Built-in bulk delete
+
+`ModelController` also registers `DeleteObjectsView`, which composes
+`DeleteMixin` (cascade preview, `form_delete.html`) with `ListActionMixin`. Use
+it as-is, or subclass it if you need custom delete behavior:
+
+```python
+class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):
+    def form_valid(self, form):
+        if not self.can_confirm_delete:
+            return self.form_invalid(form)
+        self.object_list.delete()
+        return super().form_valid(form)
+```

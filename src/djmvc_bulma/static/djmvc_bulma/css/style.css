@@ -93,3 +93,43 @@ body {
 .djmvc-filter-form {
     margin-bottom: 1rem;
 }
+
+.djmvc-listaction-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(10, 10, 10, 0.12);
+    max-width: calc(100vw - 2rem);
+}
+
+.djmvc-listaction-count {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.djmvc-object-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+
+.djmvc-object-list li + li {
+    margin-top: 0.35rem;
+}
+
+.djmvc-deletion-summary,
+.djmvc-deletion-objects {
+    list-style: disc;
+    margin-left: 1.25rem;
+}
+
+.djmvc-deletion-objects ul {
+    list-style: circle;
+    margin-left: 1.25rem;
+}

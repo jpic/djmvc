@@ -1,0 +1,39 @@
+{% extends 'djmvc/form.html' %}
+
+{% block before_message %}
+{% if view.invalid_pks %}
+<div class="notification is-warning is-light">
+    {{ view.invalid_pks }} selected item{{ view.invalid_pks|pluralize }} could not be found and were ignored.
+</div>
+{% endif %}
+
+{% include "djmvc/_object_list.html" %}
+{% endblock %}
+
+{% block message %}
+{{ block.super }}
+{% if view.has_deletion_cascade %}
+<p>All of the following related items will be deleted:</p>
+{% endif %}
+{% endblock %}
+
+{% block form_buttons %}
+{% if view.cancel_url %}
+<p class="control">
+    <button type="button" class="button" up-dismiss>Cancel</button>
+</p>
+{% endif %}
+{% if view.can_confirm_delete %}
+<p class="control">
+    <button type="submit" class="button is-{{ view.color|default:'danger' }}">
+        {% block submit_button_label %}
+        {{ view.submit_button_label }}
+        {% endblock %}
+    </button>
+</p>
+{% else %}
+<p class="control">
+    <button type="button" class="button" up-dismiss>Close</button>
+</p>
+{% endif %}
+{% endblock %}

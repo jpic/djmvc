@@ -13,6 +13,13 @@ def _autodiscover_routes():
 
 
 @pytest.fixture
+def stage0_bulk_items(db):
+    from djmvc_example.stage0.models import Stage0
+
+    return [Stage0.objects.create(name=f'item-{i}') for i in range(4)]
+
+
+@pytest.fixture
 def many_users(db):
     """Enough users to paginate and filter in browser tests."""
     return [

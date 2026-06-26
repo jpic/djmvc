@@ -1,3 +1,5 @@
+import functools
+
 from django.views import generic
 from ..model import ModelMixin
 from .filter import FilterMixin
@@ -17,6 +19,10 @@ class ListMixin:
 
     def breadcrumbs(self):
         return []
+
+    @functools.cached_property
+    def list_actions(self):
+        return self.controller.get_tagged_views('list_action', request=self.request)
 
 
 class ListView(

@@ -38,4 +38,25 @@
         No {{ view.model_meta.verbose_name_plural|default:"items" }} found.
     </div>
 {% endif %}
+
+{% if view.list_actions %}
+<list-action-bar class="djmvc-listaction-bar" table=".djmvc-list" scope="{{ request.path }}" hidden>
+    <div class="level">
+        <div class="level-left">
+            <span class="djmvc-listaction-count" data-role="count"></span>
+        </div>
+        <div class="level-right">
+            <button type="button" class="button" data-role="clear">Clear selection</button>
+            {% for action in view.list_actions %}
+            <a href="{{ action.url }}"
+               class="button is-{{ action.color|default:'primary' }}"
+               {{ action|unpoly_attributes:'list_action_bar'|html_attributes }}>
+                {% if action.icon %}<span class="icon"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
+                <span>{{ action.title }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</list-action-bar>
+{% endif %}
 {% endblock %}

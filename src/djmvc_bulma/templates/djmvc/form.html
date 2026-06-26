@@ -30,9 +30,13 @@
                 {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                 {% csrf_token %}
 
+                {% block before_message %}{% endblock %}
+
+                {% block message %}
                 {% if view.message %}
                 <p>{{ view.message }}</p>
                 {% endif %}
+                {% endblock %}
 
                 <input type="hidden" name="next" value="{% if request.POST.next %}{{ request.POST.next }}{% elif request.GET.next %}{{ request.GET.next }}{% elif request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}/{% endif %}">
 
@@ -50,7 +54,7 @@
                     </p>
                     {% endif %}
                     <p class="control">
-                        <button type="submit" class="button is-primary">
+                        <button type="submit" class="button is-{{ view.color|default:'primary' }}">
                             {% block submit_button_label %}
                             {{ view.submit_button_label }}
                             {% endblock %}
