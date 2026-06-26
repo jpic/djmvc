@@ -50,7 +50,7 @@ class Tables2Mixin:
                     break
 
         if self.add_actions:
-            fields.append('action')
+            fields.append('actions')
 
         return fields
 
