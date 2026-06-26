@@ -1,0 +1,29 @@
+{% load djmvc crispy_forms_tags %}
+{% if form %}
+<form method="{{ form_method|default:'get' }}"
+      class="{{ css_class|default:'djmvc-horizontal-form' }}"
+      {{ attrs|html_attributes }}>
+    <div class="field is-grouped">
+        {% for field in form.visible_fields %}
+        <p class="control{% if forloop.first %} is-expanded{% endif %}">
+            {{ field|as_crispy_field }}
+        </p>
+        {% endfor %}
+        <p class="control">
+            <button type="submit" class="button is-primary" aria-label="{{ submit_label|default:'Apply' }}">
+                {% if submit_icon %}
+                <span class="icon"><i class="bi bi-{{ submit_icon }}"></i></span>
+                {% else %}
+                <span>{{ submit_label|default:'Apply' }}</span>
+                {% endif %}
+            </button>
+        </p>
+        {% if show_clear %}
+        <p class="control">
+            <a href="{{ clear_url }}" class="button" up-follow up-target="{{ target }}" up-history>Clear</a>
+        </p>
+        {% endif %}
+    </div>
+    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+</form>
+{% endif %}

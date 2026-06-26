@@ -4,8 +4,13 @@ from django.template import Context, Template
 from django.test import RequestFactory
 
 from djmvc.templatetags.djmvc import html_attributes, unpoly_attributes
-from djmvc.views import generic
+from djmvc.view import ViewMixin
+from djmvc.views.pagination import PaginationMixin
 from djmvc_example.stage0.models import Stage0
+
+
+class _PaginatedView(ViewMixin, PaginationMixin):
+    pass
 
 
 def test_html_attributes_renders_key_value_pairs():
@@ -44,6 +49,42 @@ def test_unpoly_attributes_filter_without_method():
     obj = Stage0(name='x')
     view = type(detail_route)(request=request, object=obj, pk=1)
     assert unpoly_attributes(view, 'object_menu') == {}
+
+
+def test_querystring_preserves_params():
+    rf = RequestFactory()
+    request = rf.get('/items/?search=foo&page=2')
+    view = _PaginatedView()
+    view.request = request
+    result = view.querystring(page='3')
+    assert 'search=foo' in result
+    assert 'page=3' in result
+
+
+def test_querystring_replaces_existing_params():
+    rf = RequestFactory()
+    request = rf.get('/items/?search=foo&page=2')
+    view = _PaginatedView()
+    view.request = request
+    result = view.querystring(page='1')
+    assert result.count('page=') == 1
+    assert 'page=1' in result
+    assert 'page=2' not in result
+
+
+def test_pagination_url_via_eval():
+    rf = RequestFactory()
+    request = rf.get('/items/?search=foo')
+    view = _PaginatedView()
+    view.request = request
+    template = Template('''
+    {% load djmvc %}
+    {% eval view.pagination_url 2 as url %}
+    {{ url }}
+    ''')
+    output = template.render(Context({'view': view}))
+    assert 'search=foo' in output
+    assert 'page=2' in output
 
 
 def test_unpoly_attributes_filter_in_template():

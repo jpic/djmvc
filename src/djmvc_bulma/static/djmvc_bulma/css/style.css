@@ -28,3 +28,68 @@ body {
     min-width: 0;
     transition: margin-left 0.3s ease-in-out;
 }
+
+/* Pagination footer: paginate-by on the left, page controls on the right */
+.djmvc-pagination-footer,
+.djmvc-table-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-top: 1rem;
+    max-width: 100%;
+}
+
+.djmvc-per-page {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.djmvc-per-page-label {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.djmvc-table-pagination {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.djmvc-table-pagination .button {
+    flex-shrink: 0;
+}
+
+.djmvc-page-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.djmvc-page-form .input {
+    width: 3.75rem;
+    text-align: center;
+}
+
+.djmvc-page-form-total {
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+[up-table] {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.djmvc-horizontal-form,
+.djmvc-filter-form {
+    margin-bottom: 1rem;
+}

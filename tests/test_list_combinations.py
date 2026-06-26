@@ -1,0 +1,199 @@
+"""Test all composable list mixin combinations."""
+import pytest
+from django.views import generic
+
+from djmvc.views.filter import FilterMixin
+from djmvc.views.list import ListMixin
+from djmvc.views.pagination import PaginationMixin
+from djmvc.views.tables2 import Tables2Mixin
+from djmvc.views.template import TemplateViewMixin
+from djmvc.model import ModelMixin
+from djmvc_example.stage0.models import Stage0
+
+
+class _MockController:
+    model = Stage0
+    codename = 'stage0'
+    controller = None
+    routes = []
+
+    def find_route(self, codename):
+        return None
+
+
+MISSING = object()
+
+
+def build_list_view(*mixins, paginate_by=MISSING, **attrs):
+    bases = (
+        ListMixin,
+        *mixins,
+        TemplateViewMixin,
+        ModelMixin,
+        generic.ListView,
+    )
+    if paginate_by is not MISSING:
+        attrs['paginate_by'] = paginate_by
+    return type('TestListView', bases, attrs)
+
+
+@pytest.fixture
+def stage0_items(db):
+    return [
+        Stage0.objects.create(name=f'item{i:02d}')
+        for i in range(30)
+    ]
+
+
+@pytest.fixture
+def mock_controller():
+    return _MockController()
+
+
+def _dispatch(view_cls, request, controller):
+    view = view_cls()
+    view.controller = controller
+    view.setup(request)
+    view.object_list = view.get_queryset()
+    paginate_by = view.get_paginate_by(view.object_list)
+    if paginate_by:
+        paginator, page, object_list, is_paginated = view.paginate_queryset(
+            view.object_list,
+            paginate_by,
+        )
+        view.object_list = object_list
+        view.page_obj = page
+        view._paginator = paginator
+        view.is_paginated = is_paginated
+    return view
+
+
+@pytest.mark.django_db
+def test_bare_list(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view()
+    request = rf.get('/')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.object_list) == 30
+    assert getattr(view, 'page_obj', None) is None
+    assert 'table' not in type(view).__dict__
+
+
+@pytest.mark.django_db
+def test_filter_only(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        FilterMixin,
+        paginate_by=None,
+
+    )
+    request = rf.get('/?search=item1')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert all('item1' in obj.name for obj in view.object_list)
+    assert len(view.object_list) >= 10
+    assert getattr(view, 'page_obj', None) is None
+
+
+@pytest.mark.django_db
+def test_paginate_only(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        PaginationMixin,
+
+    )
+    request = rf.get('/?per_page=10&page=2')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.object_list) == 10
+    assert view.page.number == 2
+    assert view.paginator.per_page == 10
+
+
+@pytest.mark.django_db
+def test_table_only(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        Tables2Mixin,
+        paginate_by=None,
+
+    )
+    request = rf.get('/')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.table.rows) == 30
+    assert getattr(view, 'page_obj', None) is None
+
+
+@pytest.mark.django_db
+def test_filter_and_paginate(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        FilterMixin,
+        PaginationMixin,
+
+    )
+    request = rf.get('/?search=item&per_page=5&page=2')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.object_list) == 5
+    assert view.page.number == 2
+    assert all('item' in obj.name for obj in view.object_list)
+
+
+@pytest.mark.django_db
+def test_filter_and_table(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        FilterMixin,
+        Tables2Mixin,
+        paginate_by=None,
+
+    )
+    request = rf.get('/?search=item2')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert getattr(view, 'page_obj', None) is None
+    assert len(view.table.rows) == 10
+    assert all('item2' in row.record.name for row in view.table.rows)
+
+
+@pytest.mark.django_db
+def test_paginate_and_table(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(
+        PaginationMixin,
+        Tables2Mixin,
+
+    )
+    request = rf.get('/?per_page=10')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.object_list) == 10
+    assert len(view.table.rows) == 10
+    assert view.paginator.per_page == 10
+
+
+@pytest.mark.django_db
+def test_full_list_view(rf, admin_user, stage0_items, mock_controller):
+    from djmvc.views.list import ListView
+
+    view_cls = type('FullListView', (ListView,), {})
+    request = rf.get('/?search=item&per_page=5&page=2')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert len(view.object_list) == 5
+    assert view.page.number == 2
+    assert len(view.table.rows) == 5
+
+
+@pytest.mark.django_db
+def test_invalid_per_page_falls_back(rf, admin_user, stage0_items, mock_controller):
+    view_cls = build_list_view(PaginationMixin)
+    request = rf.get('/?per_page=999')
+    request.user = admin_user
+    view = _dispatch(view_cls, request, mock_controller)
+
+    assert view.paginator.per_page == 25

@@ -2,7 +2,6 @@ import functools
 import django_tables2
 from django.template.loader import render_to_string
 
-
 class ActionsColumn(django_tables2.Column):
     empty_values = ()  # Always render column
     template_name = 'djmvc/_actions_column.html'
@@ -28,7 +27,7 @@ class ActionsColumn(django_tables2.Column):
 
 
 class Tables2Mixin:
-    table_template = 'djmvc/tables2.html'
+    table_template = 'djmvc/_tables2.html'
 
     @functools.cached_property
     def table_fields(self):
@@ -88,13 +87,9 @@ class Tables2Mixin:
     def table(self):
         table = self.table_class(self.object_list)
 
-        # Store reference to view so ActionsColumn can access it
         table.view = self
 
-        # Configure pagination
-        django_tables2.RequestConfig(
-            self.request,
-        ).configure(table)
+        django_tables2.RequestConfig(self.request).configure(table)
 
         return table
 
@@ -103,3 +98,8 @@ class Tables2Mixin:
         for v in self.controller.routes:
             if 'object' in getattr(v, 'tags', []):
                 return True
+
+    def sort_url(self, column):
+        return self.querystring(**{
+            self.table.prefixed_order_by_field: column.order_by_alias.next,
+        })

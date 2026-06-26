@@ -42,6 +42,12 @@ class ViewMixin(Clonable, Route):
     def breadcrumbs(self, with_self=True):
         return []
 
+    def querystring(self, **params):
+        qs = self.request.GET.copy()
+        for key, value in params.items():
+            qs[key] = value
+        return '?' + qs.urlencode()
+
 
 class View(ViewMixin, generic.View):
     pass
