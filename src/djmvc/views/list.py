@@ -1,7 +1,6 @@
 from django.views import generic
-from ..view import ViewMixin
 from ..model import ModelMixin
-from .template import TemplateMixin
+from .template import TemplateViewMixin
 from .tables2 import Tables2Mixin
 
 
@@ -14,6 +13,9 @@ class ListMixin:
     def title(self):
         return self.model._meta.verbose_name_plural.capitalize()
 
+    def breadcrumbs(self):
+        return []
 
-class ListView(ListMixin, Tables2Mixin, TemplateMixin, ModelMixin, ViewMixin, generic.ListView):
+
+class ListView(ListMixin, Tables2Mixin, TemplateViewMixin, ModelMixin, generic.ListView):
     pass

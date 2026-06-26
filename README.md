@@ -6,8 +6,8 @@ Get more out of less with a few design patterns:
 - Dynamic navigation menus with tagged views
 - Skip `get_context_data` overrides by consuming the `view` object directly in
   templates
-- `{% eval %}` template tag to skip making template tags every time you want to
-  call a function or method (like in Jinja2)
+- `{% load djmvc %}` template library (`{% eval %}`, `html_attributes`,
+  `unpoly_attributes` filters) to skip boilerplate template tags
 - Secure by default: views allow only superusers by default, it's up to you to
   open permissions as-needed.
 
@@ -100,8 +100,8 @@ class MyView(generic.TemplateView):
 Allows directly that in the template: `{{ view.something }}`.
 
 Also, ain't no way I'm defining a templatetag for everything, loved the liberty
-Jinja2 gave me, taking it back with Django engine with the eval tag provided by
-djmvc.
+Jinja2 gave me, taking it back with Django engine with the `djmvc` template
+library.
 
 ```python
 class MyView(generic.TemplateView):
@@ -112,9 +112,24 @@ class MyView(generic.TemplateView):
 Becomes available as:
 
 ```jinja2
-{% load eval %}
+{% load djmvc %}
 {% eval view.some_method "some test var" user=view.request.user as result %}
 {{ result }}
+```
+
+Form views can define Unpoly link attributes per rendering context (list menu,
+table actions, etc.) with `unpoly_attributes(context)` on `FormMixin`. Render
+them in templates without hardcoding view names:
+
+```jinja2
+{% load djmvc %}
+<a href="{{ action.url }}" {{ action|unpoly_attributes:'model_menu'|html_attributes }}>
+```
+
+Any attribute dict (forms included) can use the `html_attributes` filter:
+
+```jinja2
+<form method="post" {{ view.form_attributes|html_attributes }}>
 ```
 
 ## Dynamic menus
@@ -133,6 +148,7 @@ And use the `get_tagged_view()` method of the controller to get all views
 tagged `"topbar"` as such:
 
 ```jinja2
+{% load djmvc %}
 {% eval view.root_controller.get_tagged_views 'topbar' request=request as topbar_menu %}
 ```
 
@@ -158,5 +174,6 @@ you can get all the views authorized for a user on a given object in the
 "object" tag as such:
 
 ```jinja2
+{% load djmvc %}
 {% eval view.root_controller.get_tagged_views 'object' request=request object=object as object_menu %}
 ```

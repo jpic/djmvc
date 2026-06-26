@@ -1,4 +1,4 @@
-{% load static eval %}
+{% load static djmvc %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,6 +71,24 @@
         </div>
         {% endfor %}
     {% endif %}
+
+    {% with breadcrumbs=view.breadcrumbs %}
+    {% if breadcrumbs %}
+    <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+        <ul>
+            {% for crumb in breadcrumbs %}
+            <li{% if forloop.last %} class="is-active"{% endif %}>
+                {% if crumb.url and not forloop.last %}
+                <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+                {% else %}
+                <a{% if forloop.last %} aria-current="page"{% endif %}>{{ crumb.title }}</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% endwith %}
 
     {% block content %}{% endblock %}
 </main>

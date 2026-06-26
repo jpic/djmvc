@@ -1,7 +1,6 @@
 from django.views import generic
 from django.forms import Form
-from djmvc.view import ViewMixin
-from djmvc.views.template import TemplateMixin
+from djmvc.views.template import TemplateViewMixin
 
 
 class FormMixin:
@@ -17,6 +16,15 @@ class FormMixin:
     def submit_button_label(self):
         return self.title
 
+    def unpoly_attributes(self, context=None):
+        attrs = {
+            'up-layer': 'new modal',
+            'up-size': 'medium',
+        }
+        if request := getattr(self, 'request', None):
+            attrs['up-accept-location'] = request.path
+        return attrs
+
     def get_form_class(self):
         return getattr(self, 'form_class', None) or Form
 
@@ -24,5 +32,5 @@ class FormMixin:
         return self.request.POST.get('next', '/')
 
 
-class FormView(ViewMixin, TemplateMixin, FormMixin, generic.FormView):
+class FormView(TemplateViewMixin, FormMixin, generic.FormView):
     pass

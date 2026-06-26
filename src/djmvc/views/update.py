@@ -1,14 +1,11 @@
 from django.views import generic
 
-from ..view import ViewMixin
-from ..model import ModelMixin
-from .template import TemplateMixin
-from .modelform import ModelFormMixin
+from .template import TemplateViewMixin
+from .objectform import ObjectModelFormMixin
 
 
-class UpdateView(ModelFormMixin, TemplateMixin, ViewMixin, generic.UpdateView):
+class UpdateView(ObjectModelFormMixin, TemplateViewMixin, generic.UpdateView):
     tags = ['object']
     default_template_name = 'form.html'
-    urlpath = '<int:pk>/edit/'
     icon = 'pencil'
     color = 'warning'

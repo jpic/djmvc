@@ -1,6 +1,5 @@
 {% extends "djmvc/base.html" %}
-{% load eval %}
-{% load django_tables2 %}
+{% load djmvc django_tables2 %}
 
 {% block content %}
 <div class="level mb-5">
@@ -22,9 +21,7 @@
                 href="{{ action.url }}"
                 class="button is-{{ action.color|default:'primary' }}"
                 {% if action.action %}{{ action.action }}{% endif %}
-                up-layer="new modal"
-                up-size="medium"
-                up-accept-location="{{ request.path }}"
+                {{ action|unpoly_attributes:'model_menu'|html_attributes }}
             >
                {% if action.icon %}<span class="icon"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
                <span>{{ action.title }}</span>

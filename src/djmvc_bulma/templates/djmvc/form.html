@@ -1,5 +1,5 @@
 {% extends 'djmvc/base.html' %}
-{% load crispy_forms_tags %}
+{% load djmvc crispy_forms_tags %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -25,9 +25,7 @@
 
             <form method="post"
                 {% block form_attrs %}
-                {% for key, value in view.form_attributes.items %}
-                {{ key }}="{{ value }}"
-                {% endfor %}
+                {{ view.form_attributes|html_attributes }}
                 {% endblock %}
                 {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                 {% csrf_token %}

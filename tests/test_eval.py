@@ -11,7 +11,7 @@ def test_eval():
             )
 
     template = Template('''
-    {% load eval %}
+    {% load djmvc %}
     {% eval foo.bar "test" var some='kwarg' other=var as result %}
     {{ result }}
     ''')

@@ -29,3 +29,14 @@ class ModelMixin:
         # because django template won't allow ._meta because it starts with an
         # underscore ...
         return self.model._meta
+
+    def breadcrumbs(self, with_self=True):
+        crumbs = []
+        list_route = self.controller.find_route('list')
+        if list_route:
+            list_view = type(list_route)(request=self.request)
+            if list_view.has_permission():
+                crumbs.append(list_view)
+        if with_self:
+            crumbs.append(self)
+        return crumbs

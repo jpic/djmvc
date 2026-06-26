@@ -1,4 +1,4 @@
-{% load django_tables2 %}
+{% load django_tables2 djmvc %}
 
 {% if actions %}
 {# Desktop/Tablet: Icon buttons with tooltips #}
@@ -8,11 +8,7 @@
        class="button is-small is-{{ action.color|default:'primary' }} is-rounded"
        title="{{ action.title }}"
        {% if action.action %}{{ action.action }}{% endif %}
-       {% if action.urlname == 'create' or action.urlname == 'edit' or action.urlname == 'delete' %}
-       up-layer="new modal" up-size="medium" up-accept-location="{{ request.path }}"
-       {% elif action.up_target %}
-       up-target="{{ action.up_target }}"
-       {% endif %}>
+       {{ action|unpoly_attributes:'table_actions'|html_attributes }}>
         {% if action.icon %}<span class="icon is-small"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
     </a>
     {% endfor %}
@@ -33,11 +29,7 @@
             <a href="{% url action.urlfullname pk=record.pk %}"
                class="dropdown-item has-text-{{ action.color|default:'primary' }}"
                {% if action.action %}{{ action.action }}{% endif %}
-               {% if action.urlname == 'create' or action.urlname == 'edit' or action.urlname == 'delete' %}
-               up-layer="new modal" up-size="medium" up-accept-location="{{ request.path }}"
-               {% elif action.up_target %}
-               up-target="{{ action.up_target }}"
-               {% endif %}>
+               {{ action|unpoly_attributes:'table_actions'|html_attributes }}>
                 {% if action.icon %}<span class="icon is-small"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
                 <span>{{ action.title }}</span>
             </a>

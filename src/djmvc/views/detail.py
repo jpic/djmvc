@@ -1,23 +1,21 @@
 from django.views import generic
 from django.utils.html import mark_safe
 
-from ..view import ViewMixin
 from ..model import ModelMixin
-from .template import TemplateMixin
+from .object import ObjectMixin
+from .template import TemplateViewMixin
 
 
-class DetailView(ModelMixin, TemplateMixin, ViewMixin, generic.DetailView):
+class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView):
     tags = ['object']
     default_template_name = 'detail.html'
-    urlpath = '<int:pk>'
     icon = 'eye'
     color = 'primary'
     fields = '__all__'
     exclude = []
 
-    @property
-    def title(self):
-        return f'{self.object} {self.model._meta.verbose_name.capitalize()} detail'
+    def breadcrumbs(self):
+        return super().breadcrumbs(with_self=False)
 
     @property
     def visible_fields(self):

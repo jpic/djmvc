@@ -29,6 +29,15 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
     def codename(self):
         return super().codename.replace('controller', '')
 
+    def find_route(self, codename):
+        current = self
+        while current is not None:
+            try:
+                return current.routes[codename]
+            except KeyError:
+                current = getattr(current, 'controller', None)
+        return None
+
     def get_tagged_views(self, tag, **kwargs):
         def process(controller):
             views = []

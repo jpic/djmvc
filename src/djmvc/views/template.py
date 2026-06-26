@@ -39,5 +39,9 @@ class TemplateMixin:
         return template_names
 
 
-class TemplateView(ViewMixin, TemplateMixin, generic.TemplateView):
+class TemplateViewMixin(ViewMixin, TemplateMixin):
+    pass
+
+
+class TemplateView(TemplateViewMixin, generic.TemplateView):
     pass

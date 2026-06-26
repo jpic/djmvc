@@ -39,6 +39,9 @@ class ViewMixin(Clonable, Route):
     def has_permission(self):
         return self.request.user.is_superuser
 
+    def breadcrumbs(self, with_self=True):
+        return []
+
 
 class View(ViewMixin, generic.View):
     pass
