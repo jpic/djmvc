@@ -10,8 +10,12 @@ class Registry:
         cls = route if isinstance(route, type) else type(route)
         cls = cls.clone(controller=self.controller)
         instance = cls()
+        if instance.codename in self._by_codename:
+            old = self._by_codename[instance.codename]
+            self._items[self._items.index(old)] = instance
+        else:
+            self._items.append(instance)
         self._by_codename[instance.codename] = instance
-        self._items.append(instance)
         return instance
 
     def __setitem__(self, codename, route):

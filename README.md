@@ -42,7 +42,8 @@ class Site(djmvc.Controller):
 
 site = Site()
 
-# define some importable url patterns to include
+# in your project's urls.py — discover per-app djmvc.py modules first
+site.autodiscover()
 urlpatterns = site.urlpatterns
 
 # it will define reverseable urls
@@ -50,13 +51,27 @@ assert reverse('site:home') == '/'
 assert reverse('controller:sub-controller:sub-view') == '/controller/sub-controller/sub-view/'
 ```
 
+### Per-app route registration
+
+Each installed app can provide a `djmvc.py` module that registers routes
+(imported by `site.autodiscover()`, same pattern as Django admin's `admin.py`):
+
+```python
+# myapp/djmvc.py
+import djmvc
+from .views import MyController
+
+djmvc.site.routes.register(MyController)
+```
+
+Use `reverse_lazy()` for any settings that hold URL names (e.g. `LOGIN_URL`).
+
 ### Runtime route customization
 
 `djmvc.site.routes` is a `Registry` — routes declared on the class are cloned
 into it at access time. You can customize it at runtime:
 
 ```python
-# register a route (e.g. from AppConfig.ready())
 djmvc.site.routes.register(AuthController())
 
 # swap a whole entry

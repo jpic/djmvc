@@ -52,4 +52,4 @@ def test_view_security(rf, admin_user):
 
 
 def test_login_url_default():
-    assert settings.LOGIN_URL == '/auth/login/'
+    assert resolve_url(settings.LOGIN_URL) == '/auth/login/'

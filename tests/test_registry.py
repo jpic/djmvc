@@ -19,6 +19,21 @@ def test_runtime_register():
     assert site.routes['extra'].controller is site
 
 
+def test_register_is_idempotent_by_codename():
+    class Extra(View):
+        tags = ['navigation']
+
+    class MySite(Controller):
+        routes = []
+
+    site = MySite()
+    first = site.routes.register(Extra)
+    second = site.routes.register(Extra)
+    assert len(list(site.routes)) == 1
+    assert site.routes['extra'] is second
+    assert first is not second
+
+
 def test_runtime_delete():
     class Home(djmvc.generic.TemplateView):
         pass

@@ -1,3 +1,5 @@
+from django.utils.module_loading import autodiscover_modules
+
 from .controller import Controller
 from .view import View
 from .model import ModelMixin
@@ -28,5 +30,10 @@ class Site(Controller):
     routes = [
         Home,
     ]
+
+    def autodiscover(self):
+        autodiscover_modules('djmvc')
+        return self
+
 
 site = Site()
