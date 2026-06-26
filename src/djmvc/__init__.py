@@ -36,5 +36,9 @@ class Site(Controller):
         autodiscover_modules('djmvc')
         return self
 
+    def build(self):
+        self.autodiscover()
+        return super().build()
+
 
 site = Site()

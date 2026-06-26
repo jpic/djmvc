@@ -4,13 +4,33 @@ from .template import TemplateViewMixin
 
 
 class ObjectMixin:
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
+    def get_object(self):
+        if obj := getattr(self, 'object', None):
+            return obj
+        pk = self.kwargs.get('pk')
+        return self.model._default_manager.get(pk=pk)
+
+    @property
+    def url(self):
+        # object bound on the view instance
+        if obj := getattr(self, 'object', None):
+            return self.reverse(obj.pk)
+        # pk bound from URL kwargs during dispatch
+        if pk := getattr(self, 'kwargs', {}).get('pk'):
+            return self.reverse(pk)
+        return super().url
+
     @property
     def urlpath(self):
         return f'<pk>/{self.codename}/'
 
     @property
-    def title(self):
-        return f'{self.object} {self.model._meta.verbose_name.capitalize()} {super().title}'
+    def breadcrumb_title(self):
+        return self.title
 
     def breadcrumbs(self, with_self=True):
         crumbs = []

@@ -19,6 +19,7 @@ def test_routing(name, url):
 @pytest.mark.urls('djmvc_example.example_urls')
 def test_view_controller():
     site = Site()
+    site.build()
 
     view = site.routes[0]
     assert view.controller is site

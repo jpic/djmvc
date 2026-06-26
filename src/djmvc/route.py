@@ -39,4 +39,4 @@ class Route:
         return self.reverse()
 
     def reverse(self, *args, **kwargs):
-        return reverse(self.urlfullname, *args, **kwargs)
+        return reverse(self.urlfullname, args=args, kwargs=kwargs)

@@ -2,7 +2,10 @@ import functools
 
 import django_tables2
 from django.template.loader import render_to_string
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+
+from .log import ADDITION, CHANGE, DELETION, format_logentry_message
 
 
 class ActionsColumn(django_tables2.Column):
@@ -54,6 +57,36 @@ class CheckboxColumn(django_tables2.Column):
             {'record': record},
             request=table.view.request,
         )
+
+
+class LogActionColumn(django_tables2.Column):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('verbose_name', 'Action')
+        kwargs.setdefault('orderable', True)
+        super().__init__(*args, **kwargs)
+
+    def render(self, value):
+        labels = {
+            ADDITION: ('Added', 'success'),
+            CHANGE: ('Changed', 'warning'),
+            DELETION: ('Deleted', 'danger'),
+        }
+        label, color = labels.get(value, ('Unknown', 'light'))
+        return format_html(
+            '<span class="tag is-{}">{}</span>',
+            color,
+            label,
+        )
+
+
+class LogMessageColumn(django_tables2.Column):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('verbose_name', 'Changes')
+        kwargs.setdefault('orderable', False)
+        super().__init__(*args, **kwargs)
+
+    def render(self, value):
+        return format_logentry_message(value)
 
 
 class Tables2Mixin:

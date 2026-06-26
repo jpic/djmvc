@@ -182,10 +182,10 @@ def test_page_navigation_buttons(browser, live_server, browser_login, admin_user
     assert page_input.value == '1'
 
     browser.find_by_css('i.bi-chevron-right').first.click()
+    _wait_for_url(browser, 'page=2')
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
     page_input = browser.find_by_css('form.djmvc-page-form input[name="page"]').first
     assert page_input.value == '2'
-    _wait_for_url(browser, 'page=2')
 
     browser.find_by_css('i.bi-chevron-left').first.click()
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
@@ -204,10 +204,10 @@ def test_page_number_input(browser, live_server, browser_login, admin_user, many
     page_input.fill('2')
     page_input._element.send_keys(Keys.RETURN)
 
+    _wait_for_url(browser, 'page=2')
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
     page_input = browser.find_by_css('form.djmvc-page-form input[name="page"]').first
     assert page_input.value == '2'
-    _wait_for_url(browser, 'page=2')
     table_text = browser.find_by_css('[up-table]').first.text
     assert 'user25' in table_text
     assert 'user0' not in table_text

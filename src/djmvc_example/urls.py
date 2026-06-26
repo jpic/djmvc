@@ -22,4 +22,4 @@ import djmvc
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-] + djmvc.site.autodiscover().urlpatterns
+] + djmvc.site.build().urlpatterns

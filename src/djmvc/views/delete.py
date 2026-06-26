@@ -9,6 +9,7 @@ from django.views import generic
 
 from .form import FormView
 from .list_action import ListActionMixin
+from .log import DELETION, LogMixin
 from .template import TemplateViewMixin
 from .objectform import ObjectFormMixin
 
@@ -57,10 +58,11 @@ def get_deleted_objects(view, objs):
     return to_delete, model_count, protected
 
 
-class DeleteMixin:
+class DeleteMixin(LogMixin):
     default_template_name = 'djmvc/form_delete.html'
     icon = 'trash'
     color = 'danger'
+    log_action_flag = DELETION
 
     @property
     def submit_button_label(self):
@@ -109,6 +111,14 @@ class DeleteMixin:
     def can_confirm_delete(self):
         return not self.deletion_protected
 
+    def form_valid(self, form):
+        for obj in self.get_log_objects():
+            if getattr(obj, 'pk', None) is not None:
+                obj._log_pk = obj.pk
+        response = super().form_valid(form)
+        self.log_insert()
+        return response
+
 
 class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.DeleteView):
     tags = ['object']
@@ -123,6 +133,7 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
     def form_valid(self, form):
         if not self.can_confirm_delete:
             return self.form_invalid(form)
+        self.log_objects = [self.object]
         return super().form_valid(form)
 
 
@@ -144,6 +155,7 @@ class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):
     def form_valid(self, form):
         if not self.can_confirm_delete:
             return self.form_invalid(form)
+        self.log_objects = list(self.object_list)
         self._deleted_count = self.object_list.count()
         self.object_list.delete()
         return super().form_valid(form)

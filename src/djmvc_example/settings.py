@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     # load the auth controller in djmvc.site:
     "djmvc_auth",
 
+    # audit log: patches ModelController + registers LogEntryController
+    "djmvc_history",
+
     # template pack
     "djmvc_bulma",
     # used by djmvc_bulma:

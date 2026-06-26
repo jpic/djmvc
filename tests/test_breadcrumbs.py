@@ -40,6 +40,7 @@ def test_find_route_walks_up_to_parent_controller(rf, admin_user):
         ],
     )
     site = Controller.clone(codename='site', routes=[outer])()
+    site.build()
     inner_mc = site.routes['stage0'].routes['nested'].routes['stage0']
     create_route = inner_mc.routes['create']
     request = _make_request(rf, admin_user)
@@ -107,3 +108,70 @@ def test_detail_view_breadcrumbs_without_self(rf, admin_user):
     assert type(crumbs[1]).__name__ == 'DetailView'
     assert crumbs[1].object == obj
     assert view not in crumbs
+
+
+@pytest.mark.django_db
+def test_update_view_breadcrumb_titles(rf, admin_user):
+    obj = Stage0.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['stage0']
+    update_route = stage0.routes['update']
+    request = _make_request(rf, admin_user)
+    view = type(update_route)(request=request, object=obj, pk=obj.pk)
+    crumbs = view.breadcrumbs()
+    assert [crumb.breadcrumb_title for crumb in crumbs] == [
+        stage0.routes['list'].title,
+        str(obj),
+        'Update',
+    ]
+
+
+@pytest.mark.django_db
+def test_detail_view_titles(rf, admin_user):
+    obj = Stage0.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['stage0']
+    detail_route = stage0.routes['detail']
+    request = _make_request(rf, admin_user)
+    view = type(detail_route)(request=request, object=obj, pk=obj.pk)
+    assert view.title == 'Detail'
+    crumbs = view.breadcrumbs()
+    assert [crumb.breadcrumb_title for crumb in crumbs] == [
+        stage0.routes['list'].title,
+        str(obj),
+    ]
+
+
+@pytest.mark.django_db
+def test_history_view_titles(rf, admin_user):
+    obj = Stage0.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['stage0']
+    history_route = stage0.routes['history']
+    request = _make_request(rf, admin_user)
+    view = type(history_route)(request=request, object=obj, pk=obj.pk)
+    assert view.title == 'History'
+    assert view.breadcrumb_title == 'History'
+    crumbs = view.breadcrumbs()
+    assert [crumb.breadcrumb_title for crumb in crumbs] == [
+        stage0.routes['list'].title,
+        str(obj),
+        'History',
+    ]
+
+
+@pytest.mark.django_db
+def test_object_menu_titles(rf, admin_user):
+    obj = Stage0.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['stage0']
+    history_route = stage0.routes['history']
+    request = _make_request(rf, admin_user)
+    view = type(history_route)(request=request, object=obj, pk=obj.pk)
+    menu = view.controller.model_controller.get_tagged_views(
+        'object',
+        request=request,
+        object=obj,
+    )
+    assert {item.title for item in menu} == {
+        'Detail',
+        'Update',
+        'Delete',
+        'History',
+    }

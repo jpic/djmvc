@@ -42,9 +42,8 @@ class Site(djmvc.Controller):
 
 site = Site()
 
-# in your project's urls.py — discover per-app djmvc.py modules first
-site.autodiscover()
-urlpatterns = site.urlpatterns
+# in your project's urls.py — build discovers per-app djmvc.py modules
+urlpatterns = site.build().urlpatterns
 
 # it will define reverseable urls
 assert reverse('site:home') == '/'
@@ -53,32 +52,33 @@ assert reverse('controller:sub-controller:sub-view') == '/controller/sub-control
 
 ### Per-app route registration
 
-Each installed app can provide a `djmvc.py` module that registers routes
-(imported by `site.autodiscover()`, same pattern as Django admin's `admin.py`):
+Each installed app can provide a `djmvc.py` module that appends routes
+(imported during `site.build()`, same pattern as Django admin's `admin.py`):
 
 ```python
 # myapp/djmvc.py
 import djmvc
 from .views import MyController
 
-djmvc.site.routes.register(MyController)
+djmvc.site.routes.append(MyController)
 ```
 
 Use `reverse_lazy()` for any settings that hold URL names (e.g. `LOGIN_URL`).
 
 ### Runtime route customization
 
-`djmvc.site.routes` is a `Registry` — routes declared on the class are cloned
-into it at access time. You can customize it at runtime:
+`site.build()` clones declared `routes` into a live registry on the instance.
+After build, `site.routes` is that registry (class-level `MyController.routes`
+stays the declaration list). Customize at runtime:
 
 ```python
-djmvc.site.routes.register(AuthController())
+site.routes.register(Extra)
 
 # swap a whole entry
-djmvc.site.routes['home'] = Dashboard.clone(urlpath='')
+site.routes['home'] = Dashboard.clone(urlpath='')
 
 # remove a route
-del djmvc.site.routes['delete']
+del site.routes['delete']
 ```
 
 ## Templates

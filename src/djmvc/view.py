@@ -21,6 +21,10 @@ class ViewMixin(Clonable, Route):
         return super().title.replace('View', '')
 
     @property
+    def breadcrumb_title(self):
+        return self.title
+
+    @property
     def codename(self):
         return super().codename.replace('view', '')
 

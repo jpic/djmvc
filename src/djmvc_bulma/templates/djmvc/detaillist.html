@@ -1,0 +1,64 @@
+{% extends "djmvc/base.html" %}
+{% load djmvc django_tables2 %}
+
+{% block content %}
+<div class="level mb-5">
+    <div class="level-left">
+        <div>
+            <h1 class="title is-3">
+                {% if view.icon %}<span class="icon{% if view.color %} has-text-{{ view.color }}{% endif %}"><i class="bi bi-{{ view.icon }}"></i></span>{% endif %}
+                {{ view.object }}
+            </h1>
+        </div>
+    </div>
+    <div class="level-right">
+        {% if view.controller %}
+            {% eval view.controller.model_controller.get_tagged_views 'object' request=request object=view.object as object_menu %}
+        {% endif %}
+        {% if object_menu %}
+        <div class="buttons">
+            {% for menu_item in object_menu %}
+            {% if menu_item.url != request.path_info %}
+            <a href="{{ menu_item.url }}"
+               class="button is-outlined is-{{ menu_item.color|default:'primary' }}"
+               {% if menu_item.action %}{{ menu_item.action }}{% endif %}
+               {{ menu_item|unpoly_attributes:'object_menu'|html_attributes }}>
+                {% if menu_item.icon %}<span class="icon"><i class="bi bi-{{ menu_item.icon }}"></i></span>{% endif %}
+                <span>{{ menu_item.title }}</span>
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if view.table %}
+    {% render_table view.table 'djmvc/_tables2.html' %}
+{% else %}
+    <div class="notification is-info is-light">
+        No {{ view.model_meta.verbose_name_plural|default:"items" }} found.
+    </div>
+{% endif %}
+
+{% if view.list_actions %}
+<list-action-bar class="djmvc-listaction-bar" table=".djmvc-list" scope="{{ request.path }}" hidden>
+    <div class="level">
+        <div class="level-left">
+            <span class="djmvc-listaction-count" data-role="count"></span>
+        </div>
+        <div class="level-right">
+            <button type="button" class="button" data-role="clear">Clear selection</button>
+            {% for action in view.list_actions %}
+            <a href="{{ action.url }}"
+               class="button is-{{ action.color|default:'primary' }}"
+               {{ action|unpoly_attributes:'list_action_bar'|html_attributes }}>
+                {% if action.icon %}<span class="icon"><i class="bi bi-{{ action.icon }}"></i></span>{% endif %}
+                <span>{{ action.title }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</list-action-bar>
+{% endif %}
+{% endblock %}

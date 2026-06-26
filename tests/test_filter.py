@@ -231,8 +231,11 @@ def test_filter_clear_on_user_list(
     browser_login()
     browser.visit(f'{live_server.url}/auth/user/?search=user42')
 
-    assert browser.is_text_present('Clear', wait_time=5)
-    browser.find_by_text('Clear').first.click()
+    assert browser.is_element_present_by_css(
+        'form.djmvc-filter-form .djmvc-filter-clear',
+        wait_time=5,
+    )
+    browser.find_by_css('form.djmvc-filter-form .djmvc-filter-clear').first.click()
 
     assert browser.is_element_present_by_css('[up-list]', wait_time=5)
     assert 'search=' not in browser.url

@@ -24,6 +24,7 @@ def test_get_tagged_views(rf, admin_user):
         ]
 
     site = Site()
+    site.build()
     request = rf.get('/')
     request.user = AnonymousUser()
     result = site.get_tagged_views('topbar', request=request)
@@ -37,12 +38,13 @@ def test_get_tagged_views(rf, admin_user):
     assert type(result[0]).__name__ == 'LogoutView'
 
 
-def test_routes():
+def test_registry():
     from djmvc.registry import Registry
 
     class MyController(Controller):
         routes = [View]
 
     controller = MyController()
+    controller.build()
     assert isinstance(controller.routes, Registry)
     assert not hasattr(View, 'controller')

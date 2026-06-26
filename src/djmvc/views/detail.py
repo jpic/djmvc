@@ -18,6 +18,10 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
         return super().breadcrumbs(with_self=False)
 
     @property
+    def breadcrumb_title(self):
+        return str(self.object)
+
+    @property
     def visible_fields(self):
         return [
             f.name for f in self.model._meta.fields

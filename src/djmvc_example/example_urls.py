@@ -32,4 +32,4 @@ Site = djmvc.Controller.clone(
 )
 
 # and urlpatterns to include
-urlpatterns = Site().urlpatterns
+urlpatterns = Site().build().urlpatterns

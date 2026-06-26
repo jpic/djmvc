@@ -5,9 +5,10 @@ from .object import ObjectMixin, ObjectTemplateView
 from .objectform import ObjectFormMixin, ObjectModelFormMixin
 from .pagination import PaginationMixin
 from .template import TemplateView, TemplateViewMixin
-from .list import ListView
+from .list import DetailListView, ListView
 from .detail import DetailView
 from .update import UpdateView
 from .create import CreateView
 from .delete import DeleteMixin, DeleteView, DeleteObjectsView
 from .list_action import ListActionMixin, ListActionView
+from .log import ADDITION, CHANGE, DELETION, LogMixin, format_logentry_message, log

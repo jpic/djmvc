@@ -15,7 +15,8 @@ def test_runtime_register():
         routes = []
 
     site = MySite()
-    site.routes.register(Extra)
+    site.routes.append(Extra)
+    site.build()
     assert site.routes['extra'].controller is site
 
 
@@ -27,6 +28,7 @@ def test_register_is_idempotent_by_codename():
         routes = []
 
     site = MySite()
+    site.build()
     first = site.routes.register(Extra)
     second = site.routes.register(Extra)
     assert len(list(site.routes)) == 1
@@ -45,6 +47,7 @@ def test_runtime_delete():
         routes = [Home, Extra]
 
     site = MySite()
+    site.build()
     del site.routes['extra']
     assert len(list(site.routes)) == 1
     assert site.routes['home'].controller is site
@@ -63,26 +66,37 @@ def test_whole_entry_swap():
         routes = [Home]
 
     site = MySite()
+    site.build()
     site.routes['home'] = Dashboard.clone()
     assert site.routes['home'].urlpath == ''
 
 
-@pytest.mark.urls('djmvc_example.example_urls')
-def test_routes_is_registry_not_declaration_list():
+def test_routes_is_declaration_before_build():
     class MySite(Controller):
         routes = [View]
 
     site = MySite()
+    assert isinstance(site.routes, list)
+
+
+@pytest.mark.urls('djmvc_example.example_urls')
+def test_routes_is_registry_after_build():
+    class MySite(Controller):
+        routes = [View]
+
+    assert isinstance(MySite.routes, list)
+    site = MySite()
+    site.build()
+    assert isinstance(MySite.routes, list)
     assert isinstance(site.routes, Registry)
-    assert not isinstance(site.routes, list)
 
 
 @pytest.mark.urls('djmvc_example.example_urls')
 def test_nested_controller_urlpatterns():
-    """Regression: class-level routes= must not shadow cached_property routes."""
     from djmvc_example.example_urls import Site
 
     site = Site()
+    site.build()
     assert isinstance(site.routes, Registry)
     assert reverse('controller:view') == '/controller/view/'
     assert (

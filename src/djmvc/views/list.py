@@ -3,6 +3,7 @@ import functools
 from django.views import generic
 from ..model import ModelMixin
 from .filter import FilterMixin
+from .object import ObjectMixin
 from .pagination import PaginationMixin
 from .template import TemplateViewMixin
 from .tables2 import Tables2Mixin
@@ -36,3 +37,12 @@ class ListView(
 ):
     pagination_target = '[up-list]'
     filter_target = '[up-list]'
+
+
+class DetailListView(ObjectMixin, ListView):
+    default_template_name = 'djmvc/detaillist.html'
+    tags = ['object']
+
+    @property
+    def title(self):
+        return super(ListMixin, self).title

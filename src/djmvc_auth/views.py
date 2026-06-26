@@ -86,7 +86,7 @@ class AuthController(djmvc.Controller):
         LogoutView,
         djmvc.ModelController.clone(
             model=User,
-            routes=[
+            routes=djmvc.ModelController.routes + [
                 djmvc.generic.ListView.clone(
                     table_fields=[
                         'id',
@@ -97,15 +97,12 @@ class AuthController(djmvc.Controller):
                     ],
                     icon='person',
                 ),
-                djmvc.generic.DetailView,
                 djmvc.generic.CreateView.clone(
                     form_class=get_custom_user_creation_form(),
                 ),
                 djmvc.generic.UpdateView.clone(
                     form_class=get_custom_user_change_form(),
                 ),
-                djmvc.generic.DeleteView,
-                djmvc.generic.DeleteObjectsView,
             ],
         ),
     ]

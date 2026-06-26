@@ -5,25 +5,37 @@ from .registry import Registry
 from .route import Route
 
 
+class RoutesDescriptor:
+    """Return the built registry on instances after build(), else the declaration list."""
+
+    def __get__(self, instance, owner):
+        obj = instance or owner
+        return getattr(obj, 'registry', obj._declaration)
+
+
 class ControllerMeta(type):
-    def __new__(mcs, name, bases, namespace, **kwargs):
-        routes = namespace.get('routes')
-        if isinstance(routes, (list, tuple)):
-            namespace['_declared_routes'] = namespace.pop('routes')
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+    """Move class-body ``routes = [...]`` into ``_declaration``; wire ``routes`` as the accessor."""
+
+    def __new__(mcs, name, bases, namespace):
+        routes = namespace.pop('routes', None)
+        cls = super().__new__(mcs, name, bases, namespace)
+        if routes is None:
+            cls._declaration = list(bases[0]._declaration) if bases else []
+        else:
+            cls._declaration = list(routes)
+        cls.routes = RoutesDescriptor()
+        return cls
 
 
 class Controller(Clonable, Route, metaclass=ControllerMeta):
-    @property
-    def routes(self):
-        if '_registry' not in self.__dict__:
-            declared = None
-            for cls in type(self).__mro__:
-                if '_declared_routes' in cls.__dict__:
-                    declared = cls.__dict__['_declared_routes']
-                    break
-            self.__dict__['_registry'] = Registry(self, declared or ())
-        return self.__dict__['_registry']
+    routes = []
+
+    def build(self):
+        self.registry = Registry(self, list(type(self)._declaration))
+        for route in self.routes:
+            if build := getattr(route, 'build', None):
+                build()
+        return self
 
     @property
     def codename(self):
@@ -37,6 +49,16 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
             except KeyError:
                 current = getattr(current, 'controller', None)
         return None
+
+    @property
+    def model_controller(self):
+        # FIXME: candidate for redesign — walk to the nearest ancestor ModelController
+        current = self
+        while current is not None:
+            if getattr(type(current), 'model', None) is not None:
+                return current
+            current = getattr(current, 'controller', None)
+        return self
 
     def get_tagged_views(self, tag, **kwargs):
         def process(controller):
