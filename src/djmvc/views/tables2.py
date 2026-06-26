@@ -29,7 +29,6 @@ class ActionsColumn(django_tables2.Column):
 
 class Tables2Mixin:
     table_template = 'djmvc/tables2.html'
-    table_attributes = dict()
 
     @functools.cached_property
     def table_fields(self):
@@ -68,7 +67,7 @@ class Tables2Mixin:
 
     @functools.cached_property
     def table_class(self):
-        attributes = self.table_attributes
+        attributes = getattr(self, 'table_attributes', {})
         if 'Meta' not in attributes:
             attributes['Meta'] = self.table_meta
 
