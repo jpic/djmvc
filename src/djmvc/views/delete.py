@@ -117,6 +117,9 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
     def message(self):
         return f'Are you sure you want to delete {self.object}?'
 
+    def get_form_valid_message(self):
+        return f'Deleted {self.object}'
+
     def form_valid(self, form):
         if not self.can_confirm_delete:
             return self.form_invalid(form)
@@ -130,8 +133,17 @@ class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):
     def title(self):
         return 'Delete'
 
+    def get_form_valid_message(self):
+        count = self._deleted_count
+        if count == 1:
+            label = capfirst(self.model._meta.verbose_name)
+        else:
+            label = capfirst(self.model._meta.verbose_name_plural)
+        return f'Deleted {count} {label}'
+
     def form_valid(self, form):
         if not self.can_confirm_delete:
             return self.form_invalid(form)
+        self._deleted_count = self.object_list.count()
         self.object_list.delete()
         return super().form_valid(form)

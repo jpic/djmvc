@@ -24,6 +24,9 @@ class LoginView(djmvc.generic.FormView):
         """ Show login only to anonymous users. """
         return not self.request.user.is_authenticated
 
+    def get_form_valid_message(self):
+        return f'Logged in as {self.form.get_user()}'
+
     def form_valid(self, form):
         login(self.request, form.get_user())
         return super().form_valid(form)
@@ -42,6 +45,9 @@ class LogoutView(djmvc.generic.FormView):
     def has_permission(self):
         """ Show login only to authenticated users. """
         return self.request.user.is_authenticated
+
+    def get_form_valid_message(self):
+        return 'Logged out'
 
     def form_valid(self, form):
         logout(self.request)

@@ -7,6 +7,7 @@ export default defineConfig({
     include: [
       'src/djmvc_bulma/static/djmvc_bulma/js/hamburger.test.js',
       'src/djmvc_bulma/static/djmvc_bulma/js/list-action-bar.test.js',
+      'src/djmvc_bulma/static/djmvc_bulma/js/toast.test.js',
     ],
   },
 })

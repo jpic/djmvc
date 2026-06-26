@@ -5,8 +5,10 @@ from .modelform import ModelFormMixin
 
 
 class ObjectFormMixin(ObjectMixin, ModelMixin, FormMixin):
-    pass
+    def get_form_valid_message(self):
+        return f'{self.title}: {self.object}'
 
 
 class ObjectModelFormMixin(ObjectMixin, ModelFormMixin):
-    pass
+    def get_form_valid_message(self):
+        return f'{self.title}: {self.object}'

@@ -133,3 +133,47 @@ body {
     list-style: circle;
     margin-left: 1.25rem;
 }
+
+/* Toast notifications via Unpoly [up-flashes] */
+[up-flashes],
+.djmvc-flashes {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9997;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    pointer-events: none;
+    max-width: min(32rem, calc(100vw - 2rem));
+    width: 100%;
+}
+
+[up-flashes] .djmvc-toast,
+.djmvc-flashes .djmvc-toast {
+    pointer-events: auto;
+    margin-bottom: 0;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    animation: djmvc-toast-in 0.25s ease-out;
+}
+
+[up-flashes] .djmvc-toast .delete,
+.djmvc-flashes .djmvc-toast .delete {
+    position: absolute;
+    right: 0.35rem;
+    top: 0.5rem;
+}
+
+@keyframes djmvc-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

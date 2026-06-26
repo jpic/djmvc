@@ -64,14 +64,6 @@
     {% endif %}
 
 <main class="p-5 djmvc-main" up-main>
-    {% if messages %}
-        {% for message in messages %}
-        <div class="notification {% if message.tags == 'error' %}is-danger{% elif message.tags %}is-{{ message.tags }}{% else %}is-info{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    {% endif %}
-
     {% with breadcrumbs=view.breadcrumbs %}
     {% if breadcrumbs %}
     <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
@@ -96,9 +88,12 @@
     </div>
     {% endif %}
 
+{% include 'djmvc/_flashes.html' %}
+
     <script src="https://unpkg.com/unpoly@3.9.2/unpoly.js"></script>
     <script src="{% static 'djmvc_bulma/js/hamburger.js' %}" type="module"></script>
     <script src="{% static 'djmvc_bulma/js/list-action-bar.js' %}" type="module"></script>
+    <script src="{% static 'djmvc_bulma/js/toast.js' %}" type="module"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
