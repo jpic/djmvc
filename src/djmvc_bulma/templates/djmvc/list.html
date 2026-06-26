@@ -15,7 +15,7 @@
     <div class="level-right">
         <div class="buttons">
             {% if view.controller %}
-                {% eval view.controller.root.get_tagged_views 'model' request=request as model_menu %}
+                {% eval view.controller.get_tagged_views 'model' request=request as model_menu %}
             {% endif %}
             {% for action in model_menu %}
             <a
