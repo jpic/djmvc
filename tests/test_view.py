@@ -3,7 +3,7 @@ import functools
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.http import HttpResponseForbidden
+from django.template.response import TemplateResponse
 from django.shortcuts import resolve_url
 from django.views import generic
 
@@ -48,7 +48,7 @@ def test_view_security(rf, admin_user):
     view = UserDetailView(request=request, object=other_user)
     response = view.dispatch(request)
     assert response.status_code == 403
-    assert isinstance(response, HttpResponseForbidden)
+    assert isinstance(response, TemplateResponse)
 
 
 def test_login_url_default():

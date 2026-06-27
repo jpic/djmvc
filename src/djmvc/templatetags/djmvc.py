@@ -20,6 +20,8 @@ def html_attributes(attrs):
             continue
         if value is True:
             parts.append(key)
+        elif value is False:
+            parts.append(f'{key}="false"')
         else:
             parts.append(f'{key}="{escape(value)}"')
     return mark_safe(' '.join(parts))

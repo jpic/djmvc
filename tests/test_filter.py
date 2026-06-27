@@ -1,5 +1,6 @@
 """Tests for list filter form."""
-from urllib.parse import parse_qs
+import time
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 from django import forms
@@ -12,6 +13,15 @@ from djmvc.views.list import ListMixin
 from djmvc.views.template import TemplateViewMixin
 from djmvc.model import ModelMixin
 from djmvc_example.stage0.models import Stage0
+
+
+def _wait_for_url_without(browser, substring, timeout=5):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if substring not in browser.url:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f'{substring!r} still in {browser.url!r}')
 
 
 class _MockController:
@@ -130,7 +140,8 @@ def test_has_active_filters_and_clear_url(rf, admin_user, mock_controller):
 
     assert view.has_active_filters is True
     url = view.clear_filter_url()
-    params = parse_qs(url.lstrip('?'))
+    params = parse_qs(urlparse(url).query)
+    assert urlparse(url).path == '/'
     assert 'search' not in params
     assert 'page' not in params
     assert params.get('per_page') == ['10']
@@ -238,6 +249,6 @@ def test_filter_clear_on_user_list(
     browser.find_by_css('form.djmvc-filter-form .djmvc-filter-clear').first.click()
 
     assert browser.is_element_present_by_css('[up-list]', wait_time=5)
-    assert 'search=' not in browser.url
+    _wait_for_url_without(browser, 'search=')
     assert browser.is_text_present('user0', wait_time=5)
     assert browser.find_by_css('input[name="search"]').first.value == ''

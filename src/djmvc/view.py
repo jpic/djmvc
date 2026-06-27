@@ -1,10 +1,10 @@
-from django import http
 from django.conf import settings
 from django.shortcuts import resolve_url
 from django.views import generic
 from django.urls import path
 
 from .clonable import Clonable
+from .errors import forbidden_response
 from .route import Route
 
 
@@ -37,7 +37,7 @@ class ViewMixin(Clonable, Route):
                     self.request.get_full_path(),
                 )
             else:
-                return http.HttpResponseForbidden()
+                return forbidden_response(self.request, view=self)
         return super().dispatch(*args, **kwargs)
 
     def has_permission(self):
@@ -45,6 +45,12 @@ class ViewMixin(Clonable, Route):
 
     def breadcrumbs(self, with_self=True):
         return []
+
+    def unpoly_attributes(self, context=None):
+        return {
+            'up-follow': True,
+            'up-target': '[up-main]',
+        }
 
     def querystring(self, **params):
         qs = self.request.GET.copy()

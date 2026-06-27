@@ -21,6 +21,10 @@ def test_html_attributes_renders_boolean_true():
     assert html_attributes({'up-submit': True}) == 'up-submit'
 
 
+def test_html_attributes_renders_boolean_false():
+    assert html_attributes({'up-follow': False}) == 'up-follow="false"'
+
+
 def test_html_attributes_escapes_values():
     result = html_attributes({'data-x': '"<&>'})
     assert result == 'data-x="&quot;&lt;&amp;&gt;"'
@@ -48,7 +52,10 @@ def test_unpoly_attributes_filter_without_method():
     detail_route = stage0.routes['detail']
     obj = Stage0(name='x')
     view = type(detail_route)(request=request, object=obj, pk=1)
-    assert unpoly_attributes(view, 'object_menu') == {}
+    assert unpoly_attributes(view, 'object_menu') == {
+        'up-follow': True,
+        'up-target': '[up-main]',
+    }
 
 
 def test_querystring_preserves_params():

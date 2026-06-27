@@ -34,7 +34,7 @@
                     {% eval view.controller.root.get_tagged_views 'topbar' request=request as topbar_menu %}
                 {% endif %}
                 {% for menu_item in topbar_menu %}
-                    <a class="navbar-item" href="{{ menu_item.url }}" up-follow up-target="[up-main]">
+                    <a class="navbar-item" href="{{ menu_item.url }}" {{ menu_item|unpoly_attributes:'topbar'|html_attributes }}>
                         {% if menu_item.icon %}<span class="icon"><i class="bi bi-{{ menu_item.icon }}"></i></span>{% endif %}
                         <span>{{ menu_item.title }}</span>
                     </a>
@@ -46,14 +46,14 @@
     <div class="djmvc-layout">
         <aside class="menu p-4 djmvc-sidebar" id="sidebar">
             <p class="menu-label">Navigation</p>
-            <ul class="menu-list">
+            <ul class="menu-list" up-nav role="navigation">
                 {% eval view.controller.root.get_tagged_views 'navigation' request=request as navigation_menu %}
                 {% for menu_item in navigation_menu %}
                 <li>
                     <a class="{% if menu_item.url == request.path_info %}is-active{% endif %}"
                        href="{{ menu_item.url }}"
-                       up-follow
-                       up-target="[up-main]">
+                       up-alias="{{ menu_item.url }}?*"
+                       {{ menu_item|unpoly_attributes:'navigation'|html_attributes }}>
                        {% if menu_item.icon %}<span class="icon{% if menu_item.color %} has-text-{{ menu_item.color }}{% endif %}"><i class="bi bi-{{ menu_item.icon }}"></i></span>{% endif %}
                         <span>{{ menu_item.title }}</span>
                     </a>
@@ -91,6 +91,10 @@
 {% include 'djmvc/_flashes.html' %}
 
     <script src="https://unpkg.com/unpoly@3.9.2/unpoly.js"></script>
+    <script>
+      up.feedback.config.currentClasses.push('is-active');
+    </script>
+    <script src="{% static 'djmvc_bulma/js/nav-config.js' %}" type="module"></script>
     <script src="{% static 'djmvc_bulma/js/hamburger.js' %}" type="module"></script>
     <script src="{% static 'djmvc_bulma/js/list-action-bar.js' %}" type="module"></script>
     <script src="{% static 'djmvc_bulma/js/toast.js' %}" type="module"></script>

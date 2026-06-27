@@ -118,7 +118,8 @@ class FilterMixin:
                     qs.pop(name, None)
         page_kwarg = getattr(self, 'page_kwarg', 'page')
         qs.pop(page_kwarg, None)
-        return '?' + qs.urlencode() if qs else '?'
+        path = self.request.path
+        return f'{path}?{qs.urlencode()}' if qs else path
 
     def get_queryset(self):
         qs = super().get_queryset()

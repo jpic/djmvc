@@ -72,5 +72,5 @@ class FormMixin:
         return response
 
 
-class FormView(TemplateViewMixin, FormMixin, generic.FormView):
+class FormView(FormMixin, TemplateViewMixin, generic.FormView):
     pass
