@@ -4,6 +4,8 @@ from django.urls import reverse
 
 from djmvc_example.stage0.models import Stage0
 
+pytestmark = pytest.mark.tutorial
+
 
 @pytest.mark.django_db
 def test_stage0_create_get_renders_model_form(client, admin_user):

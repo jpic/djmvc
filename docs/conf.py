@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+import os
+import sys
+from pathlib import Path
+
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djmvc_example.settings")
+os.environ.setdefault("DEBUG", "1")
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src" / "djmvc_example"))
+
+django.setup()
+
+project = "djmvc"
+copyright = "2026, James Pic & Contributors"
+author = "James Pic & Contributors"
+
+try:
+    from importlib.metadata import version
+
+    release = version("djmvc")
+except Exception:
+    release = "0.0.0"
+version = ".".join(release.split(".")[:2])
+
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+]
+
+templates_path = ["_templates"]
+source_suffix = ".rst"
+master_doc = "index"
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+pygments_style = "sphinx"
+todo_include_todos = False
+
+html_theme = "furo"
+html_static_path = ["_static"]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "django": ("https://docs.djangoproject.com/en/stable/", "https://docs.djangoproject.com/en/stable/_objects/"),
+}
+
+napoleon_google_docstring = True
+
+htmlhelp_basename = "djmvcdoc"
+latex_documents = [
+    (master_doc, "djmvc.tex", "djmvc Documentation", author, "manual"),
+]
+man_pages = [(master_doc, "djmvc", "djmvc Documentation", [author], 1)]
+texinfo_documents = [
+    (
+        master_doc,
+        "djmvc",
+        "djmvc Documentation",
+        author,
+        "djmvc",
+        "Django CRUD utilities.",
+        "Miscellaneous",
+    ),
+]
+
+epub_title = project
+epub_author = author
+epub_publisher = author
+epub_copyright = copyright
+epub_exclude_files = ["search.html"]

@@ -1,5 +1,7 @@
 # Faster Django development
 
+**Documentation:** https://jpic.github.io/djmvc/
+
 Get more out of less with a few design patterns:
 
 - Skip manual URL routing with MVC pattern and sane defaults

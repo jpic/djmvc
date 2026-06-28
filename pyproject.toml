@@ -45,6 +45,10 @@ dev = [
     "black>=23.0",
     "ruff>=0.1",
 ]
+docs = [
+    "sphinx>=7",
+    "furo",
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -85,6 +89,7 @@ markers = [
     "bootstrap: marks tests specific to the Bootstrap frontend",
     "django_db: mark test that requires Django database",
     "splinter: marks tests that use pytest-splinter browser fixtures",
+    "tutorial: validates tutorial example apps (docs literalinclude sources)",
 ]
 
 [tool.black]

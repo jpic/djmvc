@@ -58,8 +58,11 @@ INSTALLED_APPS = [
     "crispy_bulma",
     "django_tables2",
 
-    # our bunch of examples
+    # tutorial example apps (see docs/tutorial/)
     "djmvc_example.stage0",
+    "djmvc_example.stage1",
+    "djmvc_example.stage2",
+    "djmvc_example.stage3",
     # load a custom user model
     "djmvc_example",
 ]

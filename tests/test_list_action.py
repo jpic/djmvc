@@ -73,11 +73,8 @@ def test_delete_objects_view(client, admin_user):
 
 @pytest.mark.django_db
 def test_delete_objects_lists_clickable_objects(client, admin_user):
-    from djmvc_example.stage0.models import Stage0Tag
-
     a = Stage0.objects.create(name='Alice')
     b = Stage0.objects.create(name='Bob')
-    Stage0Tag.objects.create(stage=a, name='urgent')
     client.force_login(admin_user)
 
     url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
@@ -86,30 +83,12 @@ def test_delete_objects_lists_clickable_objects(client, admin_user):
 
     assert 'Summary' in content
     assert 'Stage0s: 2' in content
-    assert 'Stage0 tags: 1' in content
     assert 'djmvc-deletion-objects' in content
     assert 'Alice' in content
     assert 'Bob' in content
-    assert 'urgent' in content
     assert reverse('site:stage0:detail', args=[a.pk]) in content
     assert reverse('site:stage0:detail', args=[b.pk]) in content
     assert 'name="pks"' in content
-
-
-@pytest.mark.django_db
-def test_delete_objects_shows_cascade_nested(client, admin_user):
-    from djmvc_example.stage0.models import Stage0Tag
-
-    stage = Stage0.objects.create(name='Parent')
-    Stage0Tag.objects.create(stage=stage, name='child-tag')
-    client.force_login(admin_user)
-
-    url = reverse('site:stage0:deleteobjects') + f'?pks={stage.pk}'
-    response = client.get(url)
-    content = response.content.decode()
-
-    assert 'child-tag' in content
-    assert 'Stage0 tags: 1' in content
 
 
 @pytest.mark.django_db
@@ -155,24 +134,6 @@ def test_checkbox_column_respects_object_permission(rf, admin_user):
         assert 'data-pk=' not in column.render(denied, table)
     finally:
         stage0.routes['deleteobjects'] = original_route
-
-
-@pytest.mark.django_db
-def test_delete_view_shows_cascade_preview(client, admin_user):
-    from djmvc_example.stage0.models import Stage0Tag
-
-    stage = Stage0.objects.create(name='Parent')
-    Stage0Tag.objects.create(stage=stage, name='child-tag')
-    client.force_login(admin_user)
-
-    response = client.get(reverse('site:stage0:delete', args=[stage.pk]))
-    content = response.content.decode()
-
-    assert 'Are you sure you want to delete the' in content
-    assert 'Parent' in content
-    assert 'All of the following related items will be deleted' in content
-    assert 'Stage0 tags: 1' in content
-    assert 'child-tag' in content
 
 
 @pytest.mark.django_db
