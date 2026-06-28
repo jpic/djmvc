@@ -2,6 +2,18 @@
 import time
 
 import pytest
+from selenium.common.exceptions import StaleElementReferenceException
+
+
+def _toast_texts(browser):
+    """Return visible toast texts, tolerating auto-dismiss DOM updates."""
+    texts = []
+    for toast in browser.find_by_css('[up-flashes] .djmvc-toast'):
+        try:
+            texts.append(toast.text)
+        except StaleElementReferenceException:
+            continue
+    return texts
 
 
 def _wait_for_toast_absent(browser, text, timeout=6):
@@ -10,8 +22,7 @@ def _wait_for_toast_absent(browser, text, timeout=6):
     while time.time() < deadline:
         if not browser.is_element_present_by_css('[up-flashes] .djmvc-toast', wait_time=0):
             return
-        toasts = browser.find_by_css('[up-flashes] .djmvc-toast')
-        if all(text not in toast.text for toast in toasts):
+        if all(text not in toast_text for toast_text in _toast_texts(browser)):
             return
         time.sleep(0.1)
     raise AssertionError(f'Toast still present after {timeout}s: {text!r}')
