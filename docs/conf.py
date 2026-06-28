@@ -41,6 +41,7 @@ todo_include_todos = False
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_baseurl = "/djmvc/"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
