@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: browser-actions/setup-firefox@v1
+      - uses: browser-actions/setup-geckodriver@v1
+
+      - name: Install package and test dependencies
+        run: pip install -e ".[dev,bulma]"
+
+      - name: Run unit and integration tests
+        run: pytest -m "not splinter"
+
+      - name: Run browser tests
+        run: pytest -m splinter -n 0 --splinter-headless=true
+
+  test-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
