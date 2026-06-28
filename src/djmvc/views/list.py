@@ -20,6 +20,9 @@ class ListMixin:
         urlpath (str): URL segment for this view. Default ``''`` (list root).
         permission_shortcode (str): Django permission prefix for list access.
             Default ``'view'``.
+        icon (str): Bootstrap Icons name; defaults to the model controller ``icon``.
+        color (str): Bulma color for the navigation icon; defaults to the model
+            controller ``color``.
         pagination_target (str): Unpoly target for paginated list updates.
         filter_target (str): Unpoly target for filter form submissions.
     """
@@ -33,6 +36,16 @@ class ListMixin:
     def title(self):
         """Page heading from the model's ``verbose_name_plural``."""
         return self.model._meta.verbose_name_plural.capitalize()
+
+    @property
+    def icon(self):
+        """Bootstrap Icons name; falls back to the model controller ``icon``."""
+        return getattr(self.controller.model_controller, 'icon', None)
+
+    @property
+    def color(self):
+        """Bulma color for the navigation icon; falls back to the model controller."""
+        return getattr(self.controller.model_controller, 'color', None)
 
     def breadcrumbs(self):
         """List views have no parent breadcrumbs."""

@@ -34,6 +34,7 @@ class SetCategoryView(djmvc.generic.ListActionView):
 
 class PostController(djmvc.ModelController):
     model = Post
+    icon = 'chat-square-text'
 
     routes = djmvc.ModelController.routes + [
         SetCategoryView,

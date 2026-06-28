@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AnonymousUser
 
+import djmvc
 from djmvc.controller import Controller
 from djmvc.view import View
+from djmvc_example.stage0.models import Item
 
 
 def test_get_tagged_views(rf, admin_user):
@@ -36,6 +38,19 @@ def test_get_tagged_views(rf, admin_user):
     result = site.get_tagged_views('topbar', request=request)
     assert len(result) == 1
     assert type(result[0]).__name__ == 'LogoutView'
+
+
+def test_navigation_list_inherits_controller_icon(rf, admin_user):
+    class ItemController(djmvc.ModelController):
+        model = Item
+        icon = 'inbox'
+
+    controller = ItemController()
+    controller.build()
+    request = rf.get('/item/')
+    request.user = admin_user
+    list_view = type(controller.routes['list'])(request=request)
+    assert list_view.icon == 'inbox'
 
 
 def test_registry():

@@ -20,6 +20,8 @@ class ModelController(ModelMixin, Controller):
             views. Extend with ``ModelController.routes + [MyView]`` or
             replace entries by codename (see :class:`~djmvc.registry.Registry`).
         model: Django model class managed by this controller.
+        icon (str): Bootstrap Icons name for the navigation list view.
+        color (str): Bulma color for the navigation list icon.
     """
 
     routes = [

@@ -8,6 +8,16 @@ pytestmark = pytest.mark.tutorial
 
 
 @pytest.mark.django_db
+def test_stage0_list_renders_controller_icon_in_sidebar(client, admin_user):
+    client.force_login(admin_user)
+
+    response = client.get(reverse('site:item:list'))
+
+    assert response.status_code == 200
+    assert b'bi-inbox' in response.content
+
+
+@pytest.mark.django_db
 def test_stage0_create_get_renders_model_form(client, admin_user):
     client.force_login(admin_user)
 

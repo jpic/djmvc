@@ -34,6 +34,10 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
         routes: Declared child routes (classes or instances). Before
             :meth:`build`, this is the declaration list; afterward it is a
             :class:`~djmvc.registry.Registry` of built route instances.
+        icon (str): Bootstrap Icons name for the sidebar entry. Navigation
+            list views inherit this when they do not set their own ``icon``.
+        color (str): Bulma color name for the sidebar icon (``primary``,
+            ``info``, …).
     """
 
     routes = []

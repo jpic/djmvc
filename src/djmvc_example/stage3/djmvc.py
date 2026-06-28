@@ -14,6 +14,7 @@ class CategoryUpdateView(djmvc.generic.UpdateView):
 
 class ArticleController(djmvc.ModelController):
     model = Article
+    icon = 'newspaper'
 
     routes = djmvc.ModelController.routes + [
         djmvc.generic.ListView.clone(

@@ -252,6 +252,7 @@ class AuthController(djmvc.Controller):
         Become,
         djmvc.ModelController.clone(
             model=User,
+            icon='people',
             routes=djmvc.ModelController.routes + [
                 djmvc.generic.ListView.clone(
                     table_fields=[
@@ -261,7 +262,6 @@ class AuthController(djmvc.Controller):
                         'is_active',
                         'actions',
                     ],
-                    icon='person',
                 ),
                 djmvc.generic.CreateView.clone(
                     form_class=get_custom_user_creation_form(),

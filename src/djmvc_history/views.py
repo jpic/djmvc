@@ -33,6 +33,8 @@ class HistoryView(DetailListView):
 
 class LogEntryController(djmvc.ModelController):
     model = LogEntry
+    icon = 'journal-text'
+    color = 'info'
 
     @property
     def title(self):
@@ -58,7 +60,6 @@ class LogEntryController(djmvc.ModelController):
                 action_flag=LogActionColumn(),
                 change_message=LogMessageColumn(),
             ),
-            icon='journal-text',
         ),
         DetailView.clone(
             fields=[

@@ -5,6 +5,7 @@ from .models import Document
 
 class DocumentController(djmvc.ModelController):
     model = Document
+    icon = 'file-earmark-text'
 
     def get_queryset(self, view):
         qs = super().get_queryset(view)

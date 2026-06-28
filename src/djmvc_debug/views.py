@@ -23,9 +23,11 @@ class URLListView(DebugListMixin, generic.ListView):
 class RoutingDebugController(djmvc.Controller):
     codename = 'debug'
     icon = 'bug'
+    color = 'warning'
     routes = [
         djmvc.ModelController.clone(
             model=Controller,
+            icon='diagram-3',
             routes=[
                 ControllerListView,
                 generic.DetailView,
@@ -33,6 +35,7 @@ class RoutingDebugController(djmvc.Controller):
         ),
         djmvc.ModelController.clone(
             model=URL,
+            icon='signpost-split',
             routes=[
                 URLListView,
                 generic.DetailView,
