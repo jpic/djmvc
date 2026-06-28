@@ -45,13 +45,13 @@ describe('ListActionBar', () => {
 
         cb1.checked = true
         cb1.dispatchEvent(new Event('change', { bubbles: true }))
-        expect(bar.querySelector('[data-role="count"]').textContent).toBe('1 item selected')
+        expect(bar.querySelector('[data-role="count"]').textContent).toBe('1 selected')
         expect(bar.hidden).toBe(false)
 
         const cb2 = document.querySelector('[data-pk="2"]')
         cb2.checked = true
         cb2.dispatchEvent(new Event('change', { bubbles: true }))
-        expect(bar.querySelector('[data-role="count"]').textContent).toBe('2 items selected')
+        expect(bar.querySelector('[data-role="count"]').textContent).toBe('2 selected')
     })
 
     it('clears selection and hides the bar', async () => {
@@ -89,7 +89,7 @@ describe('ListActionBar', () => {
         expect(bar.hidden).toBe(false)
         expect(document.querySelector('[data-pk="1"]').checked).toBe(true)
         expect(document.querySelector('[data-pk="2"]').checked).toBe(true)
-        expect(bar.querySelector('[data-role="count"]').textContent).toBe('2 items selected')
+        expect(bar.querySelector('[data-role="count"]').textContent).toBe('2 selected')
     })
 
     it('keeps selection across simulated page fragment swap', async () => {
