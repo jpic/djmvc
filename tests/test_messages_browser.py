@@ -5,9 +5,13 @@ import pytest
 
 
 def _wait_for_toast_absent(browser, text, timeout=6):
+    """Wait until no flash toast contains ``text`` (not the whole page)."""
     deadline = time.time() + timeout
     while time.time() < deadline:
-        if not browser.is_text_present(text, wait_time=0):
+        if not browser.is_element_present_by_css('[up-flashes] .djmvc-toast', wait_time=0):
+            return
+        toasts = browser.find_by_css('[up-flashes] .djmvc-toast')
+        if all(text not in toast.text for toast in toasts):
             return
         time.sleep(0.1)
     raise AssertionError(f'Toast still present after {timeout}s: {text!r}')

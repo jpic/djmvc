@@ -12,28 +12,29 @@ permissions:
 jobs:
   test-python:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.x"
 
-      - uses: browser-actions/setup-firefox@v1
-      - uses: browser-actions/setup-geckodriver@v1
+      - uses: browser-actions/setup-firefox@latest
+      - uses: browser-actions/setup-geckodriver@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install package and test dependencies
-        run: pip install -e ".[dev,bulma]"
+        run: |
+          pip install -U pip
+          pip install -U django
+          pip install -e ".[dev,bulma]"
 
       - name: Run unit and integration tests
         run: pytest -m "not splinter"
 
       - name: Run browser tests
-        run: pytest -m splinter -n 0 --splinter-headless=true
+        run: pytest -m splinter -n 0 --splinter-headless
 
   test-js:
     runs-on: ubuntu-latest
@@ -58,7 +59,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.x"
 
       - name: Build package
         run: |
