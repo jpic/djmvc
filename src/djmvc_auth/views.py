@@ -53,8 +53,7 @@ class LogoutView(djmvc.generic.FormView):
     icon = 'box-arrow-right'
     message = 'Are you sure you want to logout ?'
     form_attributes = {
-        'up-target': 'body',
-        'up-history': 'false',
+        'up-submit': False,
     }
 
     def has_permission(self):
@@ -66,7 +65,9 @@ class LogoutView(djmvc.generic.FormView):
 
     def form_valid(self, form):
         logout(self.request)
-        return super().form_valid(form)
+        self.form = form
+        self.message_success()
+        return full_page_redirect_home(self.request)
 
 
 class PasswordView(

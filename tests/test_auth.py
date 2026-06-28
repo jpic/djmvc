@@ -185,6 +185,23 @@ def test_logout_link_opens_in_modal(client, admin_user):
 
 
 @pytest.mark.django_db
+def test_logout_form_uses_full_page_submit(client, admin_user):
+    client.force_login(admin_user)
+    response = client.get(reverse('site:auth:logout'))
+    content = response.content.decode()
+    assert 'up-submit="false"' in content
+    assert 'up-target="body"' not in content
+
+
+@pytest.mark.django_db
+def test_logout_post_redirects_home(client, admin_user):
+    client.force_login(admin_user)
+    response = client.post(reverse('site:auth:logout'), {'next': '/auth/user/'})
+    assert response.status_code == 302
+    assert response.url == reverse('site:home')
+
+
+@pytest.mark.django_db
 def test_become_user_link_disables_unpoly(client, admin_user, target_user):
     client.force_login(admin_user)
     response = client.get(reverse('site:auth:user:list'))
