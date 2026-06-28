@@ -37,10 +37,12 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
     @property
     def visible_fields(self):
         """Field names shown on the detail page."""
-        return [
-            f.name for f in self.model._meta.fields
-            if self.fields == '__all__' or f.name not in self.exclude
-        ]
+        if self.fields == '__all__':
+            return [
+                f.name for f in self.model._meta.fields
+                if f.name not in self.exclude
+            ]
+        return [name for name in self.fields if name not in self.exclude]
 
     @property
     def display_fields(self):
@@ -76,36 +78,11 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
 
     @property
     def model_fields(self):
-        """Simplified label/value pairs for all concrete model fields."""
-        obj = getattr(self, 'object', None)
-        if not obj:
-            return []
-
-        fields = []
-        meta = self.model_meta
-
-        for field in meta.get_fields():
-            if field.auto_created and not field.concrete:
-                continue
-
-            try:
-                value = getattr(obj, field.name)
-
-                if value is None:
-                    value = '-'
-                elif hasattr(value, 'all'):
-                    try:
-                        value = ', '.join(str(v) for v in value.all())
-                    except Exception:
-                        value = str(value)
-                else:
-                    value = str(value)
-
-                fields.append({
-                    'label': field.verbose_name.capitalize() if hasattr(field, 'verbose_name') else field.name,
-                    'value': value,
-                })
-            except (AttributeError, ValueError):
-                continue
-
-        return fields
+        """Simplified label/value pairs for fields shown on the detail page."""
+        return [
+            {
+                'label': row['field'].verbose_name.capitalize(),
+                'value': row['value'],
+            }
+            for row in self.display_fields
+        ]
