@@ -1,3 +1,5 @@
+from django.http import Http404
+from django.utils.translation import gettext as _
 from django.views import generic
 
 from .template import TemplateViewMixin
@@ -8,11 +10,26 @@ class ObjectMixin:
         super().setup(request, *args, **kwargs)
         self.object = self.get_object()
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         if obj := getattr(self, 'object', None):
             return obj
+        if queryset is None:
+            queryset = self.get_object_queryset()
         pk = self.kwargs.get('pk')
-        return self.model._default_manager.get(pk=pk)
+        try:
+            return queryset.get(pk=pk)
+        except Exception as exc:
+            model = getattr(queryset, 'model', None)
+            does_not_exist = getattr(model, 'DoesNotExist', None)
+            if does_not_exist is not None and isinstance(exc, does_not_exist):
+                meta = getattr(model, '_meta', None)
+                verbose_name = getattr(meta, 'verbose_name', 'object')
+                raise Http404(
+                    _('No %(verbose_name)s found matching the query') % {
+                        'verbose_name': verbose_name,
+                    }
+                ) from exc
+            raise
 
     @property
     def url(self):

@@ -8,6 +8,7 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext as _, gettext_lazy
 from django.views import generic
 
+from .action import ActionMixin
 from .form import FormView
 from .list_action import ListActionMixin
 from .log import DELETION, LogMixin
@@ -70,7 +71,8 @@ def get_deleted_objects(view, objs):
     return to_delete, model_count, protected
 
 
-class DeleteMixin(LogMixin):
+class DeleteMixin(ActionMixin, LogMixin):
+    permission_shortcode = 'delete'
     default_template_name = 'djmvc/form_delete.html'
     icon = 'trash'
     color = 'danger'

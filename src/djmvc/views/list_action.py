@@ -10,9 +10,7 @@ class ListActionMixin(ModelMixin, FormMixin):
     tags = ['list_action']
 
     def get_queryset(self):
-        if queryset := getattr(self, 'queryset', None):
-            return queryset
-        return self.model._default_manager.all()
+        return super().get_queryset()
 
     @functools.cached_property
     def pks(self):

@@ -8,8 +8,10 @@ Get more out of less with a few design patterns:
   templates
 - `{% load djmvc %}` template library (`{% eval %}`, `html_attributes`,
   `unpoly_attributes` filters) to skip boilerplate template tags
-- Secure by default: views allow only superusers by default, it's up to you to
-  open permissions as-needed.
+- Secure by default: views delegate permissions to the controller, which checks
+  Django permissions (`user.has_perm()`). List/detail use custom codenames
+  (`list_model`, `detail_model`) so only superusers pass by default; CRUD views
+  use Django's built-in `add`/`change`/`delete` permissions.
 
 Install with:
 
@@ -143,6 +145,50 @@ Any attribute dict (forms included) can use the `html_attributes` filter:
 <form method="post" {{ view.form_attributes|html_attributes }}>
 ```
 
+## Permissions and querysets
+
+Views check `has_permission()` before dispatch. By default the call chain is:
+
+```
+view.has_permission()
+  → controller.has_permission(view)
+    → view.has_permission_backend()
+      → user.has_perm(permission_fullcode)          # Django model perms
+      → user.has_perm(permission_fullcode, view)    # custom backends
+```
+
+`has_permission_backend()` tries Django codename permissions first (without
+passing the view, because ModelBackend ignores perms when `obj` is set), then
+calls again with the view so custom backends can introspect it — same pattern
+as crudlfap's `has_perm_backend()`.
+
+Override `has_permission()` to open a view to everyone (`return True`) or
+encode custom rules (login pages, per-user checks). CRUD views set
+`permission_shortcode` to Django's
+`add`, `change`, and `delete`. List and detail default to `list` and `detail`
+codenames — grant those custom permissions, use
+`ListView.clone(permission_shortcode='view')`, or override the controller.
+
+Override policy in one place on the model controller:
+
+```python
+class YourModelController(djmvc.ModelController):
+    model = YourModel
+
+    def has_permission(self, view):
+        return view.has_permission_backend()
+
+    def get_queryset(self, view):
+        qs = super().get_queryset(view)
+        if not self.request.user.is_superuser:
+            qs = qs.filter(owner=self.request.user)
+        return qs
+```
+
+`ModelMixin.get_queryset()` delegates to the controller, so lists, object
+views, and bulk actions all respect the same scoped queryset. Object views
+return 404 for PKs outside that queryset.
+
 ## Dynamic menus
 
 Add any tags you like to your views:
@@ -152,7 +198,7 @@ class YourView(generic.TemplateView):
     tags = ['topbar']
 
     def has_permission(self):
-        return self.request.user.is_authenticated  # the default
+        return self.request.user.is_authenticated
 ```
 
 And use the `get_tagged_view()` method of the controller to get all views
@@ -167,7 +213,16 @@ Here, we're passing the `request` kwarg to `get_tagged_views()` which will
 instanciate the view object with passed kwargs and call `has_permission()`
 prior to returning the tagged view.
 
-It also works with per-object permissions as such:
+It also works with per-object permissions via `ActionMixin` on update/delete
+views:
+
+```python
+class YourModelUpdateView(generic.UpdateView):
+    def has_permission_object(self):
+        return self.object.owner == self.request.user
+```
+
+Or override `has_permission()` entirely:
 
 ```python
 class YourModelDetailView(generic.DetailView):
@@ -175,8 +230,8 @@ class YourModelDetailView(generic.DetailView):
 
     def has_permission(self):
         return (
-            self.request.user.is_superuser
-            or self.object.owner == self.request.user
+            super().has_permission()
+            and self.object.owner == self.request.user
         )
 ```
 

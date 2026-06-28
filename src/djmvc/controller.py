@@ -60,6 +60,12 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
             current = getattr(current, 'controller', None)
         return self
 
+    def has_permission(self, view):
+        mc = self.model_controller
+        if mc is not self:
+            return mc.has_permission(view)
+        return view.has_permission_backend()
+
     def get_tagged_views(self, tag, **kwargs):
         def process(controller):
             views = []

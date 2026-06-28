@@ -51,5 +51,6 @@ def test_view_security(rf, admin_user):
     assert isinstance(response, TemplateResponse)
 
 
+@pytest.mark.django_db
 def test_login_url_default():
     assert resolve_url(settings.LOGIN_URL) == '/auth/login/'

@@ -21,9 +21,18 @@ class ModelController(ModelMixin, Controller):
     def codename(self):
         return self.model.__name__.lower()
 
+    def has_permission(self, view):
+        return view.has_permission_backend()
+
+    def get_queryset(self, view):
+        return self.model._default_manager.all()
+
 
 class Home(generic.TemplateView):
     urlpath = ''
+
+    def has_permission(self):
+        return True
 
 
 class Site(Controller):

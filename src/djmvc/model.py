@@ -1,3 +1,5 @@
+from django.core.exceptions import ImproperlyConfigured
+
 from .controller import Controller
 
 
@@ -29,6 +31,27 @@ class ModelMixin:
         # because django template won't allow ._meta because it starts with an
         # underscore ...
         return self.model._meta
+
+    def _controller_queryset(self):
+        if self.controller:
+            mc = getattr(self.controller, 'model_controller', self.controller)
+            if hasattr(mc, 'get_queryset'):
+                return mc.get_queryset(self)
+        if self.model:
+            return self.model._default_manager.all()
+        raise ImproperlyConfigured(
+            '%(cls)s is missing a QuerySet. Define %(cls)s.model, '
+            '%(cls)s.queryset, or override %(cls)s.get_queryset().' % {
+                'cls': self.__class__.__name__,
+            }
+        )
+
+    def get_object_queryset(self):
+        """Scoped model rows for resolving ``self.object`` from the URL."""
+        return self._controller_queryset()
+
+    def get_queryset(self):
+        return self._controller_queryset()
 
     def breadcrumbs(self, with_self=True):
         crumbs = []

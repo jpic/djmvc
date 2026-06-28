@@ -1,3 +1,4 @@
+from .action import ActionMixin
 from .filter import FilterMixin
 from .form import FormMixin, FormView
 from .modelform import ModelFormMixin

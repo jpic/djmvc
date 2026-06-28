@@ -1,9 +1,19 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 import djmvc
 
 User = get_user_model()
+
+
+def grant_model_perm(user, model, action):
+    """Grant a default Django model permission (add, change, delete, view)."""
+    content_type = ContentType.objects.get_for_model(model)
+    codename = f'{action}_{model._meta.model_name}'
+    perm = Permission.objects.get(content_type=content_type, codename=codename)
+    user.user_permissions.add(perm)
 
 
 @pytest.fixture(autouse=True)

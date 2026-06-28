@@ -8,6 +8,7 @@ from .template import TemplateViewMixin
 
 
 class CreateView(ModelFormMixin, TemplateViewMixin, generic.CreateView):
+    permission_shortcode = 'add'
     tags = ['model']
     default_template_name = 'djmvc/form.html'
     icon = 'plus-circle'
