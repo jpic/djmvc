@@ -4,6 +4,7 @@ import django_tables2
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from .log import ADDITION, CHANGE, DELETION, format_logentry_message
 
@@ -14,7 +15,7 @@ class ActionsColumn(django_tables2.Column):
     exclude_from_export = True
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('verbose_name', 'Actions')
+        kwargs.setdefault('verbose_name', _('Action:'))
         kwargs.setdefault('orderable', False)
         super().__init__(*args, **kwargs)
 
@@ -59,6 +60,12 @@ class CheckboxColumn(django_tables2.Column):
         )
 
 
+def _logentry_field_verbose_name(field_name):
+    from django.contrib.admin.models import LogEntry
+
+    return LogEntry._meta.get_field(field_name).verbose_name
+
+
 class LogActionColumn(django_tables2.Column):
     colors = {
         ADDITION: 'success',
@@ -67,7 +74,10 @@ class LogActionColumn(django_tables2.Column):
     }
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('verbose_name', 'Action')
+        kwargs.setdefault(
+            'verbose_name',
+            _logentry_field_verbose_name('action_flag'),
+        )
         kwargs.setdefault('orderable', True)
         super().__init__(*args, **kwargs)
 
@@ -83,7 +93,10 @@ class LogActionColumn(django_tables2.Column):
 
 class LogMessageColumn(django_tables2.Column):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('verbose_name', 'Changes')
+        kwargs.setdefault(
+            'verbose_name',
+            _logentry_field_verbose_name('change_message'),
+        )
         kwargs.setdefault('orderable', False)
         super().__init__(*args, **kwargs)
 

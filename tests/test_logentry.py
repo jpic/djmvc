@@ -191,7 +191,7 @@ def test_history_page_titles_and_breadcrumbs(client, admin_user, stage0_item):
     assert str(stage0_item) in content
     assert 'History' in content
     assert 'Detail' in content
-    assert 'Update' in content
+    assert 'Change Stage0' in content
     assert 'Delete' in content
     assert f'{stage0_item} History' not in content
     assert f'{stage0_item} Detail' not in content

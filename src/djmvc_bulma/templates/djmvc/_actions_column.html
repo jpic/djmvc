@@ -1,4 +1,4 @@
-{% load django_tables2 djmvc %}
+{% load django_tables2 djmvc i18n %}
 
 {% if actions %}
 {# Desktop/Tablet: Icon buttons with tooltips #}
@@ -17,7 +17,7 @@
 {# Mobile: Dropdown menu #}
 <bulma-dropdown class="dropdown is-right is-hidden-tablet actions-dropdown">
     <div class="dropdown-trigger">
-        <button class="button is-small is-outlined" aria-haspopup="true" aria-controls="dropdown-menu" aria-label="Actions">
+        <button class="button is-small is-outlined" aria-haspopup="true" aria-controls="dropdown-menu" aria-label="{% trans 'Action:' %}">
             <span class="icon is-small">
                 <i class="bi bi-list"></i>
             </span>

@@ -121,7 +121,7 @@ def test_update_view_breadcrumb_titles(rf, admin_user):
     assert [crumb.breadcrumb_title for crumb in crumbs] == [
         stage0.routes['list'].title,
         str(obj),
-        'Update',
+        'Change Stage0',
     ]
 
 
@@ -171,7 +171,7 @@ def test_object_menu_titles(rf, admin_user):
     )
     assert {item.title for item in menu} == {
         'Detail',
-        'Update',
+        'Change Stage0',
         'Delete',
         'History',
     }

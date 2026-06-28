@@ -1,4 +1,4 @@
-{% load djmvc %}
+{% load djmvc i18n %}
 {% if view.page %}
 <div class="djmvc-pagination-footer">
     <form method="get"
@@ -8,9 +8,9 @@
         <input type="hidden" name="{{ name }}" value="{{ value }}">
         {% endfor %}
         <input type="hidden" name="{{ view.page_kwarg }}" value="1">
-        <span class="djmvc-per-page-label">Paginate by:</span>
+        <span class="djmvc-per-page-label">{% trans "Paginate by:" %}</span>
         <div class="select is-small">
-            <select name="{{ view.per_page_kwarg }}" aria-label="Paginate by">
+            <select name="{{ view.per_page_kwarg }}" aria-label="{% trans 'Paginate by:' %}">
                 {% for option in view.per_page_option_list %}
                 <option value="{{ option }}"{% if option == view.paginator.per_page|stringformat:"s" %} selected{% endif %}>{{ option }}</option>
                 {% endfor %}
@@ -18,25 +18,25 @@
         </div>
     </form>
 
-    <nav class="djmvc-table-pagination" role="navigation" aria-label="pagination">
+    <nav class="djmvc-table-pagination" role="navigation" aria-label="{% trans 'pagination' %}">
         {% if view.page.has_previous %}
         {% eval view.pagination_url 1 as first_url %}
-        <a class="button is-small" href="{{ first_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="First page">
+        <a class="button is-small" href="{{ first_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="{% trans 'First page' %}">
             <i class="bi bi-chevron-bar-left"></i>
         </a>
         {% else %}
-        <span class="button is-small" disabled aria-label="First page">
+        <span class="button is-small" disabled aria-label="{% trans 'First page' %}">
             <i class="bi bi-chevron-bar-left"></i>
         </span>
         {% endif %}
 
         {% if view.page.has_previous %}
         {% eval view.pagination_url view.page.previous_page_number as prev_url %}
-        <a class="button is-small" href="{{ prev_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="Previous page">
+        <a class="button is-small" href="{{ prev_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="{% trans 'Previous page' %}">
             <i class="bi bi-chevron-left"></i>
         </a>
         {% else %}
-        <span class="button is-small" disabled aria-label="Previous page">
+        <span class="button is-small" disabled aria-label="{% trans 'Previous page' %}">
             <i class="bi bi-chevron-left"></i>
         </span>
         {% endif %}
@@ -53,28 +53,28 @@
                    value="{{ view.page.number }}"
                    min="1"
                    max="{{ view.paginator.num_pages }}"
-                   aria-label="Page number">
-            <span class="djmvc-page-form-total">of {{ view.paginator.num_pages }}</span>
+                   aria-label="{% trans 'Page number' %}">
+            <span class="djmvc-page-form-total">{% blocktrans with num_pages=view.paginator.num_pages %}of {{ num_pages }}{% endblocktrans %}</span>
         </form>
 
         {% if view.page.has_next %}
         {% eval view.pagination_url view.page.next_page_number as next_url %}
-        <a class="button is-small" href="{{ next_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="Next page">
+        <a class="button is-small" href="{{ next_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="{% trans 'Next page' %}">
             <i class="bi bi-chevron-right"></i>
         </a>
         {% else %}
-        <span class="button is-small" disabled aria-label="Next page">
+        <span class="button is-small" disabled aria-label="{% trans 'Next page' %}">
             <i class="bi bi-chevron-right"></i>
         </span>
         {% endif %}
 
         {% if view.page.has_next %}
         {% eval view.pagination_url view.paginator.num_pages as last_url %}
-        <a class="button is-small" href="{{ last_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="Last page">
+        <a class="button is-small" href="{{ last_url }}" up-follow up-target="{{ view.pagination_target }}" up-history aria-label="{% trans 'Last page' %}">
             <i class="bi bi-chevron-bar-right"></i>
         </a>
         {% else %}
-        <span class="button is-small" disabled aria-label="Last page">
+        <span class="button is-small" disabled aria-label="{% trans 'Last page' %}">
             <i class="bi bi-chevron-bar-right"></i>
         </span>
         {% endif %}

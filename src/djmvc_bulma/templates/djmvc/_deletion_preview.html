@@ -1,6 +1,7 @@
+{% load i18n %}
 {% if view.deletion_protected %}
 <div class="notification is-danger is-light">
-    <p>Deleting the selected items would require deleting the following protected related objects:</p>
+    <p>{{ view.deletion_protected_message }}</p>
     <ul>
         {% for item in view.deletion_protected %}
         <li>{{ item }}</li>
@@ -9,7 +10,7 @@
 </div>
 {% else %}
 {% if view.deletion_summary %}
-<h3 class="title is-6 mb-2">Summary</h3>
+<h3 class="title is-6 mb-2">{% trans "Summary" %}</h3>
 <ul class="djmvc-deletion-summary mb-4">
     {% for model_name, object_count in view.deletion_summary %}
     <li>{{ model_name }}: {{ object_count }}</li>
@@ -18,7 +19,7 @@
 {% endif %}
 
 {% if view.deleted_objects %}
-<h3 class="title is-6 mb-2">Objects</h3>
+<h3 class="title is-6 mb-2">{% trans "Objects" %}</h3>
 <ul class="djmvc-deletion-objects">{{ view.deleted_objects|unordered_list }}</ul>
 {% endif %}
 {% endif %}

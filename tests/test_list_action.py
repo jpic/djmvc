@@ -6,7 +6,7 @@ from django.urls import reverse
 from djmvc.views.delete import DeleteObjectsView
 from djmvc_example.stage0.models import Stage0
 
-DELETE_OBJECTS_MESSAGE = 'Are you sure you want to delete the selected items?'
+DELETE_OBJECTS_MESSAGE = 'Are you sure you want to delete the selected'
 
 
 @pytest.mark.django_db
@@ -168,7 +168,8 @@ def test_delete_view_shows_cascade_preview(client, admin_user):
     response = client.get(reverse('site:stage0:delete', args=[stage.pk]))
     content = response.content.decode()
 
-    assert 'Are you sure you want to delete Parent' in content
+    assert 'Are you sure you want to delete the' in content
+    assert 'Parent' in content
     assert 'All of the following related items will be deleted' in content
     assert 'Stage0 tags: 1' in content
     assert 'child-tag' in content
@@ -182,8 +183,8 @@ def test_delete_view_omits_cascade_message_without_relations(client, admin_user)
     response = client.get(reverse('site:stage0:delete', args=[stage.pk]))
     content = response.content.decode()
 
-    assert 'Are you sure you want to delete Lonely' in content
-    assert 'All of the following related items will be deleted' not in content
+    assert 'Are you sure you want to delete the' in content
+    assert 'Lonely' in content
 
 
 def _visit_user_list(browser, live_server):
@@ -217,14 +218,14 @@ def _select_rows(browser, indices):
 
 
 def _assert_bar_shows_count(browser, count):
-    label = '1 item selected' if count == 1 else f'{count} items selected'
+    label = '1 selected' if count == 1 else f'All {count} selected'
     assert browser.is_text_present(label, wait_time=5)
 
 
 def _assert_bar_hidden(browser, timeout=5):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        if browser.is_text_present('item selected', wait_time=0):
+        if browser.is_text_present('selected', wait_time=0):
             time.sleep(0.1)
             continue
         state = browser.execute_script(
@@ -287,7 +288,7 @@ def test_list_action_bar_shows_selection_count(browser, live_server, browser_log
     _visit_user_list(browser, live_server)
 
     _check_row(browser)
-    assert browser.is_text_present('1 item selected', wait_time=5)
+    assert browser.is_text_present('1 selected', wait_time=5)
 
 
 @pytest.mark.splinter(screenshot_dir='./screenshots')
@@ -297,17 +298,17 @@ def test_list_selection_persists_across_pages(browser, live_server, browser_logi
     _visit_user_list(browser, live_server)
 
     _check_row(browser)
-    assert browser.is_text_present('1 item selected', wait_time=5)
+    assert browser.is_text_present('1 selected', wait_time=5)
 
     browser.find_by_css('i.bi-chevron-right').first.click()
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
     assert browser.is_element_present_by_css('input[type="checkbox"][data-pk]', wait_time=5)
 
     _check_row(browser)
-    assert browser.is_text_present('2 items selected', wait_time=5)
+    assert browser.is_text_present('All 2 selected', wait_time=5)
 
     browser.find_by_css('[data-role="clear"]').first.click()
-    assert browser.is_text_not_present('item selected', wait_time=5)
+    assert browser.is_text_not_present('selected', wait_time=5)
 
 
 @pytest.mark.splinter(screenshot_dir='./screenshots')

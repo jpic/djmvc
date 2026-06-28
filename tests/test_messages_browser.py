@@ -25,7 +25,8 @@ def test_create_success_toast_in_browser(browser, live_server, browser_login, ad
     browser.fill('name', 'BrowserAlice')
     browser.find_by_css('form[method="post"] button[type="submit"]').first.click()
 
-    assert browser.is_text_present('Create: BrowserAlice', wait_time=5)
+    assert browser.is_text_present('was added successfully', wait_time=5)
+    assert browser.is_text_present('BrowserAlice', wait_time=2)
     assert browser.is_element_present_by_css('[up-flashes] .djmvc-toast.is-success', wait_time=2)
 
 
@@ -44,8 +45,7 @@ def test_create_invalid_toast_lists_field_names(browser, live_server, browser_lo
     browser.fill('name', '')
     browser.find_by_css('form[method="post"] button[type="submit"]').first.click()
 
-    assert browser.is_text_present('errors in', wait_time=5)
-    assert browser.is_text_present('Name', wait_time=2)
+    assert browser.is_text_present('Please correct the error below', wait_time=5)
     assert browser.is_element_present_by_css('[up-flashes] .djmvc-toast.is-danger', wait_time=2)
 
 
@@ -61,9 +61,9 @@ def test_toast_dismiss_button(browser, live_server, browser_login, admin_user):
     browser.fill('name', 'DismissMe')
     browser.find_by_css('form[method="post"] button[type="submit"]').first.click()
 
-    assert browser.is_text_present('Create: DismissMe', wait_time=5)
+    assert browser.is_text_present('DismissMe', wait_time=5)
     browser.find_by_css('[up-flashes] .djmvc-toast .delete').first.click()
-    _wait_for_toast_absent(browser, 'Create: DismissMe', timeout=3)
+    _wait_for_toast_absent(browser, 'DismissMe', timeout=3)
 
 
 @pytest.mark.splinter(screenshot_dir='./screenshots')
@@ -78,5 +78,5 @@ def test_toast_auto_dismiss(browser, live_server, browser_login, admin_user):
     browser.fill('name', 'AutoDismiss')
     browser.find_by_css('form[method="post"] button[type="submit"]').first.click()
 
-    assert browser.is_text_present('Create: AutoDismiss', wait_time=5)
-    _wait_for_toast_absent(browser, 'Create: AutoDismiss', timeout=6)
+    assert browser.is_text_present('AutoDismiss', wait_time=5)
+    _wait_for_toast_absent(browser, 'AutoDismiss', timeout=6)

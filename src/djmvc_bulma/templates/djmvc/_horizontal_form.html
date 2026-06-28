@@ -1,4 +1,4 @@
-{% load djmvc crispy_forms_tags %}
+{% load djmvc crispy_forms_tags i18n %}
 {% if form %}
 <form method="{{ form_method|default:'get' }}"
       class="{{ css_class|default:'djmvc-horizontal-form' }}"
@@ -10,17 +10,17 @@
         </p>
         {% endfor %}
         <p class="control">
-            <button type="submit" class="button is-primary" aria-label="{{ submit_label|default:'Apply' }}">
+            <button type="submit" class="button is-primary" aria-label="{{ submit_label|default:view.filter_submit_label }}">
                 {% if submit_icon %}
                 <span class="icon"><i class="bi bi-{{ submit_icon }}"></i></span>
                 {% else %}
-                <span>{{ submit_label|default:'Apply' }}</span>
+                <span>{{ submit_label|default:view.filter_submit_label }}</span>
                 {% endif %}
             </button>
         </p>
         {% if show_clear %}
         <p class="control">
-            <a href="{{ clear_url }}" class="button djmvc-filter-clear" up-follow up-target="{{ target }}" up-history>Clear</a>
+            <a href="{{ clear_url }}" class="button djmvc-filter-clear" up-follow up-target="{{ target }}" up-history>{% trans "Clear" %}</a>
         </p>
         {% endif %}
     </div>

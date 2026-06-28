@@ -36,7 +36,8 @@ def test_create_success_flash(client, admin_user):
 
     assert response.status_code == 200
     assert b'up-flashes' in response.content
-    assert b'Create: Alice' in response.content
+    assert b'was added successfully' in response.content
+    assert b'Alice' in response.content
     assert Stage0.objects.filter(name='Alice').exists()
 
 
@@ -57,7 +58,7 @@ def test_user_create_invalid_field_flash_with_translated_labels(client, admin_us
 
     assert response.status_code == 400
     assert b'up-flashes' in response.content
-    assert b'errors in' in response.content
+    assert b'Please correct the errors below' in response.content
 
 
 @pytest.mark.django_db
@@ -71,8 +72,7 @@ def test_create_invalid_field_flash_lists_field_names(client, admin_user):
 
     assert response.status_code == 400
     assert b'up-flashes' in response.content
-    assert b'errors in' in response.content
-    assert b'Name' in response.content
+    assert b'Please correct the error below' in response.content
 
 
 @pytest.mark.django_db
@@ -106,7 +106,7 @@ def test_bulk_delete_success_flash(client, admin_user):
 
     assert response.status_code == 200
     assert b'up-flashes' in response.content
-    assert b'Deleted 2' in response.content
+    assert b'Successfully deleted 2' in response.content
     assert Stage0.objects.count() == 0
 
 
@@ -123,7 +123,8 @@ def test_delete_success_flash(client, admin_user):
 
     assert response.status_code == 200
     assert b'up-flashes' in response.content
-    assert b'Deleted ToDelete' in response.content
+    assert b'was deleted successfully' in response.content
+    assert b'ToDelete' in response.content
     assert not Stage0.objects.filter(pk=obj.pk).exists()
 
 

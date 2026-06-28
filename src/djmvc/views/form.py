@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.views import generic
 from django.forms import Form
+from django.utils.translation import ngettext
+
 from djmvc.views.template import TemplateViewMixin
 
 
@@ -40,16 +42,14 @@ class FormMixin:
         return self.get_form_valid_message()
 
     def get_form_invalid_message(self, form):
-        labels = []
-        for name in form.errors:
-            if name == '__all__':
-                continue
-            field = form.fields.get(name)
-            label = field.label if field and field.label else name
-            labels.append(str(label))
-        if not labels:
+        error_count = sum(len(errors) for errors in form.errors.values())
+        if error_count == 0:
             return None
-        return f'{self.title}: errors in {", ".join(labels)}'
+        return ngettext(
+            'Please correct the error below.',
+            'Please correct the errors below.',
+            error_count,
+        )
 
     def message_success(self):
         messages.success(self.request, self.form_valid_message)

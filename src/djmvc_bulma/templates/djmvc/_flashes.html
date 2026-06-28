@@ -1,3 +1,4 @@
+{% load i18n %}
 <div up-flashes class="djmvc-flashes" role="alert">
     {% for message in messages %}
     <div class="notification djmvc-toast is-light
@@ -7,7 +8,7 @@
         {% elif 'info' in message.tags %}is-info
         {% else %}is-info{% endif %}"
         data-nonce="{{ forloop.counter }}-{{ message|slugify }}">
-        <button class="delete" aria-label="dismiss"></button>
+        <button class="delete" aria-label="{% trans 'dismiss' %}"></button>
         {{ message }}
     </div>
     {% endfor %}

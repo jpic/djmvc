@@ -54,6 +54,12 @@ where = ["src"]
 include = ["*"]
 namespaces = false
 
+[tool.setuptools.package-data]
+djmvc = ["locale/**/*.po", "locale/**/*.mo"]
+djmvc_bulma = ["locale/**/*.po", "locale/**/*.mo"]
+djmvc_auth = ["locale/**/*.po", "locale/**/*.mo"]
+djmvc_history = ["locale/**/*.po", "locale/**/*.mo"]
+
 [tool.setuptools_scm]
 # Git-based versioning configuration
 # This will automatically determine the version from git tags

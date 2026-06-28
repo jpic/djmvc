@@ -1,5 +1,5 @@
 {% extends 'djmvc/base.html' %}
-{% load djmvc crispy_forms_tags %}
+{% load djmvc crispy_forms_tags i18n %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -50,7 +50,7 @@
                     {% block form_buttons %}
                     {% if view.cancel_url %}
                     <p class="control">
-                        <button type="button" class="button" up-dismiss>Cancel</button>
+                        <button type="button" class="button" up-dismiss>{% trans "Close" %}</button>
                     </p>
                     {% endif %}
                     <p class="control">

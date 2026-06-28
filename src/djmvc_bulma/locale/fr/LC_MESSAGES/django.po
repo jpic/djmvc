@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 12:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: src/djmvc_bulma/templates/djmvc/_actions_column.html:20
+msgid "Action:"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_deletion_preview.html:13
+msgid "Summary"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_deletion_preview.html:22
+msgid "Objects"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_error.html:5
+#, python-format
+msgid "HTTP %(error_status)s"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_flashes.html:11
+msgid "dismiss"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:23
+msgid "Clear"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:11
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:13
+msgid "Paginate by:"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:21
+msgid "pagination"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:24
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:28
+msgid "First page"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:35
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:39
+msgid "Previous page"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:56
+msgid "Page number"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:57
+#, python-format
+msgid "of %(num_pages)s"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:62
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:66
+msgid "Next page"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:73
+#: src/djmvc_bulma/templates/djmvc/_pagination.html:77
+msgid "Last page"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/base.html:16
+#: src/djmvc_bulma/templates/djmvc/base.html:19
+msgid "Toggle navigation"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/base.html:48
+msgid "Navigation"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/base.html:69
+msgid "Breadcrumbs"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/detaillist.html:56
+#: src/djmvc_bulma/templates/djmvc/list.html:54
+msgid "Clear selection"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/form.html:53
+#: src/djmvc_bulma/templates/djmvc/form_delete.html:25
+#: src/djmvc_bulma/templates/djmvc/form_delete.html:38
+msgid "Close"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/form_delete.html:7
+#, python-format
+msgid ""
+"\n"
+"    %(counter)s selected item could not be found and was ignored.\n"
+"    "
+msgid_plural ""
+"\n"
+"    %(counter)s selected items could not be found and were ignored.\n"
+"    "
+msgstr[0] ""
+msgstr[1] ""

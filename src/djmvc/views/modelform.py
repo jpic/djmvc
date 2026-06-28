@@ -1,4 +1,5 @@
 from django.forms import modelform_factory
+from django.utils.translation import gettext as _
 
 from ..model import ModelMixin
 from .form import FormMixin
@@ -9,7 +10,11 @@ class ModelFormMixin(LogMixin, ModelMixin, FormMixin):
     fields = '__all__'
 
     def get_form_valid_message(self):
-        return f'{self.title}: {self.form.instance}'
+        opts = self.model._meta
+        return _('The {name} "{obj}" was added successfully.').format(
+            name=opts.verbose_name,
+            obj=self.form.instance,
+        )
 
     def get_form_class(self):
         if getattr(self, 'form_class', None):

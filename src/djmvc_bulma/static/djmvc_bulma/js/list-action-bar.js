@@ -230,13 +230,19 @@ export class ListActionBar extends HTMLElement {
         }
     }
 
+    selectionCountLabel(count) {
+        if (count === 1) {
+            return this.dataset.countLabelOne || '1 selected';
+        }
+        const template = this.dataset.countLabelOther || `${count} selected`;
+        return template.replace('__COUNT__', String(count));
+    }
+
     syncBar() {
         const count = this.selectedPks.size;
         const countEl = this.querySelector('[data-role="count"]');
         if (countEl) {
-            countEl.textContent = count === 1
-                ? '1 item selected'
-                : `${count} items selected`;
+            countEl.textContent = this.selectionCountLabel(count);
         }
         this.hidden = count === 0;
         this.updateActionUrls();

@@ -1,3 +1,5 @@
+from django.utils.text import capfirst
+from django.utils.translation import gettext as _
 from django.views import generic
 
 from .log import ADDITION
@@ -11,3 +13,9 @@ class CreateView(ModelFormMixin, TemplateViewMixin, generic.CreateView):
     icon = 'plus-circle'
     color = 'success'
     log_action_flag = ADDITION
+
+    @property
+    def title(self):
+        return _('Add %(name)s') % {
+            'name': capfirst(self.model._meta.verbose_name),
+        }

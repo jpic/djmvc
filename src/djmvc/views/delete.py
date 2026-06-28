@@ -5,6 +5,7 @@ from django.db import router
 from django.urls import NoReverseMatch, reverse
 from django.utils.html import format_html
 from django.utils.text import capfirst
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views import generic
 
 from .form import FormView
@@ -12,6 +13,17 @@ from .list_action import ListActionMixin
 from .log import DELETION, LogMixin
 from .template import TemplateViewMixin
 from .objectform import ObjectFormMixin
+
+
+DELETE_CONFIRM_SINGLE = gettext_lazy(
+    'Are you sure you want to delete the %(object_name)s "%(escaped_object)s"? '
+    'All of the following related items will be deleted:'
+)
+
+DELETE_CONFIRM_BULK = gettext_lazy(
+    'Are you sure you want to delete the selected %(objects_name)s? All of the '
+    'following objects and their related items will be deleted:'
+)
 
 
 def get_deleted_objects(view, objs):
@@ -66,7 +78,7 @@ class DeleteMixin(LogMixin):
 
     @property
     def submit_button_label(self):
-        return 'Delete'
+        return _('Delete')
 
     @functools.cached_property
     def detail_urlname(self):
@@ -111,6 +123,24 @@ class DeleteMixin(LogMixin):
     def can_confirm_delete(self):
         return not self.deletion_protected
 
+    @property
+    def deletion_protected_message(self):
+        if hasattr(self, 'object_list'):
+            return _(
+                'Deleting the selected %(objects_name)s would require deleting '
+                'the following protected related objects:'
+            ) % {
+                'objects_name': capfirst(self.model._meta.verbose_name_plural),
+            }
+        opts = self.object._meta
+        return _(
+            'Deleting the %(object_name)s "%(escaped_object)s" would require '
+            'deleting the following protected related objects:'
+        ) % {
+            'object_name': capfirst(opts.verbose_name),
+            'escaped_object': self.object,
+        }
+
     def form_valid(self, form):
         for obj in self.get_log_objects():
             if getattr(obj, 'pk', None) is not None:
@@ -124,11 +154,23 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
     tags = ['object']
 
     @property
+    def title(self):
+        return _('Delete')
+
+    @property
     def message(self):
-        return f'Are you sure you want to delete {self.object}?'
+        opts = self.object._meta
+        return DELETE_CONFIRM_SINGLE % {
+            'object_name': capfirst(opts.verbose_name),
+            'escaped_object': self.object,
+        }
 
     def get_form_valid_message(self):
-        return f'Deleted {self.object}'
+        opts = self.object._meta
+        return _('The %(name)s "%(obj)s" was deleted successfully.') % {
+            'name': opts.verbose_name,
+            'obj': self.object,
+        }
 
     def form_valid(self, form):
         if not self.can_confirm_delete:
@@ -138,19 +180,26 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
 
 
 class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):
-    message = 'Are you sure you want to delete the selected items?'
+    @property
+    def message(self):
+        return DELETE_CONFIRM_BULK % {
+            'objects_name': capfirst(self.model._meta.verbose_name_plural),
+        }
 
     @property
     def title(self):
-        return 'Delete'
+        return _('Delete')
 
     def get_form_valid_message(self):
         count = self._deleted_count
         if count == 1:
-            label = capfirst(self.model._meta.verbose_name)
+            items = capfirst(self.model._meta.verbose_name)
         else:
-            label = capfirst(self.model._meta.verbose_name_plural)
-        return f'Deleted {count} {label}'
+            items = capfirst(self.model._meta.verbose_name_plural)
+        return _('Successfully deleted %(count)d %(items)s.') % {
+            'count': count,
+            'items': items,
+        }
 
     def form_valid(self, form):
         if not self.can_confirm_delete:

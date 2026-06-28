@@ -1,7 +1,6 @@
 import logging
 
 import djmvc
-from django import http
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import (
@@ -11,7 +10,7 @@ from django.contrib.auth.forms import (
     UserChangeForm,
     UserCreationForm,
 )
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django.views import generic
 
 from djmvc.errors import not_found_response
@@ -36,12 +35,16 @@ class LoginView(djmvc.generic.FormView):
         'up-history': 'false',
     }
 
+    @property
+    def title(self):
+        return _('Log in')
+
     def has_permission(self):
         """Show login only to anonymous users."""
         return not self.request.user.is_authenticated
 
     def get_form_valid_message(self):
-        return f'Logged in as {self.form.get_user()}'
+        return _('Logged in as %(user)s') % {'user': self.form.get_user()}
 
     def form_valid(self, form):
         login(self.request, form.get_user())
@@ -51,17 +54,24 @@ class LoginView(djmvc.generic.FormView):
 class LogoutView(djmvc.generic.FormView):
     tags = ['topbar', 'navigation']
     icon = 'box-arrow-right'
-    message = 'Are you sure you want to logout ?'
     form_attributes = {
         'up-submit': False,
     }
+
+    @property
+    def title(self):
+        return _('Log out')
+
+    @property
+    def message(self):
+        return _('Are you sure you want to logout?')
 
     def has_permission(self):
         """Show logout only to authenticated users."""
         return self.request.user.is_authenticated
 
     def get_form_valid_message(self):
-        return 'Logged out'
+        return _('Logged out')
 
     def form_valid(self, form):
         logout(self.request)
@@ -88,8 +98,14 @@ class PasswordView(
         return 'password'
 
     @property
+    def title(self):
+        if self.object == self.request.user:
+            return _('Change password')
+        return _('Set password')
+
+    @property
     def submit_button_label(self):
-        return _('update').capitalize()
+        return _('Save')
 
     def get_form_class(self):
         if self.object == self.request.user:
@@ -131,7 +147,7 @@ class BecomeUser(ObjectMixin, ModelMixin, djmvc.View):
 
     @property
     def title(self):
-        return _('become').capitalize()
+        return _('Become user')
 
     def unpoly_attributes(self, context=None):
         return FULL_PAGE_LINK_ATTRIBUTES
@@ -142,7 +158,7 @@ class BecomeUser(ObjectMixin, ModelMixin, djmvc.View):
         except User.DoesNotExist:
             messages.error(
                 self.request,
-                'Could not find user {}'.format(self.kwargs['pk']),
+                _('Could not find user %(pk)s') % {'pk': self.kwargs['pk']},
             )
             return None
 
@@ -161,7 +177,7 @@ class BecomeUser(ObjectMixin, ModelMixin, djmvc.View):
         request.session['become_user'] = become_user
         messages.info(
             request,
-            _('Switched to user %s') % request.user,
+            _('Switched to user %(user)s') % {'user': request.user},
         )
         return full_page_redirect_home(request)
 
@@ -180,7 +196,7 @@ class Become(djmvc.View):
     @property
     def title(self):
         realname = self.request.session.get('become_user_realname', '')
-        return _('Back to your account') + f' ({realname})'
+        return _('Back to your account (%(name)s)') % {'name': realname}
 
     def unpoly_attributes(self, context=None):
         return FULL_PAGE_LINK_ATTRIBUTES
@@ -197,7 +213,7 @@ class Become(djmvc.View):
         login(request, user)
         messages.info(
             request,
-            _('Switched back to your user %s') % user,
+            _('Switched back to your user %(user)s') % {'user': user},
         )
         request.session.pop('become_user', None)
         return full_page_redirect_home(request)

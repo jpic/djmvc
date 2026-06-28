@@ -1,22 +1,27 @@
 from django.template.response import TemplateResponse
+from django.utils.translation import gettext_lazy as _
 
 
 DEFAULT_ERROR_PAGES = {
     400: (
-        'Bad request',
-        'The request could not be understood by the server.',
+        _('Bad request'),
+        _('The request could not be understood by the server.'),
     ),
     403: (
-        'Forbidden',
-        'You do not have permission to access this page.',
+        _('Forbidden'),
+        _("You don't have permission to view or edit anything."),
     ),
     404: (
-        'Not found',
-        'The page you requested could not be found.',
+        _('Page not found'),
+        _("We're sorry, but the requested page could not be found."),
     ),
     500: (
-        'Server error',
-        'Something went wrong on our end. Please try again later.',
+        _('Server error'),
+        _(
+            "There's been an error. It's been reported to the site "
+            "administrators via email and should be fixed shortly. "
+            "Thanks for your patience."
+        ),
     ),
 }
 

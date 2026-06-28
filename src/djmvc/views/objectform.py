@@ -1,3 +1,5 @@
+from django.utils.translation import gettext as _
+
 from ..model import ModelMixin
 from .log import CHANGE
 from .object import ObjectMixin
@@ -7,11 +9,19 @@ from .modelform import ModelFormMixin
 
 class ObjectFormMixin(ObjectMixin, ModelMixin, FormMixin):
     def get_form_valid_message(self):
-        return f'{self.title}: {self.object}'
+        opts = self.model._meta
+        return _('The {name} "{obj}" was changed successfully.').format(
+            name=opts.verbose_name,
+            obj=self.object,
+        )
 
 
 class ObjectModelFormMixin(ObjectMixin, ModelFormMixin):
     log_action_flag = CHANGE
 
     def get_form_valid_message(self):
-        return f'{self.title}: {self.object}'
+        opts = self.model._meta
+        return _('The {name} "{obj}" was changed successfully.').format(
+            name=opts.verbose_name,
+            obj=self.object,
+        )

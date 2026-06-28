@@ -1,6 +1,8 @@
 import functools
 
+from django.utils.translation import gettext as _, ngettext
 from django.views import generic
+
 from ..model import ModelMixin
 from .filter import FilterMixin
 from .object import ObjectMixin
@@ -24,6 +26,32 @@ class ListMixin:
     @functools.cached_property
     def list_actions(self):
         return self.controller.get_tagged_views('list_action', request=self.request)
+
+    @property
+    def empty_list_message(self):
+        return _('No %(verbose_name)s found matching the query') % {
+            'verbose_name': self.model_meta.verbose_name_plural,
+        }
+
+    @property
+    def list_action_count_label_one(self):
+        return ngettext(
+            '%(total_count)s selected',
+            'All %(total_count)s selected',
+            1,
+        ) % {'total_count': 1}
+
+    @property
+    def list_action_count_label_other(self):
+        return ngettext(
+            '%(total_count)s selected',
+            'All %(total_count)s selected',
+            2,
+        ) % {'total_count': '__COUNT__'}
+
+    @property
+    def filter_submit_label(self):
+        return _('Apply')
 
 
 class ListView(

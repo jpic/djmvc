@@ -49,7 +49,7 @@ def test_not_found_response_renders_layout(rf, admin_user):
     request = rf.get('/missing/')
     request.user = admin_user
     response = not_found_response(request, view=layout_view_for_request(request))
-    _assert_layout_response(response, 404, 'Not found')
+    _assert_layout_response(response, 404, 'Page not found')
 
 
 @pytest.mark.django_db
@@ -71,7 +71,7 @@ def test_server_error_response_renders_layout(rf, admin_user):
 @pytest.mark.django_db
 def test_handler404_unknown_url(client):
     response = client.get('/this-page-does-not-exist/')
-    _assert_layout_response(response, 404, 'Not found')
+    _assert_layout_response(response, 404, 'Page not found')
 
 
 @pytest.mark.django_db
@@ -103,4 +103,4 @@ def test_handler500(client, rf, admin_user):
 def test_become_without_session_renders_not_found(client, admin_user):
     client.force_login(admin_user)
     response = client.get(reverse('site:auth:su'))
-    _assert_layout_response(response, 404, 'Not found')
+    _assert_layout_response(response, 404, 'Page not found')

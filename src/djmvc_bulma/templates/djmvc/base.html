@@ -1,6 +1,6 @@
-{% load static djmvc %}
+{% load static djmvc i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,10 @@
 </head>
 <body>
     {% if view.unpoly.mode != 'modal' %}
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar" role="navigation" aria-label="{% trans 'Toggle navigation' %}">
         <div class="navbar-brand">
             <div class="navbar-item">
-                <hamburger-menu target="#sidebar"></hamburger-menu>
+                <hamburger-menu target="#sidebar" aria-label="{% trans 'Toggle navigation' %}"></hamburger-menu>
             </div>
         </div>
 
@@ -45,7 +45,7 @@
 
     <div class="djmvc-layout">
         <aside class="menu p-4 djmvc-sidebar" id="sidebar">
-            <p class="menu-label">Navigation</p>
+            <p class="menu-label">{% trans "Navigation" %}</p>
             <ul class="menu-list" up-nav role="navigation">
                 {% eval view.controller.root.get_tagged_views 'navigation' request=request as navigation_menu %}
                 {% for menu_item in navigation_menu %}
@@ -66,7 +66,7 @@
 <main class="p-5 djmvc-main" up-main>
     {% with breadcrumbs=view.breadcrumbs %}
     {% if breadcrumbs %}
-    <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+    <nav class="breadcrumb mb-4" aria-label="{% trans 'Breadcrumbs' %}">
         <ul>
             {% for crumb in breadcrumbs %}
             <li{% if forloop.last %} class="is-active"{% endif %}>
