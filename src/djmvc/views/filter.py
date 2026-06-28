@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from django import forms
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext as _
 
 
 class FilterMixin:
@@ -25,6 +26,11 @@ class FilterMixin:
     filter_fields = None
     filter_form_class = None
     filter_target = '[up-list]'
+
+    @property
+    def filter_submit_label(self):
+        """Label for the filter form submit button."""
+        return _('Apply')
 
     @functools.cached_property
     def search_fields(self):

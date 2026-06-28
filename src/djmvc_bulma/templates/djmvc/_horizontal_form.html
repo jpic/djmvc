@@ -1,4 +1,5 @@
 {% load djmvc crispy_forms_tags i18n %}
+{% trans "Apply" as default_submit_label %}
 {% if form %}
 <form method="{{ form_method|default:'get' }}"
       class="{{ css_class|default:'djmvc-horizontal-form' }}"
@@ -10,11 +11,11 @@
         </p>
         {% endfor %}
         <p class="control">
-            <button type="submit" class="button is-primary" aria-label="{{ submit_label|default:view.filter_submit_label }}">
+            <button type="submit" class="button is-primary" aria-label="{% if submit_label %}{{ submit_label }}{% else %}{{ default_submit_label }}{% endif %}">
                 {% if submit_icon %}
                 <span class="icon"><i class="bi bi-{{ submit_icon }}"></i></span>
                 {% else %}
-                <span>{{ submit_label|default:view.filter_submit_label }}</span>
+                <span>{% if submit_label %}{{ submit_label }}{% else %}{{ default_submit_label }}{% endif %}</span>
                 {% endif %}
             </button>
         </p>

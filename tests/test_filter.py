@@ -148,6 +148,39 @@ def test_has_active_filters_and_clear_url(rf, admin_user, mock_controller):
 
 
 @pytest.mark.django_db
+def test_filter_submit_label_on_filter_mixin(rf, admin_user, mock_controller):
+    view_cls = type(
+        'TestFilterOnlyView',
+        (FilterMixin, TemplateViewMixin, ModelMixin, generic.ListView),
+        {},
+    )
+    request = rf.get('/')
+    request.user = admin_user
+    view = view_cls()
+    view.controller = mock_controller
+    view.setup(request)
+
+    assert view.filter_submit_label == 'Apply'
+
+
+@pytest.mark.django_db
+def test_horizontal_form_default_submit_label(rf, admin_user, mock_controller):
+    view_cls = _build_filter_view()
+    request = rf.get('/')
+    request.user = admin_user
+    view = view_cls()
+    view.controller = mock_controller
+    view.setup(request)
+
+    template = Template('''
+    {% load djmvc crispy_forms_tags %}
+    {% include "djmvc/_horizontal_form.html" with form=view.filter_form only %}
+    ''')
+    output = template.render(Context({'view': view, 'request': request}))
+    assert 'aria-label="Apply"' in output
+
+
+@pytest.mark.django_db
 def test_filter_form_renders_horizontally(rf, admin_user, mock_controller):
     view_cls = _build_filter_view()
     request = rf.get('/')
@@ -165,6 +198,7 @@ def test_filter_form_renders_horizontally(rf, admin_user, mock_controller):
     assert 'method="get"' in output
     assert 'name="search"' in output
     assert 'type="submit"' in output
+    assert 'aria-label="Apply"' in output
     assert 'method="undefined"' not in output
 
 

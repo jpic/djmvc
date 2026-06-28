@@ -118,7 +118,7 @@ msgid_plural "All %(total_count)s selected"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/djmvc/views/list.py:54
+#: src/djmvc/views/filter.py:33
 msgid "Apply"
 msgstr ""
 

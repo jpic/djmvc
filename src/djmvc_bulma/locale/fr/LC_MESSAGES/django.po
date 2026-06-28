@@ -39,7 +39,11 @@ msgstr ""
 msgid "dismiss"
 msgstr ""
 
-#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:23
+#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:2
+msgid "Apply"
+msgstr ""
+
+#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:24
 msgid "Clear"
 msgstr ""
 

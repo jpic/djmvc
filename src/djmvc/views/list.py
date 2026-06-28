@@ -80,11 +80,6 @@ class ListMixin:
             2,
         ) % {'total_count': '__COUNT__'}
 
-    @property
-    def filter_submit_label(self):
-        """Label for the filter form submit button."""
-        return _('Apply')
-
 
 class ListView(
     ListMixin,
