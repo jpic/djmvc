@@ -37,10 +37,11 @@ describe('HamburgerMenu Web Component', () => {
             const { burger } = createHamburgerWithSidebar()
 
             expect(burger).toBeTruthy()
-            expect(burger.tagName).toBe('A')
-            expect(burger.getAttribute('role')).toBe('button')
+            expect(burger.tagName).toBe('BUTTON')
+            expect(burger.getAttribute('type')).toBe('button')
             expect(burger.getAttribute('aria-label')).toBe('menu')
-            expect(burger.getAttribute('aria-expanded')).toBe('false')
+            expect(burger.getAttribute('aria-expanded')).toBe('true')
+            expect(burger.classList.contains('is-active')).toBe(true)
             expect(burger.querySelectorAll('span[aria-hidden="true"]').length).toBe(4)
         })
 
