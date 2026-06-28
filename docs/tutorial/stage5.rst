@@ -19,8 +19,11 @@ List display
     :attr:`~djmvc.views.list.ListMixin.permission_shortcode`,
     :attr:`~djmvc.views.list.ListMixin.empty_list_message`
 
+    :py:class:`~djmvc.views.search.SearchMixin` —
+    :attr:`~djmvc.views.search.SearchMixin.search_param`,
+    :attr:`~djmvc.views.search.SearchMixin.search_fields`
+
     :py:class:`~djmvc.views.filter.FilterMixin` —
-    :attr:`~djmvc.views.filter.FilterMixin.search_param`,
     :attr:`~djmvc.views.filter.FilterMixin.filter_fields`,
     :attr:`~djmvc.views.filter.FilterMixin.filter_form_class`,
     :attr:`~djmvc.views.filter.FilterMixin.filter_target`

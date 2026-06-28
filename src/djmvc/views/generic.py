@@ -1,5 +1,6 @@
 from .action import ActionMixin
 from .filter import FilterMixin
+from .search import SearchMixin
 from .form import FormMixin, FormView
 from .modelform import ModelFormMixin
 from .object import ObjectMixin, ObjectTemplateView

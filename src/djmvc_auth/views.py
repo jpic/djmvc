@@ -3,6 +3,7 @@ import logging
 import djmvc
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.models import Group
 from django.contrib.auth.forms import (
     AuthenticationForm,
     PasswordChangeForm,
@@ -245,11 +246,35 @@ def get_custom_user_change_form():
     )
 
 
+class GroupController(djmvc.ModelController.clone(
+    model=Group,
+    icon='collection',
+    routes=djmvc.ModelController.routes + [
+        djmvc.generic.ListView.clone(table_fields=['id', 'name']),
+    ],
+)):
+    """CRUD for auth groups; autocomplete endpoint used by User form filters."""
+
+    def get_queryset(self, view):
+        return super().get_queryset(view).order_by('name')
+
+
+class UserCreateView(djmvc.generic.CreateView):
+    def get_form_class(self):
+        return get_custom_user_creation_form()
+
+
+class UserUpdateView(djmvc.generic.UpdateView):
+    def get_form_class(self):
+        return get_custom_user_change_form()
+
+
 class AuthController(djmvc.Controller):
     routes = [
         LoginView,
         LogoutView,
         Become,
+        GroupController,
         djmvc.ModelController.clone(
             model=User,
             icon='people',
@@ -262,13 +287,10 @@ class AuthController(djmvc.Controller):
                         'is_active',
                         'actions',
                     ],
+                    filter_fields=['groups'],
                 ),
-                djmvc.generic.CreateView.clone(
-                    form_class=get_custom_user_creation_form(),
-                ),
-                djmvc.generic.UpdateView.clone(
-                    form_class=get_custom_user_change_form(),
-                ),
+                UserCreateView,
+                UserUpdateView,
                 PasswordView,
                 BecomeUser,
             ],

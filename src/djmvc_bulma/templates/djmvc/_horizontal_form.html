@@ -6,11 +6,11 @@
       {{ attrs|html_attributes }}>
     <div class="field is-grouped">
         {% for field in form.visible_fields %}
-        <p class="control{% if forloop.first %} is-expanded{% endif %}">
+        <div class="control{% if forloop.first %} is-expanded{% endif %}">
             {{ field|as_crispy_field }}
-        </p>
+        </div>
         {% endfor %}
-        <p class="control">
+        <div class="control">
             <button type="submit" class="button is-primary" aria-label="{% if submit_label %}{{ submit_label }}{% else %}{{ default_submit_label }}{% endif %}">
                 {% if submit_icon %}
                 <span class="icon"><i class="bi bi-{{ submit_icon }}"></i></span>
@@ -18,13 +18,14 @@
                 <span>{% if submit_label %}{{ submit_label }}{% else %}{{ default_submit_label }}{% endif %}</span>
                 {% endif %}
             </button>
-        </p>
+        </div>
         {% if show_clear %}
-        <p class="control">
+        <div class="control">
             <a href="{{ clear_url }}" class="button djmvc-filter-clear" up-follow up-target="{{ target }}" up-history>{% trans "Clear" %}</a>
-        </p>
+        </div>
         {% endif %}
     </div>
     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
 </form>
+{{ form.media }}
 {% endif %}

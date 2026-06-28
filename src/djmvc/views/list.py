@@ -1,5 +1,7 @@
 import functools
 
+from crispy_forms.helper import FormHelper
+from django import forms
 from django.utils.translation import gettext as _, ngettext
 from django.views import generic
 
@@ -7,6 +9,7 @@ from ..model import ModelMixin
 from .filter import FilterMixin
 from .object import ObjectMixin
 from .pagination import PaginationMixin
+from .search import SearchMixin
 from .template import TemplateViewMixin
 from .tables2 import Tables2Mixin
 
@@ -83,6 +86,7 @@ class ListMixin:
 
 class ListView(
     ListMixin,
+    SearchMixin,
     FilterMixin,
     PaginationMixin,
     Tables2Mixin,
@@ -92,6 +96,98 @@ class ListView(
 ):
     pagination_target = '[up-list]'
     filter_target = '[up-list]'
+
+    def get_queryset(self):
+        qs = self.get_scoped_queryset()
+        if self.filter_fields and self.filterset is not None:
+            qs = self.filterset.qs
+        return self.search_filter(qs)
+
+    def get_filter_field_names(self):
+        """Filter bar field names: search input plus :attr:`filter_fields`."""
+        names = list(self.filter_fields or [])
+        if self.search_fields and self.search_param not in names:
+            names.insert(0, self.search_param)
+        return names
+
+    def _uses_default_filter_form(self):
+        return 'filter_form_class' not in type(self).__dict__
+
+    def _build_composed_filter_form_class(self):
+        field_names = self.get_filter_field_names()
+        if not field_names:
+            return None
+
+        view = self
+        form_fields = {}
+
+        for name in field_names:
+            if name == self.search_param:
+                form_fields[name] = self.search_form_field()
+            elif self.filterset is not None:
+                field = self.filterset.form.fields[name]
+                field.label = ''
+                form_fields[name] = field
+
+        def __init__(form_self, *args, view=None, **kwargs):
+            forms.Form.__init__(form_self, *args, **kwargs)
+            form_self.helper = FormHelper()
+            form_self.helper.form_method = 'get'
+            form_self.helper.form_tag = False
+            form_self.helper.disable_csrf = True
+            form_self.helper.form_show_labels = False
+            if view is not None:
+                page_kwarg = getattr(view, 'page_kwarg', 'page')
+                for key, value in view.request.GET.items():
+                    if key in form_self.fields or key == page_kwarg:
+                        continue
+                    form_self.fields[key] = forms.CharField(
+                        widget=forms.HiddenInput(),
+                        initial=value,
+                    )
+
+        form_fields['__init__'] = __init__
+        return type(
+            f'{self.model.__name__}FilterForm',
+            (forms.Form,),
+            form_fields,
+        )
+
+    @functools.cached_property
+    def filter_form(self):
+        if (
+            'filter_form_class' in type(self).__dict__
+            and type(self).filter_form_class is not None
+        ):
+            return type(self).filter_form_class(self.request.GET)
+
+        form_class = self._build_composed_filter_form_class()
+        if form_class is None:
+            return None
+        return form_class(self.request.GET, view=self)
+
+    @property
+    def has_active_filters(self):
+        form = self.filter_form
+        if form is None:
+            return False
+        return any(
+            form.data.get(name)
+            for name, field in form.fields.items()
+            if not isinstance(field.widget, forms.HiddenInput)
+        )
+
+    def clear_filter_url(self):
+        qs = self.request.GET.copy()
+        form = self.filter_form
+        if form is not None:
+            for name, field in form.fields.items():
+                if not isinstance(field.widget, forms.HiddenInput):
+                    qs.pop(name, None)
+        page_kwarg = getattr(self, 'page_kwarg', 'page')
+        qs.pop(page_kwarg, None)
+        path = self.request.path
+        return f'{path}?{qs.urlencode()}' if qs else path
 
 
 class DetailListView(ObjectMixin, ListView):

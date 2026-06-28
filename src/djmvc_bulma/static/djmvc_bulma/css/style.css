@@ -94,6 +94,41 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Horizontal filter bar: search + FK autocomplete + submit on one row */
+.djmvc-filter-form .field.is-grouped {
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.djmvc-filter-form .field.is-grouped > .control > .field {
+    margin-bottom: 0;
+}
+
+.djmvc-filter-form .field.is-grouped > .control > .field > .label {
+    display: none;
+}
+
+.djmvc-filter-form .field.is-grouped .select.is-multiple {
+    height: auto;
+    max-width: none;
+}
+
+.djmvc-filter-form .field.is-grouped > .control.is-expanded {
+    flex-grow: 1;
+    min-width: 10rem;
+}
+
+.djmvc-filter-form .field.is-grouped > .control:not(.is-expanded) autocomplete-select {
+    display: block;
+    min-width: 12rem;
+}
+
+.djmvc-filter-form .field.is-grouped > .control .input,
+.djmvc-filter-form .field.is-grouped > .control autocomplete-select-input {
+    height: 2.5em;
+}
+
 .djmvc-listaction-bar {
     position: fixed;
     bottom: 1.5rem;

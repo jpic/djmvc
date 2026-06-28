@@ -9,7 +9,8 @@ from django.views import generic
 
 from djmvc.view import ViewMixin
 from djmvc.views.filter import FilterMixin
-from djmvc.views.list import ListMixin
+from djmvc.views.list import ListMixin, ListView
+from djmvc.views.search import SearchMixin
 from djmvc.views.template import TemplateViewMixin
 from djmvc.model import ModelMixin
 from djmvc_example.stage0.models import Item
@@ -35,11 +36,7 @@ class _MockController:
 
 
 def _build_filter_view(**attrs):
-    return type(
-        'TestFilterView',
-        (ListMixin, FilterMixin, TemplateViewMixin, ModelMixin, generic.ListView),
-        attrs,
-    )
+    return ListView.clone(**attrs)
 
 
 @pytest.fixture
@@ -200,6 +197,21 @@ def test_filter_form_renders_horizontally(rf, admin_user, mock_controller):
     assert 'type="submit"' in output
     assert 'aria-label="Apply"' in output
     assert 'method="undefined"' not in output
+
+
+@pytest.mark.django_db
+def test_filter_fields_narrow_queryset(rf, admin_user, mock_controller, db):
+    Item.objects.create(name='alpha')
+    Item.objects.create(name='beta')
+    view_cls = _build_filter_view(filter_fields=['name'])
+    request = rf.get('/?name=alpha')
+    request.user = admin_user
+    view = view_cls()
+    view.controller = mock_controller
+    view.setup(request)
+
+    names = list(view.get_queryset().values_list('name', flat=True))
+    assert names == ['alpha']
 
 
 @pytest.mark.django_db

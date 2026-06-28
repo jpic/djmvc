@@ -63,8 +63,12 @@
                     {% endblock %}
                 </div>
             </form>
+            {{ form.media }}
         </div>
         {% endblock %}
     </div>
 </div>
 {% endblock %}
+
+{% block extra_css %}{{ block.super }}{{ form.media.css }}{% endblock %}
+{% block extra_js %}{{ block.super }}{{ form.media.js }}{% endblock %}
