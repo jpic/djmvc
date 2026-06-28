@@ -9,6 +9,15 @@ from djmvc_example.stage0.models import Item
 DELETE_OBJECTS_MESSAGE = 'Are you sure you want to delete the selected'
 
 
+def _wait_for_url(browser, substring, timeout=10):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if substring in browser.url:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f'{substring!r} not in {browser.url!r}')
+
+
 @pytest.mark.django_db
 def test_list_actions_on_auth_user_list(client, admin_user):
     from django.contrib.auth import get_user_model
@@ -261,12 +270,13 @@ def test_list_selection_persists_across_pages(browser, live_server, browser_logi
     _check_row(browser)
     assert browser.is_text_present('1 selected', wait_time=5)
 
-    browser.find_by_css('i.bi-chevron-right').first.click()
+    browser.find_by_css('a[aria-label="Next page"]').first.click()
+    _wait_for_url(browser, 'page=2')
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
     assert browser.is_element_present_by_css('input[type="checkbox"][data-pk]', wait_time=5)
 
     _check_row(browser)
-    assert browser.is_text_present('All 2 selected', wait_time=5)
+    _assert_bar_shows_count(browser, 2)
 
     browser.find_by_css('[data-role="clear"]').first.click()
     assert browser.is_text_not_present('selected', wait_time=5)

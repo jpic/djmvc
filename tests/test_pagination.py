@@ -187,7 +187,8 @@ def test_page_navigation_buttons(browser, live_server, browser_login, admin_user
     page_input = browser.find_by_css('form.djmvc-page-form input[name="page"]').first
     assert page_input.value == '2'
 
-    browser.find_by_css('i.bi-chevron-left').first.click()
+    browser.find_by_css('a[aria-label="Previous page"]').first.click()
+    _wait_for_url(browser, 'page=1')
     assert browser.is_element_present_by_css('form.djmvc-page-form input[name="page"]', wait_time=5)
     page_input = browser.find_by_css('form.djmvc-page-form input[name="page"]').first
     assert page_input.value == '1'
