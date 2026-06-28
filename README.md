@@ -81,6 +81,17 @@ site.routes['home'] = Dashboard.clone(urlpath='')
 del site.routes['delete']
 ```
 
+### Routing debug UI
+
+Add `djmvc_debug` to `INSTALLED_APPS` for a superuser-only browser UI that
+introspects the live route registry:
+
+```python
+INSTALLED_APPS += ["djmvc_debug"]
+```
+
+Superusers can then browse `/debug/controller/` and `/debug/url/`.
+
 ## Templates
 
 Ain't no way I'm defining get_context_data for everything I add to a view, I

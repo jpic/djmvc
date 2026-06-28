@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     # audit log: patches ModelController + registers LogEntryController
     "djmvc_history",
 
+    # routing introspection for superusers at /debug/controller/ and /debug/url/
+    "djmvc_debug",
+
     # template pack
     "djmvc_bulma",
     # used by djmvc_bulma:
