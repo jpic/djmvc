@@ -1,0 +1,106 @@
+"""Capture browser screenshots for Sphinx documentation.
+
+Run with::
+
+    pytest tests/test_docs_screenshots.py -n0 --splinter-headless
+
+Writes PNGs to ``docs/_static/screenshots/``.
+"""
+
+import time
+
+import pytest
+from django.urls import reverse
+
+from djmvc_example.stage0.models import Item
+from djmvc_example.stage3.models import Article
+from djmvc_example.stage4.models import Post
+
+from doc_screenshots import assert_all_captured, capture, prepare_browser
+
+pytestmark = [
+    pytest.mark.docs_screenshot,
+    pytest.mark.splinter(screenshot_dir="./screenshots"),
+    pytest.mark.django_db,
+]
+
+
+def _check_row(browser, index=0):
+    browser.execute_script(
+        """
+        const boxes = document.querySelectorAll('input[type="checkbox"][data-pk]');
+        const cb = boxes[arguments[0]];
+        cb.checked = true;
+        cb.dispatchEvent(new Event('change', {bubbles: true}));
+        """,
+        index,
+    )
+
+
+@pytest.mark.django_db
+def test_capture_doc_screenshots(browser, live_server, browser_login, admin_user):
+    prepare_browser(browser)
+    browser_login()
+
+    for item in ("Widget", "Gadget", "Gizmo"):
+        Item.objects.create(name=item)
+    for i in range(6):
+        Article.objects.create(
+            title=f"Article {i}",
+            body="body",
+            category="news" if i % 2 == 0 else "blog",
+        )
+    for title in ("Morning post", "Evening post", "Weekend post"):
+        Post.objects.create(title=title, category="news")
+
+    browser.visit(f"{live_server.url}{reverse('site:item:list')}")
+    assert browser.is_element_present_by_css("[up-table]", wait_time=5)
+    capture(browser, "item-list")
+
+    browser.find_by_css('a[href$="/item/create/"]').first.click()
+    assert browser.is_element_present_by_css('form[method="post"]', wait_time=5)
+    browser.fill("name", "DocScreenshot")
+    browser.find_by_css('form[method="post"] button[type="submit"]').first.click()
+    assert browser.is_text_present("was added successfully", wait_time=5)
+    assert browser.is_element_present_by_css(
+        "[up-flashes] .djmvc-toast.is-success", wait_time=2
+    )
+    capture(browser, "success-toast")
+
+    browser.visit(f"{live_server.url}{reverse('site:article:list')}")
+    assert browser.is_element_present_by_css("form.djmvc-filter-form", wait_time=5)
+    capture(browser, "article-list")
+
+    article = Article.objects.get(title="Article 0")
+    browser.visit(
+        f"{live_server.url}{reverse('site:article:detail', args=[article.pk])}"
+    )
+    assert browser.is_text_present("Article 0", wait_time=5)
+    capture(browser, "article-detail")
+
+    browser.execute_script("sessionStorage.clear()")
+    browser.visit(f"{live_server.url}{reverse('site:post:list')}")
+    assert browser.is_element_present_by_css("list-action-bar", wait_time=5)
+    _check_row(browser, 0)
+    _check_row(browser, 1)
+    assert browser.is_text_present("2 selected", wait_time=5)
+    time.sleep(0.3)
+    capture(browser, "list-action-bar")
+
+    browser.find_by_css('list-action-bar a[href*="setcategory"]').first.click()
+    assert browser.is_element_present_by_css('[up-main="modal"]', wait_time=5)
+    time.sleep(0.3)
+    capture(browser, "set-category-modal")
+
+    browser.execute_script("sessionStorage.clear()")
+    browser.visit(f"{live_server.url}{reverse('site:item:list')}")
+    assert browser.is_element_present_by_css("list-action-bar", wait_time=5)
+    _check_row(browser, 0)
+    _check_row(browser, 1)
+    assert browser.is_text_present("2 selected", wait_time=5)
+    browser.find_by_css('list-action-bar a[data-list-action="urlupdate"]').first.click()
+    assert browser.is_element_present_by_css('[up-main="modal"]', wait_time=5)
+    time.sleep(0.3)
+    capture(browser, "bulk-delete-modal")
+
+    assert_all_captured()

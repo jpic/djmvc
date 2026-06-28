@@ -31,8 +31,24 @@ update view.
 Try it
 ------
 
-Visit `http://localhost:8000/article/ <http://localhost:8000/article/>`_. Open an article's detail page — the
-object menu shows both **Change Article** and **Change category**.
+Visit `http://localhost:8000/article/ <http://localhost:8000/article/>`_.
+
+.. figure:: /_static/screenshots/article-list.png
+   :alt: Article list with filter form and pagination
+   :align: center
+   :width: 90%
+
+   Cloned list view with custom columns, filter fields, and page size.
+
+Open an article's detail page — the object menu shows both **Change Article**
+and **Change category**:
+
+.. figure:: /_static/screenshots/article-detail.png
+   :alt: Article detail with object action menu
+   :align: center
+   :width: 90%
+
+   Default update plus :py:class:`CategoryUpdateView` in the object menu.
 
 Tests
 -----

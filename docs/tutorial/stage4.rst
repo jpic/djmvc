@@ -33,8 +33,24 @@ renders them in ``<list-action-bar>`` next to the default delete action.
 Try it
 ------
 
-Visit `http://localhost:8000/post/ <http://localhost:8000/post/>`_, create a few posts, select rows, and click
-**Set category**.
+Visit `http://localhost:8000/post/ <http://localhost:8000/post/>`_, create a few
+posts, select rows, and click **Set category**:
+
+.. figure:: /_static/screenshots/list-action-bar.png
+   :alt: List action bar with row selection
+   :align: center
+   :width: 90%
+
+   Selected rows open the floating ``<list-action-bar>`` with permitted bulk
+   actions.
+
+.. figure:: /_static/screenshots/set-category-modal.png
+   :alt: Set category bulk action modal
+   :align: center
+   :width: 90%
+
+   Custom :py:class:`SetCategoryView` — same pattern as the built-in bulk
+   delete shown in :doc:`stage0`.
 
 Tests
 -----

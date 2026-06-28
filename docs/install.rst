@@ -104,4 +104,25 @@ After ``migrate``, log in as superuser with username ``su`` and password
 
 Visit `http://localhost:8000/item/ <http://localhost:8000/item/>`_.
 
+.. figure:: /_static/screenshots/item-list.png
+   :alt: Item list with sidebar navigation and table
+   :align: center
+   :width: 90%
+
+   Reference Bulma UI with sidebar navigation after a minimal install.
+
 Continue with the :doc:`tutorial/index`.
+
+Regenerate documentation screenshots
+====================================
+
+Screenshots are committed under :file:`docs/_static/screenshots/`. After
+changing templates or navigation, refresh them (requires Firefox and geckodriver,
+same as the browser tests in CI):
+
+.. code-block:: bash
+
+   pytest tests/test_docs_screenshots.py -n0 --splinter-headless
+   make -C docs html
+
+Commit the updated PNGs with your doc changes.

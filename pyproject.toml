@@ -90,6 +90,7 @@ markers = [
     "django_db: mark test that requires Django database",
     "splinter: marks tests that use pytest-splinter browser fixtures",
     "tutorial: validates tutorial example apps (docs literalinclude sources)",
+    "docs_screenshot: captures browser screenshots for Sphinx docs (run with -n0)",
 ]
 
 [tool.black]

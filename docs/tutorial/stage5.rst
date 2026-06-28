@@ -9,6 +9,9 @@ concern (filtering, pagination, tables, forms, …). Override mixin
 See :doc:`../reference/mixins` for every mixin and overridable attribute. Generic
 views that combine them are listed under :doc:`../reference/views/index`.
 
+For screenshots of list, filter, pagination, and object-menu mixins in action,
+see :doc:`stage3`.
+
 List display
     :py:class:`~djmvc.views.list.ListMixin` —
     :attr:`~djmvc.views.list.ListMixin.default_template_name`,

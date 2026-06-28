@@ -80,6 +80,14 @@ and returns only what the current user (and object, if any) may see.
 
 Navigation is **derived from the route tree**, not duplicated in every template.
 
+.. figure:: /_static/screenshots/item-list.png
+   :alt: Sidebar navigation built from tagged list views
+   :align: center
+   :width: 90%
+
+   Sidebar entries come from views tagged ``navigation``; controller ``icon``
+   attributes render beside each label.
+
 Composition over monoliths
 ==========================
 

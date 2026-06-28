@@ -28,13 +28,38 @@ After ``migrate``, log in (see :doc:`../install`) and visit
 `http://localhost:8000/item/ <http://localhost:8000/item/>`_. URL names look like ``site:item:list``,
 ``site:item:create``.
 
+.. figure:: /_static/screenshots/item-list.png
+   :alt: Default item list with sidebar navigation
+   :align: center
+   :width: 90%
+
+   Default list view for the ``Item`` model — table, sidebar navigation, and
+   create action.
+
 List and detail use Django's ``view`` permission (``view_item``). Create,
 update, and delete use ``add``, ``change``, and ``delete``.
+
+.. figure:: /_static/screenshots/success-toast.png
+   :alt: Success toast after creating an item
+   :align: center
+   :width: 90%
+
+   A success toast appears after creating a row.
 
 With ``djmvc_history`` in ``INSTALLED_APPS`` (see :doc:`../install`), every
 ``ModelController`` also gets a history view at
 `http://localhost:8000/item/<pk>/history/ <http://localhost:8000/item/%3Cpk%3E/history/>`_ with no extra code in your
 ``djmvc.py``.
+
+Select rows on the list to open the built-in bulk-delete action:
+
+.. figure:: /_static/screenshots/bulk-delete-modal.png
+   :alt: Bulk delete confirmation modal
+   :align: center
+   :width: 90%
+
+   Built-in :py:class:`~djmvc.views.delete.DeleteObjectsView` — registered on
+   every :py:class:`~djmvc.ModelController` with no extra code.
 
 Tests
 -----
