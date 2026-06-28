@@ -60,6 +60,13 @@ def test_stage0_bulk_delete(client, admin_user):
     b = Item.objects.get(name='B')
 
     url = reverse('site:item:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
-    assert client.get(url).status_code == 200
+    response = client.get(url)
+    assert response.status_code == 200
+    content = response.content.decode()
+    message = 'Are you sure you want to delete the selected'
+    assert message in content
+    for heading in ('Summary', 'Objects'):
+        if heading in content:
+            assert content.index(message) < content.index(heading)
     client.post(url, {'next': reverse('site:item:list')})
     assert Item.objects.count() == 0

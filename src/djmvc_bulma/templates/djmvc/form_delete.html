@@ -11,12 +11,11 @@
     {% endblocktrans %}
 </div>
 {% endif %}
-
-{% include "djmvc/_object_list.html" %}
 {% endblock %}
 
 {% block message %}
 {{ block.super }}
+{% include "djmvc/_object_list.html" %}
 {% endblock %}
 
 {% block form_buttons %}
