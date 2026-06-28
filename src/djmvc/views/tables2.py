@@ -60,22 +60,24 @@ class CheckboxColumn(django_tables2.Column):
 
 
 class LogActionColumn(django_tables2.Column):
+    colors = {
+        ADDITION: 'success',
+        CHANGE: 'warning',
+        DELETION: 'danger',
+    }
+
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('verbose_name', 'Action')
         kwargs.setdefault('orderable', True)
         super().__init__(*args, **kwargs)
 
-    def render(self, value):
-        labels = {
-            ADDITION: ('Added', 'success'),
-            CHANGE: ('Changed', 'warning'),
-            DELETION: ('Deleted', 'danger'),
-        }
-        label, color = labels.get(value, ('Unknown', 'light'))
+    def render(self, value, record=None):
+        if record is None:
+            return format_html('<span class="tag is-light">{}</span>', value)
         return format_html(
             '<span class="tag is-{}">{}</span>',
-            color,
-            label,
+            self.colors.get(record.action_flag, 'light'),
+            record.get_action_flag_display(),
         )
 
 

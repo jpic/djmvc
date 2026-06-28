@@ -255,6 +255,23 @@ def test_logentry_controller_list(client, admin_user, stage0_item):
 
     assert response.status_code == 200
     assert b'Logged' in response.content
+    assert b'Unknown' not in response.content
+    assert b'>Addition<' in response.content
+
+
+@pytest.mark.django_db
+def test_history_view_shows_action_labels(client, admin_user, stage0_item):
+    client.force_login(admin_user)
+    client.post(
+        reverse('site:stage0:update', args=[stage0_item.pk]),
+        {'name': 'Updated'},
+    )
+
+    response = client.get(reverse('site:stage0:history', args=[stage0_item.pk]))
+
+    assert response.status_code == 200
+    assert b'Unknown' not in response.content
+    assert b'>Change<' in response.content
 
 
 @pytest.mark.django_db
