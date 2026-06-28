@@ -6,12 +6,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 
 from djmvc.views.log import ADDITION, CHANGE, DELETION
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 @pytest.fixture
 def stage0_item(db):
-    return Stage0.objects.create(name='Alice')
+    return Item.objects.create(name='Alice')
 
 
 def logentries_for(obj):
@@ -23,8 +23,8 @@ def test_create_logs_addition(client, admin_user, stage0_item):
     client.force_login(admin_user)
     before = LogEntry.objects.count()
 
-    client.post(reverse('site:stage0:create'), {'name': 'Bob'})
-    obj = Stage0.objects.get(name='Bob')
+    client.post(reverse('site:item:create'), {'name': 'Bob'})
+    obj = Item.objects.get(name='Bob')
 
     assert LogEntry.objects.count() == before + 1
     entry = logentries_for(obj).get()
@@ -32,7 +32,7 @@ def test_create_logs_addition(client, admin_user, stage0_item):
     assert entry.user_id == admin_user.pk
     data = json.loads(entry.change_message)
     assert 'extra' in data
-    assert data['extra']['path'] == reverse('site:stage0:create')
+    assert data['extra']['path'] == reverse('site:item:create')
 
 
 @pytest.mark.django_db
@@ -40,7 +40,7 @@ def test_update_logs_changed_fields(client, admin_user, stage0_item):
     client.force_login(admin_user)
 
     client.post(
-        reverse('site:stage0:update', args=[stage0_item.pk]),
+        reverse('site:item:update', args=[stage0_item.pk]),
         {'name': 'Bob'},
     )
 
@@ -56,7 +56,7 @@ def test_delete_logs_deletion(client, admin_user, stage0_item):
     client.force_login(admin_user)
     pk = stage0_item.pk
 
-    client.post(reverse('site:stage0:delete', args=[pk]))
+    client.post(reverse('site:item:delete', args=[pk]))
 
     entry = LogEntry.objects.filter(object_id=str(pk)).get()
     assert entry.action_flag == DELETION
@@ -65,14 +65,14 @@ def test_delete_logs_deletion(client, admin_user, stage0_item):
 @pytest.mark.django_db
 def test_bulk_delete_logs_each(client, admin_user):
     client.force_login(admin_user)
-    client.post(reverse('site:stage0:create'), {'name': 'A'})
-    client.post(reverse('site:stage0:create'), {'name': 'B'})
-    a = Stage0.objects.get(name='A')
-    b = Stage0.objects.get(name='B')
+    client.post(reverse('site:item:create'), {'name': 'A'})
+    client.post(reverse('site:item:create'), {'name': 'B'})
+    a = Item.objects.get(name='A')
+    b = Item.objects.get(name='B')
     before = LogEntry.objects.filter(action_flag=DELETION).count()
 
-    url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
-    client.post(url, {'next': reverse('site:stage0:list')})
+    url = reverse('site:item:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
+    client.post(url, {'next': reverse('site:item:list')})
 
     assert LogEntry.objects.filter(action_flag=DELETION).count() == before + 2
     assert LogEntry.objects.filter(action_flag=DELETION, object_id=str(a.pk)).exists()
@@ -82,7 +82,7 @@ def test_bulk_delete_logs_each(client, admin_user):
 @pytest.mark.django_db
 def test_no_log_when_anonymous(client, stage0_item):
     before = LogEntry.objects.count()
-    client.post(reverse('site:stage0:create'), {'name': 'Ghost'})
+    client.post(reverse('site:item:create'), {'name': 'Ghost'})
     assert LogEntry.objects.count() == before
 
 
@@ -91,7 +91,7 @@ def test_model_controller_includes_history():
     import djmvc
     from djmvc_history.views import HistoryView
 
-    stage0 = djmvc.site.routes['stage0']
+    stage0 = djmvc.site.routes['item']
     assert any(
         isinstance(route, HistoryView)
         for route in stage0.routes
@@ -114,11 +114,11 @@ def test_custom_model_controller_includes_history():
 def test_history_view_lists_entries(client, admin_user, stage0_item):
     client.force_login(admin_user)
     client.post(
-        reverse('site:stage0:update', args=[stage0_item.pk]),
+        reverse('site:item:update', args=[stage0_item.pk]),
         {'name': 'Updated'},
     )
 
-    url = reverse('site:stage0:history', args=[stage0_item.pk])
+    url = reverse('site:item:history', args=[stage0_item.pk])
     response = client.get(url)
 
     assert response.status_code == 200
@@ -131,11 +131,11 @@ def test_history_paginated(client, admin_user, stage0_item):
     client.force_login(admin_user)
     for i in range(30):
         client.post(
-            reverse('site:stage0:update', args=[stage0_item.pk]),
+            reverse('site:item:update', args=[stage0_item.pk]),
             {'name': f'Name-{i}'},
         )
 
-    url = reverse('site:stage0:history', args=[stage0_item.pk])
+    url = reverse('site:item:history', args=[stage0_item.pk])
     page1 = client.get(url)
     page2 = client.get(url + '?page=2')
 
@@ -165,7 +165,7 @@ def test_user_detail_shows_history_in_object_menu(client, admin_user):
 @pytest.mark.django_db
 def test_history_shows_object_menu(client, admin_user, stage0_item):
     client.force_login(admin_user)
-    url = reverse('site:stage0:history', args=[stage0_item.pk])
+    url = reverse('site:item:history', args=[stage0_item.pk])
     response = client.get(url)
 
     assert response.status_code == 200
@@ -176,14 +176,14 @@ def test_history_shows_object_menu(client, admin_user, stage0_item):
         object=view.object,
     )
     menu_urls = [item.url for item in menu if item.url != view.request.path_info]
-    detail_url = reverse('site:stage0:detail', args=[stage0_item.pk])
+    detail_url = reverse('site:item:detail', args=[stage0_item.pk])
     assert detail_url in menu_urls
 
 
 @pytest.mark.django_db
 def test_history_page_titles_and_breadcrumbs(client, admin_user, stage0_item):
     client.force_login(admin_user)
-    url = reverse('site:stage0:history', args=[stage0_item.pk])
+    url = reverse('site:item:history', args=[stage0_item.pk])
     response = client.get(url)
 
     assert response.status_code == 200
@@ -191,7 +191,7 @@ def test_history_page_titles_and_breadcrumbs(client, admin_user, stage0_item):
     assert str(stage0_item) in content
     assert 'History' in content
     assert 'Detail' in content
-    assert 'Change Stage0' in content
+    assert 'Change Item' in content
     assert 'Delete' in content
     assert f'{stage0_item} History' not in content
     assert f'{stage0_item} Detail' not in content
@@ -249,7 +249,7 @@ def test_user_history_renders_mixed_log_entries(client, admin_user):
 @pytest.mark.django_db
 def test_logentry_controller_list(client, admin_user, stage0_item):
     client.force_login(admin_user)
-    client.post(reverse('site:stage0:create'), {'name': 'Logged'})
+    client.post(reverse('site:item:create'), {'name': 'Logged'})
 
     response = client.get(reverse('site:logentry:list'))
 
@@ -263,11 +263,11 @@ def test_logentry_controller_list(client, admin_user, stage0_item):
 def test_history_view_shows_action_labels(client, admin_user, stage0_item):
     client.force_login(admin_user)
     client.post(
-        reverse('site:stage0:update', args=[stage0_item.pk]),
+        reverse('site:item:update', args=[stage0_item.pk]),
         {'name': 'Updated'},
     )
 
-    response = client.get(reverse('site:stage0:history', args=[stage0_item.pk]))
+    response = client.get(reverse('site:item:history', args=[stage0_item.pk]))
 
     assert response.status_code == 200
     assert b'Unknown' not in response.content

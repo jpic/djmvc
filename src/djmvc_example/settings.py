@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "djmvc_example.stage1",
     "djmvc_example.stage2",
     "djmvc_example.stage3",
+    "djmvc_example.stage4",
     # load a custom user model
     "djmvc_example",
 ]

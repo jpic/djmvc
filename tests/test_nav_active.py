@@ -29,7 +29,7 @@ def _is_sidebar_hidden(browser):
 @pytest.mark.splinter(screenshot_dir='./screenshots')
 @pytest.mark.django_db
 def test_nav_active_moves_on_unpoly_navigation(browser, live_server, browser_login, admin_user):
-    stage0_url = reverse('site:stage0:list')
+    stage0_url = reverse('site:item:list')
     users_url = reverse('site:auth:user:list')
 
     browser_login()
@@ -64,7 +64,7 @@ def test_nav_stays_active_on_pagination(browser, live_server, browser_login, adm
 @pytest.mark.splinter(screenshot_dir='./screenshots')
 @pytest.mark.django_db
 def test_sidebar_visibility_preserved_on_nav(browser, live_server, browser_login, admin_user):
-    stage0_url = reverse('site:stage0:list')
+    stage0_url = reverse('site:item:list')
     users_url = reverse('site:auth:user:list')
 
     browser_login()

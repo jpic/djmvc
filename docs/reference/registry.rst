@@ -1,6 +1,6 @@
 Registry
-~~~~~~~~
+~~~~~~~~~~
 
-.. automodule:: djmvc.registry
+.. autoclass:: djmvc.registry.Registry
    :members:
    :show-inheritance:

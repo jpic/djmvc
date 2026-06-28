@@ -13,6 +13,18 @@ class UpdateView(
     TemplateViewMixin,
     generic.UpdateView,
 ):
+    """Update an existing model instance.
+
+    Attributes:
+        permission_shortcode (str): Default ``'change'``.
+        tags (list[str]): Default ``['object']`` (object action menu).
+        default_template_name (str): Form template.
+        icon (str): Bootstrap Icons name.
+        color (str): Bulma button colour modifier.
+        fields (list[str]): Model form fields. Set on clone or subclass.
+        form_class (type): Explicit form class instead of ``fields``.
+    """
+
     permission_shortcode = 'change'
     tags = ['object']
     default_template_name = 'form.html'

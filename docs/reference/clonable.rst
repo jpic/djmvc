@@ -1,6 +1,6 @@
 Clonable
 ~~~~~~~~
 
-.. automodule:: djmvc.clonable
+.. autoclass:: djmvc.clonable.Clonable
    :members:
    :show-inheritance:

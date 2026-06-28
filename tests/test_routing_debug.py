@@ -13,14 +13,14 @@ def test_walk_site_contains_known_routes():
     data = walk_site(djmvc.site)
     urlnames = {u.urlfullname for u in data['urls']}
     assert 'site:auth:login' in urlnames
-    assert 'site:stage0:list' in urlnames
+    assert 'site:item:list' in urlnames
 
 
 def test_walk_site_contains_known_controllers():
     data = walk_site(djmvc.site)
     pks = {c.pk for c in data['controllers']}
     assert 'site.auth' in pks
-    assert 'stage0.Stage0' in pks
+    assert 'stage0.Item' in pks
 
 
 def test_controller_manager_returns_records():

@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 
 from djmvc.views.delete import DeleteObjectsView
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 DELETE_OBJECTS_MESSAGE = 'Are you sure you want to delete the selected'
 
@@ -24,9 +24,9 @@ def test_list_actions_on_auth_user_list(client, admin_user):
 
 @pytest.mark.django_db
 def test_list_actions_on_stage0_list(client, admin_user):
-    Stage0.objects.create(name='A')
+    Item.objects.create(name='A')
     client.force_login(admin_user)
-    response = client.get(reverse('site:stage0:list'))
+    response = client.get(reverse('site:item:list'))
     assert response.status_code == 200
     assert b'list-action-bar' in response.content
     assert b'data-role="count"' in response.content
@@ -36,11 +36,11 @@ def test_list_actions_on_stage0_list(client, admin_user):
 
 @pytest.mark.django_db
 def test_delete_objects_loads_pks(rf, admin_user):
-    a = Stage0.objects.create(name='A')
-    b = Stage0.objects.create(name='B')
-    stage0 = __import__('djmvc').site.routes['stage0']
+    a = Item.objects.create(name='A')
+    b = Item.objects.create(name='B')
+    stage0 = __import__('djmvc').site.routes['item']
     route = stage0.routes['deleteobjects']
-    request = rf.get(f'/stage0/deleteobjects/?pks={a.pk}&pks={b.pk}')
+    request = rf.get(f'/item/deleteobjects/?pks={a.pk}&pks={b.pk}')
     request.user = admin_user
     view = type(route)(request=request)
     assert list(view.object_list.values_list('pk', flat=True)) == [a.pk, b.pk]
@@ -49,10 +49,10 @@ def test_delete_objects_loads_pks(rf, admin_user):
 
 @pytest.mark.django_db
 def test_invalid_pks_for_unauthorized_objects(rf, admin_user):
-    obj = Stage0.objects.create(name='A')
-    stage0 = __import__('djmvc').site.routes['stage0']
+    obj = Item.objects.create(name='A')
+    stage0 = __import__('djmvc').site.routes['item']
     route = stage0.routes['deleteobjects']
-    request = rf.get(f'/stage0/deleteobjects/?pks={obj.pk}&pks=99999')
+    request = rf.get(f'/item/deleteobjects/?pks={obj.pk}&pks=99999')
     request.user = admin_user
     view = type(route)(request=request)
     assert view.object_list.count() == 1
@@ -61,41 +61,41 @@ def test_invalid_pks_for_unauthorized_objects(rf, admin_user):
 
 @pytest.mark.django_db
 def test_delete_objects_view(client, admin_user):
-    a = Stage0.objects.create(name='A')
-    b = Stage0.objects.create(name='B')
+    a = Item.objects.create(name='A')
+    b = Item.objects.create(name='B')
     client.force_login(admin_user)
 
-    url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
+    url = reverse('site:item:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
     assert client.get(url).status_code == 200
-    client.post(url, {'next': reverse('site:stage0:list')})
-    assert Stage0.objects.count() == 0
+    client.post(url, {'next': reverse('site:item:list')})
+    assert Item.objects.count() == 0
 
 
 @pytest.mark.django_db
 def test_delete_objects_lists_clickable_objects(client, admin_user):
-    a = Stage0.objects.create(name='Alice')
-    b = Stage0.objects.create(name='Bob')
+    a = Item.objects.create(name='Alice')
+    b = Item.objects.create(name='Bob')
     client.force_login(admin_user)
 
-    url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
+    url = reverse('site:item:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
     response = client.get(url)
     content = response.content.decode()
 
     assert 'Summary' in content
-    assert 'Stage0s: 2' in content
+    assert 'Items: 2' in content
     assert 'djmvc-deletion-objects' in content
     assert 'Alice' in content
     assert 'Bob' in content
-    assert reverse('site:stage0:detail', args=[a.pk]) in content
-    assert reverse('site:stage0:detail', args=[b.pk]) in content
+    assert reverse('site:item:detail', args=[a.pk]) in content
+    assert reverse('site:item:detail', args=[b.pk]) in content
     assert 'name="pks"' in content
 
 
 @pytest.mark.django_db
 def test_unpoly_attributes_list_action_bar(rf, admin_user):
-    stage0 = __import__('djmvc').site.routes['stage0']
+    stage0 = __import__('djmvc').site.routes['item']
     route = stage0.routes['deleteobjects']
-    request = rf.get('/stage0/deleteobjects/')
+    request = rf.get('/item/deleteobjects/')
     request.user = admin_user
     view = type(route)(request=request)
     attrs = view.unpoly_attributes('list_action_bar')
@@ -117,17 +117,17 @@ def test_checkbox_column_respects_object_permission(rf, admin_user):
                 return False
             return super().has_permission()
 
-    allowed = Stage0.objects.create(name='allowed')
-    denied = Stage0.objects.create(name='denied')
-    stage0 = __import__('djmvc').site.routes['stage0']
+    allowed = Item.objects.create(name='allowed')
+    denied = Item.objects.create(name='denied')
+    stage0 = __import__('djmvc').site.routes['item']
     original_route = stage0.routes['deleteobjects']
     stage0.routes['deleteobjects'] = DenyObjectDelete
     try:
         list_route = stage0.routes['list']
-        request = rf.get('/stage0/')
+        request = rf.get('/item/')
         request.user = admin_user
         view = type(list_route)(request=request)
-        view.object_list = Stage0.objects.all()
+        view.object_list = Item.objects.all()
         column = CheckboxColumn()
         table = view.table
         assert 'data-pk=' in column.render(allowed, table)
@@ -138,10 +138,10 @@ def test_checkbox_column_respects_object_permission(rf, admin_user):
 
 @pytest.mark.django_db
 def test_delete_view_omits_cascade_message_without_relations(client, admin_user):
-    stage = Stage0.objects.create(name='Lonely')
+    stage = Item.objects.create(name='Lonely')
     client.force_login(admin_user)
 
-    response = client.get(reverse('site:stage0:delete', args=[stage.pk]))
+    response = client.get(reverse('site:item:delete', args=[stage.pk]))
     content = response.content.decode()
 
     assert 'Are you sure you want to delete the' in content
@@ -156,7 +156,7 @@ def _visit_user_list(browser, live_server):
 
 def _visit_stage0_list(browser, live_server):
     browser.execute_script('sessionStorage.clear()')
-    browser.visit(f'{live_server.url}/stage0/')
+    browser.visit(f'{live_server.url}/item/')
     assert browser.is_element_present_by_css('list-action-bar', wait_time=5)
     assert browser.is_element_present_by_css('input[type="checkbox"][data-pk]', wait_time=5)
 
@@ -214,7 +214,7 @@ def _open_bulk_delete_modal(browser):
 
 def _assert_delete_modal(browser, count, names):
     assert browser.is_text_present(DELETE_OBJECTS_MESSAGE, wait_time=5)
-    assert browser.is_text_present(f'Stage0s: {count}', wait_time=2)
+    assert browser.is_text_present(f'Items: {count}', wait_time=2)
     for name in names:
         assert browser.is_text_present(name, wait_time=2)
 
@@ -302,4 +302,4 @@ def test_bulk_delete_twice_clears_selection(
     assert not browser.is_element_present_by_css(
         'input[type="checkbox"][data-pk]', wait_time=5,
     )
-    assert Stage0.objects.count() == 0
+    assert Item.objects.count() == 0

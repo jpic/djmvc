@@ -12,7 +12,7 @@ Get more out of less with a few design patterns:
   `unpoly_attributes` filters) to skip boilerplate template tags
 - Secure by default: views delegate permissions to the controller, which checks
   Django permissions (`user.has_perm()`). List/detail use custom codenames
-  (`list_model`, `detail_model`) so only superusers pass by default; CRUD views
+  (`view_<model>`) for list and detail; CRUD views
   use Django's built-in `add`/`change`/`delete` permissions.
 
 Install with:
@@ -167,9 +167,8 @@ as crudlfap's `has_perm_backend()`.
 Override `has_permission()` to open a view to everyone (`return True`) or
 encode custom rules (login pages, per-user checks). CRUD views set
 `permission_shortcode` to Django's
-`add`, `change`, and `delete`. List and detail default to `list` and `detail`
-codenames — grant those custom permissions, use
-`ListView.clone(permission_shortcode='view')`, or override the controller.
+`add`, `change`, and `delete`. List and detail default to Django's `view`
+permission (`view_<model>`).
 
 Override policy in one place on the model controller:
 

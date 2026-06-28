@@ -1,11 +1,12 @@
-Stage 2 — Override default views
-================================
+Stage 2 — Querysets and permissions
+=====================================
 
 Goal
 ----
 
-Replace default views with :py:meth:`~djmvc.clonable.Clonable.clone` and add an
-extra update view that edits a single field.
+Scope which rows a user can reach with
+:py:meth:`~djmvc.ModelController.get_queryset`. List and detail already use
+Django's ``view`` permission by default (stage 0).
 
 Model
 -----
@@ -17,18 +18,18 @@ Controller and registration
 
 .. literalinclude:: ../../src/djmvc_example/stage2/djmvc.py
 
-The cloned :py:class:`~djmvc.views.list.ListView` sets table columns, filter
-fields, and page size. :py:class:`CategoryUpdateView` is a second update route
-(``/stage2/<pk>/categoryupdate/``) that only exposes the ``category`` field and
-appears in the object action menu alongside the full update view.
+``get_queryset`` limits non-superusers to documents they own. Grant
+``view_document`` for read access; ``delete_document`` for bulk delete on owned
+rows.
 
 Try it
 ------
 
-Visit ``/stage2/``. Open an article's detail page — the object menu shows both
-**Change Article** and **Change category**.
+Visit `http://localhost:8000/document/ <http://localhost:8000/document/>`_. Create two users and documents with
+different owners. Each user sees only their rows; detail and bulk delete ignore
+out-of-scope primary keys.
 
 Tests
 -----
 
-``tests/test_stage2.py``
+`tests/test_stage2.py on GitHub <https://github.com/jpic/djmvc/blob/master/tests/test_stage2.py>`_

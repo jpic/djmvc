@@ -1,6 +1,10 @@
 View
 ~~~~
 
-.. automodule:: djmvc.view
+.. autoclass:: djmvc.view.ViewMixin
+   :members:
+   :show-inheritance:
+
+.. autoclass:: djmvc.view.View
    :members:
    :show-inheritance:

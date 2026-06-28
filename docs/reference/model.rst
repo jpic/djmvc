@@ -1,6 +1,6 @@
 Model mixin
 ~~~~~~~~~~~
 
-.. automodule:: djmvc.model
+.. autoclass:: djmvc.model.ModelMixin
    :members:
    :show-inheritance:

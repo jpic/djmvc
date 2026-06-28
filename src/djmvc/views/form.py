@@ -7,6 +7,15 @@ from djmvc.views.template import TemplateViewMixin
 
 
 class FormMixin:
+    """Generic form rendering, messages, and Unpoly modal attributes.
+
+    Attributes:
+        default_template_name (str): Template for form pages.
+        form_attributes (dict): HTML attributes merged onto the ``<form>`` tag.
+        form_class (type): Form class. Subclasses must set this or override
+            :meth:`get_form_class`.
+    """
+
     default_template_name = 'form.html'
     form_attributes = {
         'up-submit': True,
@@ -17,6 +26,7 @@ class FormMixin:
 
     @property
     def submit_button_label(self):
+        """Primary submit button text; defaults to :attr:`title`."""
         return self.title
 
     def unpoly_attributes(self, context=None):
@@ -29,16 +39,20 @@ class FormMixin:
         return attrs
 
     def get_form_class(self):
+        """Return :attr:`form_class` or Django's base :class:`~django.forms.Form`."""
         return getattr(self, 'form_class', None) or Form
 
     def get_success_url(self):
+        """Redirect target after successful submit (``next`` POST field or ``/``)."""
         return self.request.POST.get('next', '/')
 
     def get_form_valid_message(self):
+        """Success toast message after valid submit."""
         return f'{self.title}: success'
 
     @property
     def form_valid_message(self):
+        """Cached success message from :meth:`get_form_valid_message`."""
         return self.get_form_valid_message()
 
     def get_form_invalid_message(self, form):
@@ -52,6 +66,7 @@ class FormMixin:
         )
 
     def message_success(self):
+        """Enqueue a success message for the response."""
         messages.success(self.request, self.form_valid_message)
 
     def message_error(self, form):
@@ -61,6 +76,7 @@ class FormMixin:
             messages.error(self.request, msg)
 
     def form_valid(self, form):
+        """Show success message and delegate to Django's ``form_valid``."""
         self.form = form
         self.message_success()
         return super().form_valid(form)
@@ -73,4 +89,5 @@ class FormMixin:
 
 
 class FormView(FormMixin, TemplateViewMixin, generic.FormView):
+    """Generic form view with djmvc templates and Unpoly modals."""
     pass

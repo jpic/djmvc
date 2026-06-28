@@ -28,9 +28,18 @@ class ControllerMeta(type):
 
 
 class Controller(Clonable, Route, metaclass=ControllerMeta):
+    """Group child routes under a shared URL prefix.
+
+    Attributes:
+        routes: Declared child routes (classes or instances). Before
+            :meth:`build`, this is the declaration list; afterward it is a
+            :class:`~djmvc.registry.Registry` of built route instances.
+    """
+
     routes = []
 
     def build(self):
+        """Instantiate child routes into a :class:`~djmvc.registry.Registry`."""
         self.registry = Registry(self, list(type(self)._declaration))
         for route in self.routes:
             if build := getattr(route, 'build', None):
@@ -39,9 +48,11 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
 
     @property
     def codename(self):
+        """URL segment with the ``controller`` suffix removed from the class name."""
         return super().codename.replace('controller', '')
 
     def find_route(self, codename):
+        """Walk up the controller tree and return the first route named *codename*."""
         current = self
         while current is not None:
             try:
@@ -52,7 +63,7 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
 
     @property
     def model_controller(self):
-        # FIXME: candidate for redesign — walk to the nearest ancestor ModelController
+        """Nearest ancestor :class:`~djmvc.ModelController`, or ``self``."""
         current = self
         while current is not None:
             if getattr(type(current), 'model', None) is not None:
@@ -61,12 +72,14 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
         return self
 
     def has_permission(self, view):
+        """Delegate permission checks to the nearest :class:`~djmvc.ModelController`."""
         mc = self.model_controller
         if mc is not self:
             return mc.has_permission(view)
         return view.has_permission_backend()
 
     def get_tagged_views(self, tag, **kwargs):
+        """Return permitted child views whose ``tags`` contain *tag*."""
         def process(controller):
             views = []
             for route in controller.routes:
@@ -85,6 +98,7 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
 
     @property
     def root(self):
+        """Topmost controller ancestor."""
         controller = getattr(self, 'controller', None)
         if not controller:
             return self
@@ -95,6 +109,7 @@ class Controller(Clonable, Route, metaclass=ControllerMeta):
 
     @property
     def urlpatterns(self):
+        """Include child :attr:`~djmvc.route.Route.urlpatterns` under this prefix."""
         patterns = []
 
         for route in self.routes:

@@ -17,3 +17,4 @@ Optional packages (``djmvc_history``, ``djmvc_debug``, …) are covered in
    stage2
    stage3
    stage4
+   stage5

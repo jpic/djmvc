@@ -1,30 +1,45 @@
-Stage 4 — What to explore next
-==============================
+Stage 4 — Custom list actions
+=============================
 
-You now have a working CRUD stack. Optional packages (history, debug, auth) are
-described in :doc:`../install`. Here are natural next steps not covered by
-dedicated stage apps:
+Goal
+----
 
-List actions
-    Stage 3 shows bulk category update (stage 2 already shows single-row
-    category edit). Same pattern for archive, export, or reassign.
+Add a bulk action on the list view: select rows, pick a new category, apply to
+all. Built-in bulk delete (from stage 0) works the same way — subclass
+:py:class:`~djmvc.views.list_action.ListActionView`, tag it ``list_action``, and
+append it to the controller ``routes``.
 
-Menus and tags
-    Tag views with ``navigation``, ``object``, or custom labels. Use
-    ``controller.get_tagged_views('object', request=request, object=obj)`` in
-    templates (see :doc:`../reference/views`).
+Model
+-----
 
-Runtime route changes
-    After ``site.build()``, swap or remove routes on the live registry
-    (``site.routes['list'] = …``, ``del site.routes['delete']``).
+.. literalinclude:: ../../src/djmvc_example/stage4/models.py
 
-Routing debug
-    Add ``djmvc_debug`` and browse ``/debug/controller/`` as superuser.
+Controller and registration
+---------------------------
 
-Custom templates
-    Set ``default_template_name`` on a cloned view, or add templates under
-    ``templates/<controller_codename>/`` (see :py:meth:`~djmvc.views.template.TemplateViewMixin.get_template_names`).
+.. literalinclude:: ../../src/djmvc_example/stage4/djmvc.py
 
-Internationalization
-    djmvc ships French translations; wrap user-visible strings in ``gettext``
-    when overriding views.
+:py:class:`SetCategoryView` receives selected primary keys as ``pks`` (query
+string from the list action bar). ``object_list`` is the scoped queryset
+intersection. ``form_valid`` runs your bulk logic — here a single
+``QuerySet.update``.
+
+User-visible strings use ``gettext`` and ``ngettext`` so success messages
+pluralize correctly.
+
+The list template discovers permitted actions as ``view.list_actions`` and
+renders them in ``<list-action-bar>`` next to the default delete action.
+
+Try it
+------
+
+Visit `http://localhost:8000/post/ <http://localhost:8000/post/>`_, create a few posts, select rows, and click
+**Set category**.
+
+Tests
+-----
+
+`tests/test_stage4.py on GitHub <https://github.com/jpic/djmvc/blob/master/tests/test_stage4.py>`_
+
+Next: :doc:`stage5` surveys the view mixins you can combine when building custom
+views.

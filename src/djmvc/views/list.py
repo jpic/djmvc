@@ -12,19 +12,35 @@ from .tables2 import Tables2Mixin
 
 
 class ListMixin:
+    """List view behaviour: navigation tag, empty-state text, list actions.
+
+    Attributes:
+        default_template_name (str): Template for the list page.
+        tags (list[str]): Menu discovery tags. Default ``['navigation']``.
+        urlpath (str): URL segment for this view. Default ``''`` (list root).
+        permission_shortcode (str): Django permission prefix for list access.
+            Default ``'view'``.
+        pagination_target (str): Unpoly target for paginated list updates.
+        filter_target (str): Unpoly target for filter form submissions.
+    """
+
     default_template_name = 'djmvc/list.html'
     tags = ['navigation']
     urlpath = ''
+    permission_shortcode = 'view'
 
     @property
     def title(self):
+        """Page heading from the model's ``verbose_name_plural``."""
         return self.model._meta.verbose_name_plural.capitalize()
 
     def breadcrumbs(self):
+        """List views have no parent breadcrumbs."""
         return []
 
     @functools.cached_property
     def list_actions(self):
+        """Permitted bulk-action views for the list action bar."""
         return self.controller.get_tagged_views('list_action', request=self.request)
 
     @property
@@ -35,6 +51,7 @@ class ListMixin:
 
     @property
     def list_action_count_label_one(self):
+        """Selection count label when exactly one row is selected."""
         return ngettext(
             '%(total_count)s selected',
             'All %(total_count)s selected',
@@ -43,6 +60,7 @@ class ListMixin:
 
     @property
     def list_action_count_label_other(self):
+        """Selection count label template when multiple rows are selected."""
         return ngettext(
             '%(total_count)s selected',
             'All %(total_count)s selected',
@@ -51,6 +69,7 @@ class ListMixin:
 
     @property
     def filter_submit_label(self):
+        """Label for the filter form submit button."""
         return _('Apply')
 
 
@@ -68,6 +87,8 @@ class ListView(
 
 
 class DetailListView(ObjectMixin, ListView):
+    """List of related rows shown on an object detail page."""
+
     default_template_name = 'djmvc/detaillist.html'
     tags = ['object']
 

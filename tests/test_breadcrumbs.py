@@ -4,7 +4,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from djmvc.controller import Controller
 from djmvc.views import generic
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 def _make_request(rf, user):
@@ -15,7 +15,7 @@ def _make_request(rf, user):
 
 @pytest.mark.django_db
 def test_find_route_on_immediate_controller(rf, admin_user):
-    stage0 = djmvc.site.routes['stage0']
+    stage0 = djmvc.site.routes['item']
     create_route = stage0.routes['create']
     request = _make_request(rf, admin_user)
     view = type(create_route)(request=request)
@@ -25,14 +25,14 @@ def test_find_route_on_immediate_controller(rf, admin_user):
 @pytest.mark.django_db
 def test_find_route_walks_up_to_parent_controller(rf, admin_user):
     outer = djmvc.ModelController.clone(
-        model=Stage0,
+        model=Item,
         routes=[
             generic.ListView,
             djmvc.Controller.clone(
                 codename='nested',
                 routes=[
                     djmvc.ModelController.clone(
-                        model=Stage0,
+                        model=Item,
                         routes=[generic.CreateView],
                     ),
                 ],
@@ -41,16 +41,16 @@ def test_find_route_walks_up_to_parent_controller(rf, admin_user):
     )
     site = Controller.clone(codename='site', routes=[outer])()
     site.build()
-    inner_mc = site.routes['stage0'].routes['nested'].routes['stage0']
+    inner_mc = site.routes['item'].routes['nested'].routes['item']
     create_route = inner_mc.routes['create']
     request = _make_request(rf, admin_user)
     view = type(create_route)(request=request)
-    assert view.controller.find_route('list') is site.routes['stage0'].routes['list']
+    assert view.controller.find_route('list') is site.routes['item'].routes['list']
 
 
 @pytest.mark.django_db
 def test_list_view_breadcrumbs_empty(rf, admin_user):
-    stage0 = djmvc.site.routes['stage0']
+    stage0 = djmvc.site.routes['item']
     list_route = stage0.routes['list']
     request = _make_request(rf, admin_user)
     view = type(list_route)(request=request)
@@ -59,7 +59,7 @@ def test_list_view_breadcrumbs_empty(rf, admin_user):
 
 @pytest.mark.django_db
 def test_create_view_breadcrumbs(rf, admin_user):
-    stage0 = djmvc.site.routes['stage0']
+    stage0 = djmvc.site.routes['item']
     create_route = stage0.routes['create']
     request = _make_request(rf, admin_user)
     view = type(create_route)(request=request)
@@ -71,7 +71,7 @@ def test_create_view_breadcrumbs(rf, admin_user):
 
 @pytest.mark.django_db
 def test_create_view_breadcrumbs_omits_list_without_permission(rf):
-    stage0 = djmvc.site.routes['stage0']
+    stage0 = djmvc.site.routes['item']
     create_route = stage0.routes['create']
     request = _make_request(rf, AnonymousUser())
     view = type(create_route)(request=request)
@@ -82,8 +82,8 @@ def test_create_view_breadcrumbs_omits_list_without_permission(rf):
 
 @pytest.mark.django_db
 def test_update_view_breadcrumbs(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     update_route = stage0.routes['update']
     request = _make_request(rf, admin_user)
     view = type(update_route)(request=request, object=obj, pk=obj.pk)
@@ -97,8 +97,8 @@ def test_update_view_breadcrumbs(rf, admin_user):
 
 @pytest.mark.django_db
 def test_detail_view_breadcrumbs_without_self(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     detail_route = stage0.routes['detail']
     request = _make_request(rf, admin_user)
     view = type(detail_route)(request=request, object=obj, pk=obj.pk)
@@ -112,8 +112,8 @@ def test_detail_view_breadcrumbs_without_self(rf, admin_user):
 
 @pytest.mark.django_db
 def test_update_view_breadcrumb_titles(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     update_route = stage0.routes['update']
     request = _make_request(rf, admin_user)
     view = type(update_route)(request=request, object=obj, pk=obj.pk)
@@ -121,14 +121,14 @@ def test_update_view_breadcrumb_titles(rf, admin_user):
     assert [crumb.breadcrumb_title for crumb in crumbs] == [
         stage0.routes['list'].title,
         str(obj),
-        'Change Stage0',
+        'Change Item',
     ]
 
 
 @pytest.mark.django_db
 def test_detail_view_titles(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     detail_route = stage0.routes['detail']
     request = _make_request(rf, admin_user)
     view = type(detail_route)(request=request, object=obj, pk=obj.pk)
@@ -142,8 +142,8 @@ def test_detail_view_titles(rf, admin_user):
 
 @pytest.mark.django_db
 def test_history_view_titles(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     history_route = stage0.routes['history']
     request = _make_request(rf, admin_user)
     view = type(history_route)(request=request, object=obj, pk=obj.pk)
@@ -159,8 +159,8 @@ def test_history_view_titles(rf, admin_user):
 
 @pytest.mark.django_db
 def test_object_menu_titles(rf, admin_user):
-    obj = Stage0.objects.create(name='Alice')
-    stage0 = djmvc.site.routes['stage0']
+    obj = Item.objects.create(name='Alice')
+    stage0 = djmvc.site.routes['item']
     history_route = stage0.routes['history']
     request = _make_request(rf, admin_user)
     view = type(history_route)(request=request, object=obj, pk=obj.pk)
@@ -171,7 +171,7 @@ def test_object_menu_titles(rf, admin_user):
     )
     assert {item.title for item in menu} == {
         'Detail',
-        'Change Stage0',
+        'Change Item',
         'Delete',
         'History',
     }

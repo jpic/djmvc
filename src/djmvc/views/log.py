@@ -111,18 +111,28 @@ def format_logentry_message(value):
 
 
 class LogMixin:
+    """Write ``LogEntry`` rows when ``djmvc_history`` is installed.
+
+    Attributes:
+        log_action_flag (int | bool): ``LogEntry`` action constant, or ``False``
+            to skip logging.
+    """
+
     log_action_flag = False
 
     def get_log_message(self):
+        """Short label stored in the log entry."""
         return self.title
 
     def get_log_extra(self):
+        """Extra metadata (view class name, request path) for the log entry."""
         return {
             'view': type(self).__name__,
             'path': self.request.path,
         }
 
     def get_log_objects(self):
+        """Model instances to attach to the log entry."""
         if log_objects := getattr(self, 'log_objects', None):
             return log_objects
         if hasattr(self, 'object_list'):
@@ -153,6 +163,7 @@ class LogMixin:
         return envelope
 
     def log_insert(self):
+        """Write log entries for :meth:`get_log_objects` when history is enabled."""
         if not apps.is_installed('django.contrib.admin'):
             return
 

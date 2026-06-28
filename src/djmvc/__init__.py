@@ -1,3 +1,9 @@
+"""djmvc public API.
+
+:data:`site` is the root :class:`Site` controller. Tutorial and application
+``djmvc.py`` modules append controllers to ``site.routes``.
+"""
+
 from django.utils.module_loading import autodiscover_modules
 
 from .controller import Controller
@@ -6,8 +12,16 @@ from .model import ModelMixin
 from .views import generic
 
 
-
 class ModelController(ModelMixin, Controller):
+    """CRUD controller for a single Django model.
+
+    Attributes:
+        routes: Default list, detail, create, update, delete, and bulk-delete
+            views. Extend with ``ModelController.routes + [MyView]`` or
+            replace entries by codename (see :class:`~djmvc.registry.Registry`).
+        model: Django model class managed by this controller.
+    """
+
     routes = [
         generic.ListView,
         generic.DetailView,
@@ -19,33 +33,43 @@ class ModelController(ModelMixin, Controller):
 
     @property
     def codename(self):
+        """URL segment from :attr:`model` name (lowercase)."""
         return self.model.__name__.lower()
 
     def has_permission(self, view):
+        """Check Django permissions for *view* via the permission backend."""
         return view.has_permission_backend()
 
     def get_queryset(self, view):
+        """Return all rows for *view*; override to scope per user or role."""
         return self.model._default_manager.all()
 
 
 class Home(generic.TemplateView):
+    """Site root page at ``/``."""
+
     urlpath = ''
 
     def has_permission(self):
+        """Allow anonymous access to the home page."""
         return True
 
 
 class Site(Controller):
+    """Root site controller; autodiscovers ``djmvc.py`` in installed apps."""
+
     urlpath = ''
     routes = [
         Home,
     ]
 
     def autodiscover(self):
+        """Import ``djmvc`` modules from every installed app."""
         autodiscover_modules('djmvc')
         return self
 
     def build(self):
+        """Autodiscover app routes, then build the route registry."""
         self.autodiscover()
         return super().build()
 

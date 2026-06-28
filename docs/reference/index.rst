@@ -5,12 +5,14 @@ API reference
    :maxdepth: 1
 
    controller
+   site
    view
    route
    registry
    clonable
    model
-   views
+   mixins/index
+   views/index
    templatetags
    djmvc_auth/index
    djmvc_history/index

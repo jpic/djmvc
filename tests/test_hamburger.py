@@ -40,7 +40,7 @@ def _click_burger(browser):
 @pytest.mark.splinter(screenshot_dir='./screenshots')
 @pytest.mark.django_db
 def test_hamburger_active_when_sidebar_open_on_load(browser, live_server, browser_login, admin_user):
-    stage0_url = reverse('site:stage0:list')
+    stage0_url = reverse('site:item:list')
 
     browser_login()
     browser.visit(f'{live_server.url}{stage0_url}')
@@ -54,7 +54,7 @@ def test_hamburger_active_when_sidebar_open_on_load(browser, live_server, browse
 @pytest.mark.splinter(screenshot_dir='./screenshots')
 @pytest.mark.django_db
 def test_hamburger_toggles_with_sidebar(browser, live_server, browser_login, admin_user):
-    stage0_url = reverse('site:stage0:list')
+    stage0_url = reverse('site:item:list')
 
     browser_login()
     browser.visit(f'{live_server.url}{stage0_url}')

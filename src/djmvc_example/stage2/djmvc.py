@@ -1,37 +1,17 @@
 import djmvc
 
-from .models import Article
+from .models import Document
 
 
-class CategoryUpdateView(djmvc.generic.UpdateView):
-    """Update a single field — shows in the object action menu."""
+class DocumentController(djmvc.ModelController):
+    model = Document
 
-    fields = ["category"]
-    title = "Change category"
-    icon = "tag"
-    color = "info"
-
-
-class Stage2Controller(djmvc.ModelController):
-    model = Article
-
-    @property
-    def codename(self):
-        return "stage2"
-
-    routes = [
-        djmvc.generic.ListView.clone(
-            table_fields=["title", "category"],
-            filter_fields=["category"],
-            paginate_by=5,
-        ),
-        djmvc.generic.DetailView,
-        djmvc.generic.UpdateView,
-        CategoryUpdateView,
-        djmvc.generic.DeleteView,
-        djmvc.generic.DeleteObjectsView,
-        djmvc.generic.CreateView,
-    ]
+    def get_queryset(self, view):
+        qs = super().get_queryset(view)
+        user = view.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(owner=user)
 
 
-djmvc.site.routes.append(Stage2Controller)
+djmvc.site.routes.append(DocumentController)

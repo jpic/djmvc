@@ -1,5 +1,12 @@
 class Registry:
+    """Ordered, codename-keyed route list built from a controller declaration.
+
+    Registering a route with an existing :attr:`~djmvc.route.Route.codename`
+    replaces the previous entry — this is how cloned views override defaults.
+    """
+
     def __init__(self, controller, routes=()):
+        """Attach to *controller* and register each declared *routes* entry."""
         self.controller = controller
         self._items = []
         self._by_codename = {}
@@ -7,6 +14,7 @@ class Registry:
             self.register(route)
 
     def register(self, route):
+        """Clone *route* for ``self.controller``, instantiate, and store by codename."""
         cls = route if isinstance(route, type) else type(route)
         cls = cls.clone(controller=self.controller)
         instance = cls()
@@ -19,6 +27,7 @@ class Registry:
         return instance
 
     def __setitem__(self, codename, route):
+        """Replace (or add) the route registered under *codename*."""
         cls = route if isinstance(route, type) else type(route)
         cls = cls.clone(controller=self.controller)
         instance = cls()
@@ -30,13 +39,16 @@ class Registry:
         self._by_codename[codename] = instance
 
     def __getitem__(self, key):
+        """Return a route by integer index or string codename."""
         if isinstance(key, int):
             return self._items[key]
         return self._by_codename[key]
 
     def __delitem__(self, codename):
+        """Remove the route registered under *codename*."""
         instance = self._by_codename.pop(codename)
         self._items.remove(instance)
 
     def __iter__(self):
+        """Iterate routes in registration order."""
         return iter(self._items)

@@ -1,6 +1,6 @@
 Controller
 ~~~~~~~~~~
 
-.. automodule:: djmvc.controller
+.. autoclass:: djmvc.controller.Controller
    :members:
    :show-inheritance:

@@ -1,10 +1,14 @@
+from django.conf import settings
 from django.db import models
 
 
-class Article(models.Model):
+class Document(models.Model):
     title = models.CharField(max_length=200)
-    body = models.TextField(blank=True)
-    category = models.CharField(max_length=50, blank=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="documents",
+    )
 
     def __str__(self):
         return self.title

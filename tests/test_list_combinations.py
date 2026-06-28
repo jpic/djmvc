@@ -8,12 +8,12 @@ from djmvc.views.pagination import PaginationMixin
 from djmvc.views.tables2 import Tables2Mixin
 from djmvc.views.template import TemplateViewMixin
 from djmvc.model import ModelMixin
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 class _MockController:
-    model = Stage0
-    codename = 'stage0'
+    model = Item
+    codename = 'item'
     controller = None
     routes = []
 
@@ -40,7 +40,7 @@ def build_list_view(*mixins, paginate_by=MISSING, **attrs):
 @pytest.fixture
 def stage0_items(db):
     return [
-        Stage0.objects.create(name=f'item{i:02d}')
+        Item.objects.create(name=f'item{i:02d}')
         for i in range(30)
     ]
 

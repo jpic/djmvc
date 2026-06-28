@@ -2,17 +2,17 @@ import pytest
 from django.urls import reverse
 from django.utils import translation
 
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 @pytest.mark.django_db
 def test_delete_button_uses_django_admin_translation(client, admin_user):
     client.force_login(admin_user)
-    Stage0.objects.create(name='Test')
+    Item.objects.create(name='Test')
 
     with translation.override('fr'):
         response = client.get(
-            reverse('site:stage0:list'),
+            reverse('site:item:list'),
             HTTP_ACCEPT_LANGUAGE='fr',
         )
 
@@ -27,7 +27,7 @@ def test_clear_selection_uses_django_admin_translation(client, admin_user):
 
     with translation.override('fr'):
         response = client.get(
-            reverse('site:stage0:list'),
+            reverse('site:item:list'),
             HTTP_ACCEPT_LANGUAGE='fr',
         )
 
@@ -40,5 +40,5 @@ def test_clear_selection_uses_django_admin_translation(client, admin_user):
 def test_navigation_label_is_translatable(client, admin_user):
     client.force_login(admin_user)
 
-    response = client.get(reverse('site:stage0:list'))
+    response = client.get(reverse('site:item:list'))
     assert 'Navigation' in response.content.decode()

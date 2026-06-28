@@ -1,10 +1,10 @@
 import djmvc
 
-from .models import Stage0
+from .models import Item
 
 
-class Stage0Controller(djmvc.ModelController):
-    model = Stage0
+class ItemController(djmvc.ModelController):
+    model = Item
 
 
-djmvc.site.routes.append(Stage0Controller)
+djmvc.site.routes.append(ItemController)

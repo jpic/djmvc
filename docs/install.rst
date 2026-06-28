@@ -29,9 +29,11 @@ during :py:meth:`~djmvc.controller.Controller.build`, like Django admin's
     routing registry, template tags. No UI templates by itself.
 
 ``djmvc_bulma`` (recommended)
-    Bulma layout, sidebar navigation, tables, filters, toasts, Unpoly
-    integration. Requires ``crispy_forms``, ``crispy_bulma``, and
-    ``django_tables2``.
+    Reference UI maintained in this repository: plain Django templates with
+    `Bulma <https://bulma.io/>`_. The markup is intentionally simple so you can
+    copy and adapt it. Bulma is customizable through `CSS variables
+    <https://bulma.io/documentation/customize/with-css-variables/>`_.
+    Requires ``crispy_forms``, ``crispy_bulma``, and ``django_tables2``.
 
 ``djmvc_auth`` (recommended)
     Login, logout, and user CRUD at ``/auth/``. Mount this if you use djmvc's
@@ -68,7 +70,7 @@ Minimal ``INSTALLED_APPS`` for a new project:
    ]
 
 The example project adds ``djmvc_history``, ``djmvc_debug``, and tutorial apps
-``djmvc_example.stage0`` through ``stage3``.
+``djmvc_example.stage0`` through ``stage4``.
 
 URL configuration
 =================
@@ -84,18 +86,22 @@ Example project settings
 
 Full settings for the tutorial harness (all optional packages and stage apps):
 
-.. literalinclude:: ../src/djmvc_example/settings.py
+`djmvc_example/settings.py on GitHub <https://github.com/jpic/djmvc/blob/master/src/djmvc_example/settings.py>`_
 
 Run the example
 ===============
 
+From the repository root, use :file:`manage.py`:
+
 .. code-block:: bash
 
-   cd src/djmvc_example
-   python -m django migrate
-   python -m django createsuperuser
-   python -m django runserver
+   python manage.py migrate
+   python manage.py runserver
 
-Visit ``http://127.0.0.1:8000/stage0/`` after logging in as superuser.
+After ``migrate``, log in as superuser with username ``su`` and password
+``su`` (seeded by the example project's data migration) at
+`Log in <http://localhost:8000/auth/login/>`_.
+
+Visit `http://localhost:8000/item/ <http://localhost:8000/item/>`_.
 
 Continue with the :doc:`tutorial/index`.

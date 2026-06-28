@@ -8,6 +8,18 @@ from .template import TemplateViewMixin
 
 
 class CreateView(ModelFormMixin, TemplateViewMixin, generic.CreateView):
+    """Create a new model instance.
+
+    Attributes:
+        permission_shortcode (str): Default ``'add'``.
+        tags (list[str]): Default ``['model']`` (top-bar create button).
+        default_template_name (str): Form template.
+        icon (str): Bootstrap Icons name.
+        color (str): Bulma button colour modifier.
+        fields (list[str]): Model form fields. Set on clone or subclass.
+        form_class (type): Explicit form class instead of ``fields``.
+    """
+
     permission_shortcode = 'add'
     tags = ['model']
     default_template_name = 'djmvc/form.html'

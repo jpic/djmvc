@@ -1,48 +1,65 @@
 import pytest
 from django.urls import reverse
 
-from djmvc_example.stage3.models import Post
+from djmvc_example.stage3.models import Article
 
 pytestmark = pytest.mark.tutorial
 
 
 @pytest.mark.django_db
-def test_stage3_list_shows_custom_list_action(client, admin_user):
-    Post.objects.create(title="Hello", category="news")
+def test_stage3_list_renders_table_and_filter(client, admin_user):
+    for i in range(6):
+        Article.objects.create(
+            title=f"Article {i}",
+            body="body",
+            category="news" if i % 2 == 0 else "blog",
+        )
     client.force_login(admin_user)
 
-    response = client.get(reverse("site:stage3:list"))
+    response = client.get(reverse("site:article:list"))
     assert response.status_code == 200
     content = response.content.decode()
-    assert "list-action-bar" in content
-    assert "Set category" in content
-    assert "/stage3/setcategory/" in content
+    assert "Article 0" in content
+    assert "category" in content.lower()
 
 
 @pytest.mark.django_db
-def test_stage3_bulk_set_category(client, admin_user):
-    a = Post.objects.create(title="A", category="news")
-    b = Post.objects.create(title="B", category="news")
-    c = Post.objects.create(title="C", category="news")
+def test_stage3_search_filters_results(client, admin_user):
+    Article.objects.create(title="News one", body="", category="news")
+    Article.objects.create(title="Blog one", body="", category="blog")
     client.force_login(admin_user)
 
-    url = reverse("site:stage3:setcategory") + f"?pks={a.pk}&pks={b.pk}"
-    assert client.get(url).status_code == 200
-    client.post(url, {"category": "blog"})
-
-    a.refresh_from_db()
-    b.refresh_from_db()
-    c.refresh_from_db()
-    assert a.category == "blog"
-    assert b.category == "blog"
-    assert c.category == "news"
+    response = client.get(reverse("site:article:list") + "?search=News")
+    content = response.content.decode()
+    assert "News one" in content
+    assert "Blog one" not in content
 
 
 @pytest.mark.django_db
-def test_stage3_set_category_form_renders_field(client, admin_user):
-    post = Post.objects.create(title="One", category="x")
+def test_stage3_pagination(client, admin_user):
+    for i in range(6):
+        Article.objects.create(title=f"Row {i}", category="x")
     client.force_login(admin_user)
 
-    url = reverse("site:stage3:setcategory") + f"?pks={post.pk}"
+    response = client.get(reverse("site:article:list"))
+    assert response.status_code == 200
+    assert response.context["paginator"].per_page == 5
+    assert response.context["paginator"].num_pages == 2
+    assert 'max="2"' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_stage3_category_update_single_field(client, admin_user):
+    article = Article.objects.create(title="Hello", body="text", category="news")
+    client.force_login(admin_user)
+
+    url = reverse("site:article:categoryupdate", args=[article.pk])
     response = client.get(url)
-    assert "category" in response.context["form"].fields
+    assert response.status_code == 200
+    form = response.context["form"]
+    assert list(form.fields) == ["category"]
+
+    client.post(url, {"category": "blog"})
+    article.refresh_from_db()
+    assert article.category == "blog"
+    assert article.title == "Hello"

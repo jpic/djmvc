@@ -48,6 +48,16 @@ intersphinx_mapping = {
 }
 
 napoleon_google_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_attr_annotations = True
+autoclass_content = "both"
+autodoc_member_order = "bysource"
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "members": True,
+    "show-inheritance": True,
+    "member-order": "bysource",
+}
 
 htmlhelp_basename = "djmvcdoc"
 latex_documents = [

@@ -1,6 +1,6 @@
 Route
 ~~~~~
 
-.. automodule:: djmvc.route
+.. autoclass:: djmvc.route.Route
    :members:
    :show-inheritance:

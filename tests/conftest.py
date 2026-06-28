@@ -24,9 +24,9 @@ def _autodiscover_routes():
 
 @pytest.fixture
 def stage0_bulk_items(db):
-    from djmvc_example.stage0.models import Stage0
+    from djmvc_example.stage0.models import Item
 
-    return [Stage0.objects.create(name=f'item-{i}') for i in range(4)]
+    return [Item.objects.create(name=f'item-{i}') for i in range(4)]
 
 
 @pytest.fixture

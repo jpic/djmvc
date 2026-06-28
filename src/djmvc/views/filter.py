@@ -9,6 +9,18 @@ from django.db.models import Q
 
 
 class FilterMixin:
+    """Search and field filters on list querysets.
+
+    Attributes:
+        search_param (str): GET parameter for full-text search. Default
+            ``'search'``.
+        filter_fields (list[str] | None): Model field names rendered as filter
+            inputs. ``None`` uses search only.
+        filter_form_class (type | None): Custom filter form class. When unset, a
+            form is built from ``filter_fields``.
+        filter_target (str): Unpoly ``up-target`` for the filter form.
+    """
+
     search_param = 'search'
     filter_fields = None
     filter_form_class = None
@@ -16,6 +28,7 @@ class FilterMixin:
 
     @functools.cached_property
     def search_fields(self):
+        """CharField and TextField names searched by :attr:`search_param`."""
         return [
             f.name
             for f in self.model_meta.get_fields()
@@ -25,6 +38,7 @@ class FilterMixin:
         ]
 
     def get_filter_field_names(self):
+        """Filter form field names including :attr:`search_param` when applicable."""
         names = list(self.filter_fields or [])
         if self.search_fields and self.search_param not in names:
             names.insert(0, self.search_param)
@@ -36,6 +50,7 @@ class FilterMixin:
         return self.model_meta.get_field(name).formfield()
 
     def get_filter_form_class(self):
+        """Return :attr:`filter_form_class` or build one from :attr:`filter_fields`."""
         if (
             'filter_form_class' in type(self).__dict__
             and type(self).filter_form_class is not None
@@ -83,6 +98,7 @@ class FilterMixin:
 
     @functools.cached_property
     def filter_form(self):
+        """Bound filter form from the current GET parameters."""
         form_class = self.get_filter_form_class()
         if form_class is None:
             return None
@@ -92,6 +108,7 @@ class FilterMixin:
 
     @property
     def filter_attributes(self):
+        """HTML attributes for the filter ``<form>`` tag."""
         return {
             'up-submit': True,
             'up-target': self.filter_target,
@@ -100,6 +117,7 @@ class FilterMixin:
 
     @property
     def has_active_filters(self):
+        """Whether any visible filter field has a value."""
         form = self.filter_form
         if form is None:
             return False
@@ -110,6 +128,7 @@ class FilterMixin:
         )
 
     def clear_filter_url(self):
+        """URL with filter and page GET parameters removed."""
         qs = self.request.GET.copy()
         form = self.filter_form
         if form is not None:
@@ -122,6 +141,7 @@ class FilterMixin:
         return f'{path}?{qs.urlencode()}' if qs else path
 
     def get_queryset(self):
+        """Apply search-term filtering to the scoped queryset."""
         qs = super().get_queryset()
         form = self.filter_form
         if form is None:

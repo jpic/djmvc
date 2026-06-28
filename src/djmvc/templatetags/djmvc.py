@@ -1,3 +1,16 @@
+"""djmvc template tags and filters.
+
+Load in templates with ``{% load djmvc %}``.
+
+Filters:
+    :func:`html_attributes` — render a dict as safe HTML attributes.
+    :func:`unpoly_attributes` — call :meth:`~djmvc.view.ViewMixin.unpoly_attributes`
+    on a view for a rendering context.
+
+Tags:
+    :func:`do_eval` — ``{% eval %}``; call a view method and store the result.
+"""
+
 import re
 
 from django import template
@@ -12,6 +25,17 @@ SAFE_ATTR_NAME = re.compile(r'^[a-zA-Z][\w-]*$')
 
 @register.filter
 def html_attributes(attrs):
+    """Render *attrs* as a safe HTML attribute string.
+
+    Boolean ``True`` renders as a boolean attribute (name only). ``False``
+    renders as ``name="false"``. Other values are escaped and quoted. Keys that
+    do not match a safe attribute name pattern are skipped.
+
+    Example::
+
+        {{ view.form_attributes|html_attributes }}
+        {{ action|unpoly_attributes:'model_menu'|html_attributes }}
+    """
     if not attrs:
         return ''
     parts = []
@@ -29,6 +53,16 @@ def html_attributes(attrs):
 
 @register.filter
 def unpoly_attributes(view, context=''):
+    """Return Unpoly link attributes for *view* in *context*.
+
+    Delegates to :meth:`~djmvc.view.ViewMixin.unpoly_attributes` when the view
+    defines it; otherwise returns an empty dict. *context* is passed through
+    (for example ``'model_menu'``, ``'object_menu'``, ``'list_action_bar'``).
+
+    Pair with :func:`html_attributes` in templates::
+
+        {{ action|unpoly_attributes:'model_menu'|html_attributes }}
+    """
     fn = getattr(view, 'unpoly_attributes', None)
     if fn is None:
         return {}
@@ -37,6 +71,25 @@ def unpoly_attributes(view, context=''):
 
 @register.tag(name='eval')
 def do_eval(parser, token):
+    """``{% eval %}`` template tag — call a callable and assign the result.
+
+    Syntax::
+
+        {% eval callable positional_arg keyword=value as variable_name %}
+
+    *callable* is a template variable path (for example ``view.pagination_url``).
+    Positional and keyword arguments are resolved in the template context and
+    passed to the callable. The return value is stored in *variable_name* for
+    the remainder of the template.
+
+    Example::
+
+        {% load djmvc %}
+        {% eval view.pagination_url 2 as url %}
+        <a href="{{ url }}">Page 2</a>
+
+        {% eval view.some_method "arg" user=view.request.user as result %}
+    """
     bits = token.split_contents()
 
     if len(bits) < 4:
@@ -84,6 +137,8 @@ def do_eval(parser, token):
 
 
 class EvalNode(template.Node):
+    """Parse tree node for :func:`do_eval`."""
+
     def __init__(self, callable_var, args, kwargs, var_name):
         self.callable_var = callable_var
         self.args = args

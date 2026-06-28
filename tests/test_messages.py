@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 @pytest.mark.django_db
@@ -9,7 +9,7 @@ def test_flashes_render_outside_layout(client, admin_user):
     """[up-flashes] must not sit between sidebar and main in the flex layout."""
     client.force_login(admin_user)
 
-    response = client.get(reverse('site:stage0:list'))
+    response = client.get(reverse('site:item:list'))
     html = response.content.decode()
 
     layout_pos = html.find('class="djmvc-layout"')
@@ -29,8 +29,8 @@ def test_create_success_flash(client, admin_user):
     client.force_login(admin_user)
 
     response = client.post(
-        reverse('site:stage0:create'),
-        {'name': 'Alice', 'next': reverse('site:stage0:list')},
+        reverse('site:item:create'),
+        {'name': 'Alice', 'next': reverse('site:item:list')},
         follow=True,
     )
 
@@ -38,7 +38,7 @@ def test_create_success_flash(client, admin_user):
     assert b'up-flashes' in response.content
     assert b'was added successfully' in response.content
     assert b'Alice' in response.content
-    assert Stage0.objects.filter(name='Alice').exists()
+    assert Item.objects.filter(name='Alice').exists()
 
 
 @pytest.mark.django_db
@@ -66,8 +66,8 @@ def test_create_invalid_field_flash_lists_field_names(client, admin_user):
     client.force_login(admin_user)
 
     response = client.post(
-        reverse('site:stage0:create'),
-        {'name': '', 'next': reverse('site:stage0:list')},
+        reverse('site:item:create'),
+        {'name': '', 'next': reverse('site:item:list')},
     )
 
     assert response.status_code == 400
@@ -94,30 +94,30 @@ def test_login_invalid_shows_non_field_error_flash(client):
 @pytest.mark.django_db
 def test_bulk_delete_success_flash(client, admin_user):
     client.force_login(admin_user)
-    a = Stage0.objects.create(name='A')
-    b = Stage0.objects.create(name='B')
+    a = Item.objects.create(name='A')
+    b = Item.objects.create(name='B')
 
-    url = reverse('site:stage0:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
+    url = reverse('site:item:deleteobjects') + f'?pks={a.pk}&pks={b.pk}'
     response = client.post(
         url,
-        {'next': reverse('site:stage0:list')},
+        {'next': reverse('site:item:list')},
         follow=True,
     )
 
     assert response.status_code == 200
     assert b'up-flashes' in response.content
     assert b'Successfully deleted 2' in response.content
-    assert Stage0.objects.count() == 0
+    assert Item.objects.count() == 0
 
 
 @pytest.mark.django_db
 def test_delete_success_flash(client, admin_user):
     client.force_login(admin_user)
-    obj = Stage0.objects.create(name='ToDelete')
+    obj = Item.objects.create(name='ToDelete')
 
     response = client.post(
-        reverse('site:stage0:delete', args=[obj.pk]),
-        {'next': reverse('site:stage0:list')},
+        reverse('site:item:delete', args=[obj.pk]),
+        {'next': reverse('site:item:list')},
         follow=True,
     )
 
@@ -125,7 +125,7 @@ def test_delete_success_flash(client, admin_user):
     assert b'up-flashes' in response.content
     assert b'was deleted successfully' in response.content
     assert b'ToDelete' in response.content
-    assert not Stage0.objects.filter(pk=obj.pk).exists()
+    assert not Item.objects.filter(pk=obj.pk).exists()
 
 
 @pytest.mark.django_db

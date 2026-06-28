@@ -105,6 +105,14 @@ class LogMessageColumn(django_tables2.Column):
 
 
 class Tables2Mixin:
+    """django-tables2 integration for list views.
+
+    Attributes:
+        table_template (str): Partial template wrapping the rendered table.
+        table_attributes (dict): Extra attributes on the generated
+            ``Table`` subclass.
+    """
+
     table_template = 'djmvc/_tables2.html'
 
     def _declared_table_fields(self):
@@ -137,6 +145,7 @@ class Tables2Mixin:
 
     @functools.cached_property
     def table_fields(self):
+        """Column names from clone or auto-detected model fields."""
         if declared := self._declared_table_fields():
             return declared
         return self._auto_table_fields()
@@ -187,6 +196,7 @@ class Tables2Mixin:
 
     @functools.cached_property
     def table(self):
+        """Rendered django-tables2 ``Table`` for the current object list."""
         table = self.table_class(self.object_list)
 
         table.view = self
@@ -197,15 +207,18 @@ class Tables2Mixin:
 
     @functools.cached_property
     def add_actions(self):
+        """Whether to add an per-row actions column."""
         for v in self.controller.routes:
             if 'object' in getattr(v, 'tags', []):
                 return True
 
     @functools.cached_property
     def add_checkbox(self):
+        """Whether to add list-action selection checkboxes."""
         return bool(getattr(self, 'list_actions', []))
 
     def sort_url(self, column):
+        """URL toggling sort order for *column*."""
         return self.querystring(**{
             self.table.prefixed_order_by_field: column.order_by_alias.next,
         })

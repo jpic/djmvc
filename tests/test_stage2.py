@@ -1,65 +1,89 @@
 import pytest
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
-from djmvc_example.stage2.models import Article
+from djmvc_example.models import User
+from djmvc_example.stage2.models import Document
 
 pytestmark = pytest.mark.tutorial
 
 
-@pytest.mark.django_db
-def test_stage2_list_renders_table_and_filter(client, admin_user):
-    for i in range(6):
-        Article.objects.create(
-            title=f"Article {i}",
-            body="body",
-            category="news" if i % 2 == 0 else "blog",
-        )
-    client.force_login(admin_user)
+def grant_document_perm(user, codename):
+    content_type = ContentType.objects.get_for_model(Document)
+    perm = Permission.objects.get(content_type=content_type, codename=codename)
+    user.user_permissions.add(perm)
 
-    response = client.get(reverse("site:stage2:list"))
-    assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_stage2_list_scoped_to_owner(client, admin_user):
+    owner = User.objects.create_user("owner", password="pass")
+    other = User.objects.create_user("other", password="pass")
+    grant_document_perm(owner, "view_document")
+    Document.objects.create(title="mine", owner=owner)
+    Document.objects.create(title="theirs", owner=other)
+    client.force_login(owner)
+
+    response = client.get(reverse("site:document:list"))
     content = response.content.decode()
-    assert "Article 0" in content
-    assert "category" in content.lower()
-
-
-@pytest.mark.django_db
-def test_stage2_search_filters_results(client, admin_user):
-    Article.objects.create(title="News one", body="", category="news")
-    Article.objects.create(title="Blog one", body="", category="blog")
-    client.force_login(admin_user)
-
-    response = client.get(reverse("site:stage2:list") + "?search=News")
-    content = response.content.decode()
-    assert "News one" in content
-    assert "Blog one" not in content
-
-
-@pytest.mark.django_db
-def test_stage2_pagination(client, admin_user):
-    for i in range(6):
-        Article.objects.create(title=f"Row {i}", category="x")
-    client.force_login(admin_user)
-
-    response = client.get(reverse("site:stage2:list"))
     assert response.status_code == 200
-    assert response.context["paginator"].per_page == 5
-    assert response.context["paginator"].num_pages == 2
-    assert 'max="2"' in response.content.decode()
+    assert "mine" in content
+    assert "theirs" not in content
 
 
 @pytest.mark.django_db
-def test_stage2_category_update_single_field(client, admin_user):
-    article = Article.objects.create(title="Hello", body="text", category="news")
-    client.force_login(admin_user)
+def test_stage2_detail_404_outside_scope(client, admin_user):
+    owner = User.objects.create_user("owner", password="pass")
+    other = User.objects.create_user("other", password="pass")
+    grant_document_perm(owner, "view_document")
+    doc = Document.objects.create(title="secret", owner=other)
+    client.force_login(owner)
 
-    url = reverse("site:stage2:categoryupdate", args=[article.pk])
+    response = client.get(reverse("site:document:detail", args=[doc.pk]))
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_stage2_list_denied_without_view_permission(client, admin_user):
+    Document.objects.create(title="Doc", owner=admin_user)
+    reader = User.objects.create_user("reader", password="pass")
+    client.force_login(reader)
+
+    response = client.get(reverse("site:document:list"))
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_stage2_list_allowed_with_view_permission(client, admin_user):
+    reader = User.objects.create_user("reader", password="pass")
+    grant_document_perm(reader, "view_document")
+    Document.objects.create(title="Visible", owner=reader)
+    client.force_login(reader)
+
+    response = client.get(reverse("site:document:list"))
+    assert response.status_code == 200
+    assert b"Visible" in response.content
+
+
+@pytest.mark.django_db
+def test_stage2_bulk_delete_intersects_scope(client, admin_user):
+    owner = User.objects.create_user("owner", password="pass")
+    other = User.objects.create_user("other", password="pass")
+    grant_document_perm(owner, "view_document")
+    grant_document_perm(owner, "delete_document")
+    mine = Document.objects.create(title="mine", owner=owner)
+    theirs = Document.objects.create(title="theirs", owner=other)
+    client.force_login(owner)
+
+    url = (
+        reverse("site:document:deleteobjects")
+        + f"?pks={mine.pk}&pks={theirs.pk}"
+    )
     response = client.get(url)
-    assert response.status_code == 200
-    form = response.context["form"]
-    assert list(form.fields) == ["category"]
+    content = response.content.decode()
+    assert "mine" in content
+    assert "theirs" not in content
 
-    client.post(url, {"category": "blog"})
-    article.refresh_from_db()
-    assert article.category == "blog"
-    assert article.title == "Hello"
+    client.post(url, {"next": reverse("site:document:list")})
+    assert Document.objects.filter(pk=mine.pk).exists() is False
+    assert Document.objects.filter(pk=theirs.pk).exists() is True

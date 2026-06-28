@@ -1,35 +1,44 @@
-Stage 1 — Querysets and permissions
-=====================================
+Stage 1 — App-level controller
+==============================
 
 Goal
 ----
 
-Scope which rows a user can reach with
-:py:meth:`~djmvc.ModelController.get_queryset`, then open list and detail to
-non-superusers with Django's ``view`` permission.
+Group routes under an app prefix with :py:class:`~djmvc.Controller`, the same
+pattern as :doc:`../install` describes for ``djmvc_auth``.
 
-Model
------
-
-.. literalinclude:: ../../src/djmvc_example/stage1/models.py
+Stage 0 appended a :py:class:`~djmvc.ModelController` directly to
+:data:`djmvc.site`. Real apps often wrap one or more model controllers (and
+extra views such as login) inside a single app-level controller. ``AuthController``
+in ``djmvc_auth`` does exactly that — login/logout views plus a nested user CRUD
+controller at `http://localhost:8000/auth/user/ <http://localhost:8000/auth/user/>`_.
 
 Controller and registration
 ---------------------------
 
+The ``Item`` model lives in stage 0. Stage 1 imports it and nests an
+``ItemController`` under ``InventoryController``:
+
 .. literalinclude:: ../../src/djmvc_example/stage1/djmvc.py
 
-``get_queryset`` limits non-superusers to documents they own. List and detail
-use ``permission_shortcode='view'`` so granting ``view_document`` is enough for
-read access. ``has_permission`` delegates view checks to Django's permission
-backend.
+.. note::
+
+   ``djmvc.ModelController.clone(model=Item)`` would register the same routes
+   without a separate controller class — useful for one-off nesting inside
+   ``routes``.
+
+``InventoryController`` maps to the URL prefix ``/inventory/``. The nested
+``Item`` model controller adds ``/item/`` below that, so the list view is at
+`http://localhost:8000/inventory/item/ <http://localhost:8000/inventory/item/>`_ with URL name ``site:inventory:item:list``.
 
 Try it
 ------
 
-Visit ``/stage1/``. Create two users and documents with different owners. Each
-user sees only their rows; detail and bulk delete ignore out-of-scope PKs.
+Visit `http://localhost:8000/inventory/item/ <http://localhost:8000/inventory/item/>`_. Create a few items — they share the
+same database table as `http://localhost:8000/item/ <http://localhost:8000/item/>`_ from stage 0, but the URL
+namespace is different.
 
 Tests
 -----
 
-``tests/test_stage1.py``
+`tests/test_stage1.py on GitHub <https://github.com/jpic/djmvc/blob/master/tests/test_stage1.py>`_

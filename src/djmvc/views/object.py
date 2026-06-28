@@ -6,6 +6,11 @@ from .template import TemplateViewMixin
 
 
 class ObjectMixin:
+    """Resolve ``self.object`` from the URL primary key and build breadcrumbs.
+
+    Object-bound views use ``urlpath`` ``'<pk>/{codename}/'`` by default.
+    """
+
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.object = self.get_object()

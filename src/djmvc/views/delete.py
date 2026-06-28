@@ -72,6 +72,17 @@ def get_deleted_objects(view, objs):
 
 
 class DeleteMixin(ActionMixin, LogMixin):
+    """Single-object and bulk delete confirmation.
+
+    Attributes:
+        permission_shortcode (str): Django permission prefix. Default
+            ``'delete'``.
+        default_template_name (str): Delete confirmation template.
+        icon (str): Bootstrap Icons name for action buttons.
+        color (str): Bulma button colour modifier.
+        log_action_flag (int): ``LogEntry`` action flag when history is enabled.
+    """
+
     permission_shortcode = 'delete'
     default_template_name = 'djmvc/form_delete.html'
     icon = 'trash'
@@ -153,6 +164,8 @@ class DeleteMixin(ActionMixin, LogMixin):
 
 
 class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.DeleteView):
+    """Confirm and delete a single object."""
+
     tags = ['object']
 
     @property
@@ -182,6 +195,8 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
 
 
 class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):
+    """Bulk delete for rows selected on the list view."""
+
     @property
     def message(self):
         return DELETE_CONFIRM_BULK % {

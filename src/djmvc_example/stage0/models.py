@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Stage0(models.Model):
+class Item(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):

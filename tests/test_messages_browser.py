@@ -17,9 +17,9 @@ def _wait_for_toast_absent(browser, text, timeout=6):
 @pytest.mark.django_db
 def test_create_success_toast_in_browser(browser, live_server, browser_login, admin_user):
     browser_login()
-    browser.visit(f'{live_server.url}/stage0/')
+    browser.visit(f'{live_server.url}/item/')
 
-    browser.find_by_css('a[href$="/stage0/create/"]').first.click()
+    browser.find_by_css('a[href$="/item/create/"]').first.click()
     assert browser.is_element_present_by_css('form[method="post"]', wait_time=5)
 
     browser.fill('name', 'BrowserAlice')
@@ -34,9 +34,9 @@ def test_create_success_toast_in_browser(browser, live_server, browser_login, ad
 @pytest.mark.django_db
 def test_create_invalid_toast_lists_field_names(browser, live_server, browser_login, admin_user):
     browser_login()
-    browser.visit(f'{live_server.url}/stage0/')
+    browser.visit(f'{live_server.url}/item/')
 
-    browser.find_by_css('a[href$="/stage0/create/"]').first.click()
+    browser.find_by_css('a[href$="/item/create/"]').first.click()
     assert browser.is_element_present_by_css('form[method="post"]', wait_time=5)
 
     browser.driver.execute_script(
@@ -53,9 +53,9 @@ def test_create_invalid_toast_lists_field_names(browser, live_server, browser_lo
 @pytest.mark.django_db
 def test_toast_dismiss_button(browser, live_server, browser_login, admin_user):
     browser_login()
-    browser.visit(f'{live_server.url}/stage0/')
+    browser.visit(f'{live_server.url}/item/')
 
-    browser.find_by_css('a[href$="/stage0/create/"]').first.click()
+    browser.find_by_css('a[href$="/item/create/"]').first.click()
     assert browser.is_element_present_by_css('form[method="post"]', wait_time=5)
 
     browser.fill('name', 'DismissMe')
@@ -70,9 +70,9 @@ def test_toast_dismiss_button(browser, live_server, browser_login, admin_user):
 @pytest.mark.django_db
 def test_toast_auto_dismiss(browser, live_server, browser_login, admin_user):
     browser_login()
-    browser.visit(f'{live_server.url}/stage0/')
+    browser.visit(f'{live_server.url}/item/')
 
-    browser.find_by_css('a[href$="/stage0/create/"]').first.click()
+    browser.find_by_css('a[href$="/item/create/"]').first.click()
     assert browser.is_element_present_by_css('form[method="post"]', wait_time=5)
 
     browser.fill('name', 'AutoDismiss')

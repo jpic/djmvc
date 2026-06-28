@@ -8,6 +8,8 @@ from .modelform import ModelFormMixin
 
 
 class ObjectFormMixin(ObjectMixin, ModelMixin, FormMixin):
+    """Form bound to :attr:`~djmvc.views.object.ObjectMixin.object`."""
+
     def get_form_valid_message(self):
         opts = self.model._meta
         return _('The {name} "{obj}" was changed successfully.').format(
@@ -17,6 +19,8 @@ class ObjectFormMixin(ObjectMixin, ModelMixin, FormMixin):
 
 
 class ObjectModelFormMixin(ObjectMixin, ModelFormMixin):
+    """Model form for updating :attr:`~djmvc.views.object.ObjectMixin.object`."""
+
     log_action_flag = CHANGE
 
     def get_form_valid_message(self):

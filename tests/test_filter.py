@@ -12,7 +12,7 @@ from djmvc.views.filter import FilterMixin
 from djmvc.views.list import ListMixin
 from djmvc.views.template import TemplateViewMixin
 from djmvc.model import ModelMixin
-from djmvc_example.stage0.models import Stage0
+from djmvc_example.stage0.models import Item
 
 
 def _wait_for_url_without(browser, substring, timeout=5):
@@ -25,8 +25,8 @@ def _wait_for_url_without(browser, substring, timeout=5):
 
 
 class _MockController:
-    model = Stage0
-    codename = 'stage0'
+    model = Item
+    codename = 'item'
     controller = None
     routes = []
 
@@ -170,8 +170,8 @@ def test_filter_form_renders_horizontally(rf, admin_user, mock_controller):
 
 @pytest.mark.django_db
 def test_search_filters_queryset(rf, admin_user, mock_controller, db):
-    Stage0.objects.create(name='alpha')
-    Stage0.objects.create(name='beta')
+    Item.objects.create(name='alpha')
+    Item.objects.create(name='beta')
     view_cls = _build_filter_view()
     request = rf.get('/?search=alpha')
     request.user = admin_user

@@ -4,20 +4,25 @@ from .controller import Controller
 
 
 class ModelMixin:
+    """Resolve ``model`` and scoped querysets from the enclosing controller.
+
+    Views nested under a :class:`~djmvc.ModelController` inherit its ``model``
+    and :meth:`~djmvc.ModelController.get_queryset` scoping.
     """
-    Allows setting model on the class, or uses the controller model if any.
-    """
+
     @property
     def title(self):
+        """Human-readable label with the model class name removed."""
         return super().title.replace(self.model.__name__, '')
 
     @property
     def codename(self):
+        """URL segment with the model name removed from the default codename."""
         return super().codename.replace(self.model.__name__.lower(), '')
 
     @property
     def model(self):
-        """ Return self.controller.model """
+        """Django model from the nearest ancestor :class:`~djmvc.ModelController`."""
         current = self.controller
         while not hasattr(current, 'model'):
             try:
@@ -28,8 +33,7 @@ class ModelMixin:
 
     @property
     def model_meta(self):
-        # because django template won't allow ._meta because it starts with an
-        # underscore ...
+        """``model._meta`` exposed for templates (``._meta`` is blocked)."""
         return self.model._meta
 
     def _controller_queryset(self):
@@ -51,9 +55,11 @@ class ModelMixin:
         return self._controller_queryset()
 
     def get_queryset(self):
+        """Scoped queryset for list and action views."""
         return self._controller_queryset()
 
     def breadcrumbs(self, with_self=True):
+        """Breadcrumb trail via list view, optionally including this view."""
         crumbs = []
         list_route = self.controller.find_route('list')
         if list_route:

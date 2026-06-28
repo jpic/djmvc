@@ -7,10 +7,23 @@ from .template import TemplateViewMixin
 
 
 class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView):
+    """Read-only object page.
+
+    Attributes:
+        tags (list[str]): Menu tags. Default ``['object']``.
+        default_template_name (str): Detail template.
+        icon (str): Bootstrap Icons name.
+        color (str): Bulma button colour modifier.
+        permission_shortcode (str): Django permission prefix. Default ``'view'``.
+        fields (list[str] | str): Field names to display, or ``'__all__'``.
+        exclude (list[str]): Field names omitted when ``fields`` is ``'__all__'``.
+    """
+
     tags = ['object']
     default_template_name = 'detail.html'
     icon = 'eye'
     color = 'primary'
+    permission_shortcode = 'view'
     fields = '__all__'
     exclude = []
 
@@ -23,6 +36,7 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
 
     @property
     def visible_fields(self):
+        """Field names shown on the detail page."""
         return [
             f.name for f in self.model._meta.fields
             if self.fields == '__all__' or f.name not in self.exclude
@@ -30,6 +44,7 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
 
     @property
     def display_fields(self):
+        """Field metadata and rendered values for the detail template."""
         return [
             {
                 'field': self.model._meta.get_field(field),
@@ -61,6 +76,7 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
 
     @property
     def model_fields(self):
+        """Simplified label/value pairs for all concrete model fields."""
         obj = getattr(self, 'object', None)
         if not obj:
             return []
