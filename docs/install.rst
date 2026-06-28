@@ -19,10 +19,14 @@ For local development (tests, docs, example project):
 djmvc applications
 ==================
 
-Add these Django apps to ``INSTALLED_APPS``. Each optional package registers
-routes on :data:`djmvc.site` through its own ``djmvc.py`` module (autodiscovered
-during :py:meth:`~djmvc.controller.Controller.build`, like Django admin's
-``admin.py``).
+Add these Django apps to ``INSTALLED_APPS``. Each app (and optional package)
+appends its controllers to :data:`djmvc.site` in ``djmvc.py``::
+
+    djmvc.site.routes.append(MyController)
+
+:py:meth:`~djmvc.Site.build` imports those modules via autodiscovery — the same
+pattern as Django admin's ``admin.py``. The append runs on import, before the
+route registry is built.
 
 ``djmvc`` (required)
     Core framework: :py:class:`~djmvc.ModelController`, generic CRUD views,

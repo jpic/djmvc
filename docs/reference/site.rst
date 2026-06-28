@@ -15,6 +15,8 @@ ModelController and site
 
 .. data:: djmvc.site
 
-   Root :class:`~djmvc.Site` instance. Append controllers in each app's
-   ``djmvc.py`` with ``djmvc.site.routes.append(...)``, then include
-   ``djmvc.site.build().urlpatterns`` in your project's ``urls.py``.
+   Root :class:`~djmvc.Site` instance. Before :meth:`~djmvc.Site.build`,
+   ``site.routes`` is the declaration list — append controllers from each app's
+   ``djmvc.py`` with ``site.routes.append(...)`` (see :doc:`../tutorial/stage0`).
+   Call ``djmvc.site.build()`` from your project's ``urls.py`` to autodiscover
+   those modules and obtain ``urlpatterns``.

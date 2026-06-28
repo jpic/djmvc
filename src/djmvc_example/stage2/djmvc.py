@@ -16,3 +16,4 @@ class DocumentController(djmvc.ModelController):
 
 
 djmvc.site.routes.append(DocumentController)
+

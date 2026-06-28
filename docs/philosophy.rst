@@ -13,9 +13,9 @@ Routing is declared by **nesting controllers and views**, not by hand-editing
 gives you list, detail, create, update, delete, and bulk delete. URL segments,
 names, and nesting follow from class names and conventions.
 
-Apps register routes through ``djmvc.py``, autodiscovered at
-:py:meth:`~djmvc.Site.build` — the same “drop a module in each app” pattern as
-Django admin's ``admin.py``.
+Each app appends controllers to :data:`djmvc.site` in ``djmvc.py`` (``site.routes.append(...)``).
+:py:meth:`~djmvc.Site.build` autodiscovers those modules — the same “drop a
+module in each app” pattern as Django admin's ``admin.py``.
 
 Sane defaults, surgical overrides
 =================================

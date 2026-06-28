@@ -7,7 +7,7 @@ Goal
 Group routes under an app prefix with :py:class:`~djmvc.Controller`, the same
 pattern as :doc:`../install` describes for ``djmvc_auth``.
 
-Stage 0 appended a :py:class:`~djmvc.ModelController` directly to
+Stage 0 appended an :py:class:`~djmvc.ModelController` to
 :data:`djmvc.site`. Real apps often wrap one or more model controllers (and
 extra views such as login) inside a single app-level controller. ``AuthController``
 in ``djmvc_auth`` does exactly that — login/logout views plus a nested user CRUD

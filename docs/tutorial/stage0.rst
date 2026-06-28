@@ -15,14 +15,15 @@ Model
 Controller and registration
 ---------------------------
 
-Create ``yourapp/djmvc.py``, add ``yourapp`` to ``INSTALLED_APPS``, and append
-your controller to the site:
+Create ``yourapp/djmvc.py``, add ``yourapp`` to ``INSTALLED_APPS``, define your
+controller, and append it to :data:`djmvc.site`:
 
 .. literalinclude:: ../../src/djmvc_example/stage0/djmvc.py
 
-That is all the routing you need in the app. djmvc autodiscovers ``djmvc.py``
-modules and registers list, create, detail, update, delete, and bulk-delete
-views with Bulma templates.
+Before :py:meth:`~djmvc.Site.build`, ``site.routes`` is the declaration list;
+``append()`` adds your controller there. Build then autodiscovers every
+``djmvc.py`` module (importing it runs the append) and gives you list, create,
+detail, update, delete, and bulk-delete views with Bulma templates.
 
 After ``migrate``, log in (see :doc:`../install`) and visit
 `http://localhost:8000/item/ <http://localhost:8000/item/>`_. URL names look like ``site:item:list``,

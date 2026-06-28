@@ -42,3 +42,4 @@ class PostController(djmvc.ModelController):
 
 
 djmvc.site.routes.append(PostController)
+

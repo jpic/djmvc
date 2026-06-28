@@ -1,7 +1,8 @@
 """djmvc public API.
 
-:data:`site` is the root :class:`Site` controller. Tutorial and application
-``djmvc.py`` modules append controllers to ``site.routes``.
+:data:`site` is the root :class:`Site` controller. Append controllers to
+``site.routes`` in each app's ``djmvc.py`` module; :meth:`Site.build` imports
+those modules via autodiscovery (like Django admin's ``admin.py``).
 """
 
 from django.utils.module_loading import autodiscover_modules

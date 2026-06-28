@@ -27,3 +27,4 @@ class ArticleController(djmvc.ModelController):
 
 
 djmvc.site.routes.append(ArticleController)
+

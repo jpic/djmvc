@@ -53,6 +53,15 @@ def test_navigation_list_inherits_controller_icon(rf, admin_user):
     assert list_view.icon == 'inbox'
 
 
+def test_site_routes_append():
+    class Extra(djmvc.View):
+        pass
+
+    site = djmvc.Site()
+    site.routes.append(Extra)
+    assert Extra in type(site)._declaration
+
+
 def test_registry():
     from djmvc.registry import Registry
 
