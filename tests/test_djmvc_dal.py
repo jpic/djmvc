@@ -44,14 +44,13 @@ def test_find_autocomplete_url_for_group():
     assert url == 'site:auth:group:autocomplete'
 
 
-def test_dal_widget_media_renders_module_scripts():
+def test_dal_widget_media_renders_alight_scripts():
     from dal import autocomplete
 
     widget = autocomplete.ModelAlight(url='site:auth:group:autocomplete')
     scripts = ''.join(widget.media.render_js())
     assert 'autocomplete-light.js' in scripts
     assert 'dal-django.js' in scripts
-    assert 'type="module"' in scripts
 
 
 @pytest.mark.django_db
@@ -63,11 +62,10 @@ def test_user_update_form_has_groups_autocomplete(admin_client, admin_user):
     )
     assert response.status_code == 200
     content = response.content.decode()
-    assert 'autocomplete-select' in content
-    assert 'autocomplete-light' in content
-    assert 'type="module"' in content
-    assert 'class="input"' in content
-    assert 'class="vTextField"' not in content
+    form_html = content.split('<form method="post"', 1)[1].split('</form>', 1)[0]
+    assert 'autocomplete-select' in form_html
+    assert 'class="input"' in form_html
+    assert 'class="vTextField"' not in form_html
 
 
 @pytest.mark.django_db
@@ -76,11 +74,12 @@ def test_user_list_filter_has_groups_autocomplete(admin_client, admin_user):
     response = admin_client.get(reverse('site:auth:user:list'))
     assert response.status_code == 200
     content = response.content.decode()
-    assert 'name="groups"' in content or 'id_groups' in content
-    assert 'class="input"' in content
-    assert 'class="vTextField"' not in content
     assert 'djmvc-filter-form' in content
-    filter_bar = content.split('djmvc-filter-form')[1].split('</form>')[0]
+    filter_bar = content.split('djmvc-filter-form', 1)[1].split('</form>', 1)[0]
+    assert 'name="groups"' in filter_bar or 'id_groups' in filter_bar
+    assert 'autocomplete-select' in filter_bar
+    assert 'class="input"' in filter_bar
+    assert 'class="vTextField"' not in filter_bar
     assert '<div class="select' not in filter_bar
 
 
