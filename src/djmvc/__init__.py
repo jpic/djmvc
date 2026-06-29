@@ -11,6 +11,7 @@ from django.utils.module_loading import autodiscover_modules
 from .controller import Controller
 from .view import View
 from .model import ModelMixin
+from .settings import INSTALLED_APPS, MIDDLEWARES
 from .views import generic
 
 

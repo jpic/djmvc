@@ -74,7 +74,7 @@ Configure middleware for the JSON API:
        "django.middleware.csrf.CsrfViewMiddleware",
        "django.contrib.auth.middleware.AuthenticationMiddleware",
        "djmvc_api.middleware.BearerUserMiddleware",         # After AuthenticationMiddleware
-       "django.middleware.messages.middleware.MessageMiddleware",
+       "django.contrib.messages.middleware.MessageMiddleware",
        "django.middleware.clickjacking.XFrameOptionsMiddleware",
    ]
 
