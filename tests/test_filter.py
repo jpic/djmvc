@@ -270,7 +270,10 @@ def test_filter_search_on_user_list(
     browser.find_by_css('form.djmvc-filter-form button[type="submit"]').first.click()
 
     assert browser.is_element_present_by_css('[up-list]', wait_time=5)
-    assert 'search=user42' in browser.url
+    assert browser.is_element_present_by_css(
+        '[up-list][up-source*="search=user42"]',
+        wait_time=5,
+    )
     assert browser.is_text_present('user42', wait_time=5)
 
     table_text = browser.find_by_css('[up-table]').first.text

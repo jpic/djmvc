@@ -43,8 +43,12 @@ def _assert_filter_form_layout(browser):
         wait_time=2,
     )
     assert browser.is_element_present_by_css(
-        'form.djmvc-filter-form .control.is-expanded input[name="search"]',
+        'form.djmvc-filter-form input[name="search"][placeholder="Search words…"]',
         wait_time=2,
+    )
+    assert not browser.is_element_present_by_css(
+        'form.djmvc-filter-form .control.is-expanded input[name="search"]',
+        wait_time=0,
     )
 
 

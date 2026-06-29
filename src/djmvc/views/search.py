@@ -5,6 +5,7 @@ from functools import reduce
 from django import forms
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext as _
 
 
 class SearchMixin:
@@ -30,7 +31,14 @@ class SearchMixin:
 
     def search_form_field(self):
         """Unlabeled optional CharField for the horizontal filter bar."""
-        return forms.CharField(label='', required=False)
+        return forms.CharField(
+            label='',
+            required=False,
+            widget=forms.TextInput(attrs={
+                'placeholder': _('Search words…'),
+                'aria-label': _('Search'),
+            }),
+        )
 
     def search_filter(self, qs):
         """Apply :attr:`search_param` icontains OR across :attr:`search_fields`."""

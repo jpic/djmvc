@@ -6,7 +6,7 @@
       {{ attrs|html_attributes }}>
     <div class="field is-grouped">
         {% for field in form.visible_fields %}
-        <div class="control{% if forloop.first %} is-expanded{% endif %}">
+        <div class="control{% if field.name != search_param %} is-expanded{% endif %}">
             {{ field|as_crispy_field }}
         </div>
         {% endfor %}

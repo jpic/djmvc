@@ -125,6 +125,12 @@ autocomplete-light {
     min-width: 10rem;
 }
 
+.djmvc-filter-form .control:has(input[name="search"]) {
+    flex-grow: 0;
+    width: 14rem;
+    max-width: 40%;
+}
+
 .djmvc-filter-form .field.is-grouped > .control:not(.is-expanded) autocomplete-select {
     min-width: 12rem;
 }

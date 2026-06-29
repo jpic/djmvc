@@ -1,6 +1,17 @@
+.navbar .navbar-menu {
+    flex: 1;
+}
+
+.djmvc-navbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    padding: 0 1rem;
+}
+
 .djmvc-site-search-wrap {
-    flex-shrink: 1;
-    min-width: 10rem;
+    width: 100%;
     max-width: 18rem;
 }
 
