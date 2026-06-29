@@ -53,10 +53,10 @@ route registry is built.
     Navbar site search across model-controller list views — see
     :ref:`install-site-search` below. Requires ``djmvc_dal``.
 
-``djmvc_history`` (optional)
+``djmvc_history`` (recommended)
     Patches every :py:class:`~djmvc.ModelController` with a history view and
     registers a global log-entry browser at ``/logentry/``. Uses Django's
-    ``LogEntry`` model.
+    ``LogEntry`` model. Included in :mod:`djmvc.settings`.
 
 ``djmvc_debug`` (optional, development)
     Superuser-only route introspection at ``/debug/controller/`` and
@@ -81,6 +81,7 @@ Minimal ``INSTALLED_APPS`` for a new project:
        "djmvc_dal",
        "djmvc_dal_topbar",
        "djmvc_auth",
+       "djmvc_history",
        "djmvc_bulma",
        "crispy_forms",
        "crispy_bulma",
@@ -89,8 +90,25 @@ Minimal ``INSTALLED_APPS`` for a new project:
        # "myapp",
    ]
 
-The example project adds ``djmvc_history``, ``djmvc_debug``, and tutorial apps
-``djmvc_example.stage0`` through ``stage4``.
+The example project adds ``djmvc_debug`` and tutorial apps ``djmvc_example.stage0``
+through ``stage4``.
+
+:mod:`djmvc.settings` defines the same djmvc/DAL/Bulma stack as a list you can
+extend — ``dal`` stays first so DAL loads before ``django.contrib.admin``:
+
+.. code-block:: python
+
+   import djmvc.settings
+
+   INSTALLED_APPS = djmvc.settings.INSTALLED_APPS + [
+       "django.contrib.admin",
+       "django.contrib.auth",
+       "django.contrib.contenttypes",
+       "django.contrib.sessions",
+       "django.contrib.messages",
+       "django.contrib.staticfiles",
+       # "myapp",
+   ]
 
 .. _install-djmvc-dal:
 
@@ -122,7 +140,7 @@ What you get
 
 The example project demonstrates this with ``djmvc_auth``: ``Group`` has a
 controller at ``/auth/group/``, and the user list filters by group with an
-autocomplete in the horizontal search bar.
+autocomplete in the filter sidebar.
 
 How it works
 ------------
@@ -173,7 +191,7 @@ Unpoly, modals, and ``form.media``
 
 Unpoly modal fragments swap body content only — ``{% block extra_js %}`` in the
 page layout is not re-evaluated. djmvc_bulma therefore inlines ``{{ form.media
-}}`` in form templates (model forms and the horizontal filter bar) so scripts
+}}`` in form templates (model forms and the filter sidebar) so scripts
 and styles travel with the fragment.
 
 DAL loads its JavaScript as ES modules (``Script(…, type='module')`` in
@@ -188,10 +206,12 @@ Site search
 -----------
 
 :class:`~djmvc_dal_topbar.views.SiteSearchView` is appended to :data:`djmvc.site` in
-:mod:`djmvc_dal_topbar.djmvc` (``/search/`` → ``site:search``). It queries every model
-controller whose **list view** the current user may access
-(``list_view.has_permission()``) using each list's scoped queryset and
-:attr:`~djmvc.views.search.SearchMixin.search_fields`. Results are combined with
+:mod:`djmvc_dal_topbar.djmvc` (``/search/`` → ``site:search``). It queries model
+controllers whose **list view** the current user may access
+(``list_view.has_permission()``), has opted into site search
+(:attr:`~djmvc.views.search.SearchMixin.site_search`), and defines
+:attr:`~djmvc.views.search.SearchMixin.search_fields`. Each hit uses the list's
+scoped queryset and search fields. Results are combined with
 DAL's ``QuerySetSequence`` (content-type ``ctype-pk`` identifiers) and rendered
 as Alight HTML fragments with a ``data-url`` pointing at each row's detail page.
 
@@ -275,7 +295,7 @@ same as the browser tests in CI):
 
 .. code-block:: bash
 
-   pytest tests/test_docs_screenshots.py -n0 --splinter-headless
+   pytest tests/test_docs_screenshots.py tests/test_djmvc_dal_topbar_splinter.py -n0 --splinter-headless
    make -C docs html
 
 Commit the updated PNGs with your doc changes.

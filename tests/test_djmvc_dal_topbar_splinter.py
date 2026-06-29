@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from alight_helpers import open_autocomplete, type_and_select, wait_alight_ready
+from doc_screenshots import capture as capture_doc
 from topbar_screenshots import capture, prepare_browser
 
 User = get_user_model()
@@ -40,6 +41,7 @@ def test_site_search_navigates_to_user_detail(
         wait_time=5,
     )
     capture(browser, 'site-search-results')
+    capture_doc(browser, 'site-search')
 
     type_and_select(
         browser,

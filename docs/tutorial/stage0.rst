@@ -40,6 +40,27 @@ After ``migrate``, log in (see :doc:`../install`) and visit
 List and detail use Django's ``view`` permission (``view_item``). Create,
 update, and delete use ``add``, ``change``, and ``delete``.
 
+Site search
+-----------
+
+With ``djmvc_dal_topbar`` installed (see :ref:`install-site-search`), the navbar
+includes a site-wide search autocomplete. List views are **not** included by
+default — opt in with ``site_search=True`` on the list route:
+
+.. code-block:: python
+
+    routes = djmvc.ModelController.routes + [
+        djmvc.generic.ListView.clone(site_search=True),
+    ]
+
+The cloned list view replaces the default ``list`` route (same codename).
+Search uses each list's :attr:`~djmvc.views.search.SearchMixin.search_fields`
+(CharField and TextField columns by default). Models without ``site_search`` —
+for example audit logs from ``djmvc_history`` — stay out of the top bar even
+when they have searchable columns.
+
+``djmvc_auth`` opts in User and Group list views the same way.
+
 .. figure:: /_static/screenshots/success-toast.png
    :alt: Success toast after creating an item
    :align: center

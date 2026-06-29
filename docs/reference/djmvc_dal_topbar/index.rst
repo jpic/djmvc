@@ -14,5 +14,6 @@ Site search
 
 :class:`~djmvc_dal_topbar.views.SiteSearchView` is registered on :data:`djmvc.site` at
 ``/search/``. Discovery helpers in :mod:`djmvc_dal_topbar.lookup` walk model
-controllers and yield list views the user may search. The navbar partial is
-:file:`djmvc_dal_topbar/templates/djmvc/_site_search.html`.
+controllers and yield list views the user may search when
+:attr:`~djmvc.views.search.SearchMixin.site_search` is ``True``. The navbar
+partial is :file:`djmvc_dal_topbar/templates/djmvc/_site_search.html`.

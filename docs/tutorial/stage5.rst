@@ -21,7 +21,8 @@ List display
 
     :py:class:`~djmvc.views.search.SearchMixin` —
     :attr:`~djmvc.views.search.SearchMixin.search_param`,
-    :attr:`~djmvc.views.search.SearchMixin.search_fields`
+    :attr:`~djmvc.views.search.SearchMixin.search_fields`,
+    :attr:`~djmvc.views.search.SearchMixin.site_search`
 
     :py:class:`~djmvc.views.filter.FilterMixin` —
     :attr:`~djmvc.views.filter.FilterMixin.filter_fields`,

@@ -4,8 +4,9 @@ Load in templates with ``{% load djmvc %}``.
 
 Filters:
     :func:`html_attributes` — render a dict as safe HTML attributes.
-    :func:`unpoly_attributes` — call :meth:`~djmvc.view.ViewMixin.unpoly_attributes`
-    on a view for a rendering context.
+    :func:`unpoly_attributes` — call
+    :meth:`~djmvc.view.ViewMixin.unpoly_attributes` on a view for a rendering
+    context.
 
 Tags:
     :func:`do_eval` — ``{% eval %}``; call a view method and store the result.

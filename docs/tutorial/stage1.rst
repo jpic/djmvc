@@ -31,6 +31,10 @@ The ``Item`` model lives in stage 0. Stage 1 imports it and nests an
 ``Item`` model controller adds ``/item/`` below that, so the list view is at
 `http://localhost:8000/inventory/item/ <http://localhost:8000/inventory/item/>`_ with URL name ``site:inventory:item:list``.
 
+The sidebar shows both stage 0's **Items** (``/item/``, inbox icon) and this
+**Inventory** entry (``/inventory/item/``, boxes icon) — same model, different
+URL namespace and navigation label.
+
 Try it
 ------
 
