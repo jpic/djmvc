@@ -52,7 +52,7 @@ jobs:
               "django.middleware.csrf.CsrfViewMiddleware",
               "django.contrib.auth.middleware.AuthenticationMiddleware",
               "djmvc_api.middleware.BearerUserMiddleware",
-              "django.middleware.messages.middleware.MessageMiddleware",
+              "django.contrib.messages.middleware.MessageMiddleware",
               "django.middleware.clickjacking.XFrameOptionsMiddleware",
           ]
           EOF
