@@ -94,6 +94,12 @@ body {
     margin-bottom: 1rem;
 }
 
+autocomplete-select,
+autocomplete-light {
+    display: block;
+    width: 100%;
+}
+
 /* Horizontal filter bar: search + FK autocomplete + submit on one row */
 .djmvc-filter-form .field.is-grouped {
     align-items: flex-end;
@@ -120,13 +126,7 @@ body {
 }
 
 .djmvc-filter-form .field.is-grouped > .control:not(.is-expanded) autocomplete-select {
-    display: block;
     min-width: 12rem;
-}
-
-.djmvc-filter-form .field.is-grouped > .control .input,
-.djmvc-filter-form .field.is-grouped > .control autocomplete-select-input {
-    height: 2.5em;
 }
 
 .djmvc-listaction-bar {

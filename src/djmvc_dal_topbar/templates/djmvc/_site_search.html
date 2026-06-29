@@ -1,0 +1,17 @@
+{% load i18n static %}
+<div class="navbar-item djmvc-site-search-wrap">
+    <div class="field mb-0">
+        <div class="control">
+            <autocomplete-light url="{% url 'site:search' %}" class="djmvc-site-search"
+                                minimum-characters="2">
+                <input type="text" class="input" slot="input" placeholder="{% trans 'Search…' %}"
+                       autocomplete="off" aria-label="{% trans 'Search' %}">
+            </autocomplete-light>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="{% static 'dal_alight/autocomplete-light.css' %}">
+<link rel="stylesheet" href="{% static 'djmvc_dal_topbar/css/site-search.css' %}">
+<script src="{% static 'dal_alight/autocomplete-light.js' %}" type="module"></script>
+<script src="{% static 'dal_alight/dal-django.js' %}" type="module"></script>
+<script src="{% static 'djmvc_dal_topbar/js/site-search.js' %}" type="module"></script>

@@ -34,6 +34,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "dal",
     "dal_alight",
+    "queryset_sequence",
+    "dal_queryset_sequence",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     # core
     "djmvc",
     "djmvc_dal",
+    "djmvc_dal_topbar",
 
     # load the auth controller in djmvc.site:
     "djmvc_auth",

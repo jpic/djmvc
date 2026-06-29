@@ -8,7 +8,7 @@ class DjmvcDalConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
-        for app in ('dal', 'dal_alight'):
+        for app in ('dal', 'dal_alight', 'queryset_sequence', 'dal_queryset_sequence'):
             if app not in settings.INSTALLED_APPS:
                 raise ImproperlyConfigured(
                     f'djmvc_dal requires {app!r} in INSTALLED_APPS'

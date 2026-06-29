@@ -4,6 +4,7 @@ from django.views import generic
 
 from djmvc.views.filter import FilterMixin
 from djmvc.views.list import ListMixin
+from djmvc.views.search import SearchMixin
 from djmvc.views.pagination import PaginationMixin
 from djmvc.views.tables2 import Tables2Mixin
 from djmvc.views.template import TemplateViewMixin
@@ -34,6 +35,16 @@ def build_list_view(*mixins, paginate_by=MISSING, **attrs):
     )
     if paginate_by is not MISSING:
         attrs['paginate_by'] = paginate_by
+    if SearchMixin in mixins or FilterMixin in mixins:
+        def get_queryset(self):
+            qs = self.get_scoped_queryset()
+            if self.filter_fields and self.filterset is not None:
+                qs = self.filterset.qs
+            if hasattr(self, 'search_filter'):
+                qs = self.search_filter(qs)
+            return qs
+
+        attrs['get_queryset'] = get_queryset
     return type('TestListView', bases, attrs)
 
 
@@ -83,6 +94,7 @@ def test_bare_list(rf, admin_user, stage0_items, mock_controller):
 @pytest.mark.django_db
 def test_filter_only(rf, admin_user, stage0_items, mock_controller):
     view_cls = build_list_view(
+        SearchMixin,
         FilterMixin,
         paginate_by=None,
 
@@ -129,6 +141,7 @@ def test_table_only(rf, admin_user, stage0_items, mock_controller):
 @pytest.mark.django_db
 def test_filter_and_paginate(rf, admin_user, stage0_items, mock_controller):
     view_cls = build_list_view(
+        SearchMixin,
         FilterMixin,
         PaginationMixin,
 
@@ -145,6 +158,7 @@ def test_filter_and_paginate(rf, admin_user, stage0_items, mock_controller):
 @pytest.mark.django_db
 def test_filter_and_table(rf, admin_user, stage0_items, mock_controller):
     view_cls = build_list_view(
+        SearchMixin,
         FilterMixin,
         Tables2Mixin,
         paginate_by=None,

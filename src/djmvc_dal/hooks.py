@@ -22,15 +22,18 @@ def _autocomplete_kwargs(model_field, **kwargs):
     url_name = find_autocomplete_url(remote.model)
     if not url_name:
         return {}
+    widget_attrs = {'class': 'input'}
     if isinstance(field, models.ManyToManyField):
         return dict(
             form_class=forms.ModelMultipleChoiceField,
-            widget=autocomplete.ModelAlightMultiple(url=url_name),
+            widget=autocomplete.ModelAlightMultiple(
+                url=url_name, attrs=widget_attrs
+            ),
             **kwargs,
         )
     return dict(
         form_class=forms.ModelChoiceField,
-        widget=autocomplete.ModelAlight(url=url_name),
+        widget=autocomplete.ModelAlight(url=url_name, attrs=widget_attrs),
         **kwargs,
     )
 

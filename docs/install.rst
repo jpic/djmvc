@@ -49,6 +49,10 @@ route registry is built.
     :ref:`install-djmvc-dal` below. Requires ``dal`` and ``dal_alight``
     **before** ``django.contrib.admin`` in ``INSTALLED_APPS``.
 
+``djmvc_dal_topbar`` (recommended with ``djmvc_dal``)
+    Navbar site search across model-controller list views — see
+    :ref:`install-site-search` below. Requires ``djmvc_dal``.
+
 ``djmvc_history`` (optional)
     Patches every :py:class:`~djmvc.ModelController` with a history view and
     registers a global log-entry browser at ``/logentry/``. Uses Django's
@@ -65,6 +69,8 @@ Minimal ``INSTALLED_APPS`` for a new project:
    INSTALLED_APPS = [
        "dal",
        "dal_alight",
+       "queryset_sequence",
+       "dal_queryset_sequence",
        "django.contrib.admin",
        "django.contrib.auth",
        "django.contrib.contenttypes",
@@ -73,6 +79,7 @@ Minimal ``INSTALLED_APPS`` for a new project:
        "django.contrib.staticfiles",
        "djmvc",
        "djmvc_dal",
+       "djmvc_dal_topbar",
        "djmvc_auth",
        "djmvc_bulma",
        "crispy_forms",
@@ -111,6 +118,7 @@ What you get
   you set :attr:`~djmvc.views.filter.FilterMixin.filter_fields` (for example
   ``filter_fields=['groups']`` on the user list).
 * Form media that survives Unpoly fragment swaps and modal layers (see below).
+* A **site-wide search** autocomplete in the top bar (see below).
 
 The example project demonstrates this with ``djmvc_auth``: ``Group`` has a
 controller at ``/auth/group/``, and the user list filters by group with an
@@ -174,17 +182,48 @@ re-inserts the same ``<script type="module" src="…">`` tag after a filter
 submit or modal open, the custom elements and adapters do not re-initialize.
 That is what makes inline ``form.media`` safe here.
 
+.. _install-site-search:
+
+Site search
+-----------
+
+:class:`~djmvc_dal_topbar.views.SiteSearchView` is appended to :data:`djmvc.site` in
+:mod:`djmvc_dal_topbar.djmvc` (``/search/`` → ``site:search``). It queries every model
+controller whose **list view** the current user may access
+(``list_view.has_permission()``) using each list's scoped queryset and
+:attr:`~djmvc.views.search.SearchMixin.search_fields`. Results are combined with
+DAL's ``QuerySetSequence`` (content-type ``ctype-pk`` identifiers) and rendered
+as Alight HTML fragments with a ``data-url`` pointing at each row's detail page.
+
+The top-bar widget is a plain ``<autocomplete-light>`` (navigation only, no
+form ``<select>``). :file:`djmvc_bulma/templates/djmvc/base.html` includes
+``djmvc/_site_search.html``; ``djmvc_dal_topbar`` provides the partial.
+List ``djmvc_dal_topbar`` **before** ``djmvc_bulma`` in ``INSTALLED_APPS`` so
+the loader picks the topbar template. A small ``site-search.js`` module listens
+for ``autocompleteChoiceSelected`` and calls ``up.visit(data-url)``.
+
+.. figure:: /_static/screenshots/site-search.png
+   :alt: Site search autocomplete in the top navigation bar
+   :align: center
+   :width: 90%
+
+   Navbar site search (``djmvc_dal_topbar``) with grouped results and
+   navigation to each row's detail page.
+
 Requirements
 ------------
 
-* ``dal`` and ``dal_alight`` in ``INSTALLED_APPS`` **before**
-  ``django.contrib.admin`` (DAL's own requirement).
-* ``djmvc_dal`` after ``djmvc`` (it patches :class:`~djmvc.ModelController` and
-  :class:`~djmvc.Site`).
+* ``dal``, ``dal_alight``, ``queryset_sequence``, and ``dal_queryset_sequence``
+  in ``INSTALLED_APPS`` (**before** ``django.contrib.admin``).
+* ``djmvc_dal`` after ``djmvc`` (patches
+  :class:`~djmvc.ModelController` and contributes per-model autocomplete
+  routes).
+* ``djmvc_dal_topbar`` after ``djmvc_dal`` and before ``djmvc_bulma`` (site
+  search route and navbar partial).
 * ``djhacker`` — installed as a core dependency of ``djmvc``; ``djmvc_dal`` uses
   it to patch ``formfield()`` on relation fields project-wide.
 
-API reference: :doc:`reference/djmvc_dal/index`.
+API reference: :doc:`reference/djmvc_dal/index`, :doc:`reference/djmvc_dal_topbar/index`.
 
 URL configuration
 =================

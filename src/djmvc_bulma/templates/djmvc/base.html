@@ -30,6 +30,7 @@
             </div>
 
             <div class="navbar-end">
+                {% include "djmvc/_site_search.html" %}
                 {% if view.controller.root %}
                     {% eval view.controller.root.get_tagged_views 'topbar' request=request as topbar_menu %}
                 {% endif %}

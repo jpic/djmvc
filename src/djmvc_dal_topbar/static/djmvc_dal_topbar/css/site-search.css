@@ -1,0 +1,9 @@
+.djmvc-site-search-wrap {
+    flex-shrink: 1;
+    min-width: 10rem;
+    max-width: 18rem;
+}
+
+.djmvc-site-search-wrap .field {
+    margin-bottom: 0;
+}

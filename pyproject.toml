@@ -30,6 +30,7 @@ dependencies = [
     "django-crispy-forms>=2.0",
     "django-filter",
     "django-autocomplete-light>=5.0",
+    "django-querysetsequence>=0.11",
     "djhacker",
 ]
 
@@ -62,8 +63,10 @@ namespaces = false
 
 [tool.setuptools.package-data]
 djmvc = ["locale/**/*.po", "locale/**/*.mo"]
-djmvc_bulma = ["locale/**/*.po", "locale/**/*.mo"]
+djmvc_bulma = ["locale/**/*.po", "locale/**/*.mo", "templates/**/*.html"]
 djmvc_auth = ["locale/**/*.po", "locale/**/*.mo"]
+djmvc_dal = ["templates/**/*.html"]
+djmvc_dal_topbar = ["templates/**/*.html", "static/**/*"]
 djmvc_history = ["locale/**/*.po", "locale/**/*.mo"]
 
 [tool.setuptools_scm]

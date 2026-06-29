@@ -11,9 +11,11 @@ def wait_alight_ready(browser, timeout=15):
         try:
             if browser.evaluate_script(
                 "customElements.get('autocomplete-select') !== undefined"
+                " && customElements.get('autocomplete-light') !== undefined"
                 " && !document.querySelector("
                 "'autocomplete-select-input:not([data-bound]),"
-                " autocomplete-select:not([data-bound])')"
+                " autocomplete-select:not([data-bound]),"
+                " autocomplete-light:not([data-bound])')"
             ):
                 return
         except Exception:

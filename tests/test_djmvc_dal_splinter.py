@@ -39,7 +39,7 @@ def _assert_filter_form_layout(browser):
         wait_time=2,
     )
     assert browser.is_element_present_by_css(
-        'form.djmvc-filter-form #div_id_groups autocomplete-select',
+        'form.djmvc-filter-form autocomplete-select',
         wait_time=2,
     )
     assert browser.is_element_present_by_css(
@@ -99,7 +99,7 @@ def test_user_list_filter_groups_autocomplete(
     browser_login()
     browser.visit(f'{live_server.url}/auth/user/')
 
-    filter_groups_css = 'form.djmvc-filter-form #div_id_groups autocomplete-select'
+    filter_groups_css = 'form.djmvc-filter-form autocomplete-select'
     assert browser.is_element_present_by_css(filter_groups_css, wait_time=5)
     wait_alight_ready(browser)
     _assert_filter_form_layout(browser)
@@ -111,7 +111,7 @@ def test_user_list_filter_groups_autocomplete(
         browser,
         'editors',
         container_css=filter_groups_css,
-        input_css='form.djmvc-filter-form #div_id_groups autocomplete-select-input input',
+        input_css='form.djmvc-filter-form autocomplete-select-input input',
     )
     capture(browser, 'user-list-filter-groups-selected')
     browser.find_by_css('form.djmvc-filter-form button[type="submit"]').first.click()
