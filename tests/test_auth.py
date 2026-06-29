@@ -175,6 +175,19 @@ def test_full_page_redirect():
 
 
 @pytest.mark.django_db
+def test_login_form_inherits_unpoly_modal_attributes(client):
+    client.logout()
+    response = client.get(reverse('site:auth:login'))
+    content = response.content.decode()
+    assert 'up-target="body"' in content
+    assert 'up-history="false"' in content
+    assert 'up-submit' in content
+    assert 'up-layer="any"' in content
+    assert 'up-accept-location="*"' in content
+    assert 'up-on-accepted="up.visit(response.url)"' in content
+
+
+@pytest.mark.django_db
 def test_logout_link_opens_in_modal(client, admin_user):
     client.force_login(admin_user)
     response = client.get(reverse('site:home'))

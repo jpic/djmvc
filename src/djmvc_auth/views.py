@@ -31,10 +31,13 @@ class LoginView(djmvc.generic.FormView):
     form_class = AuthenticationForm
     tags = ['topbar', 'navigation']
     icon = 'box-arrow-in-right'
-    form_attributes = {
-        'up-target': 'body',
-        'up-history': 'false',
-    }
+
+    @property
+    def form_attributes(self):
+        attrs = dict(FormMixin.form_attributes)
+        attrs['up-target'] = 'body'
+        attrs['up-history'] = False
+        return attrs
 
     @property
     def title(self):
