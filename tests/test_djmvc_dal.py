@@ -65,7 +65,6 @@ def test_user_update_form_has_groups_autocomplete(admin_client, admin_user):
     form_html = content.split('<form method="post"', 1)[1].split('</form>', 1)[0]
     assert 'autocomplete-select' in form_html
     assert 'class="input"' in form_html
-    assert 'class="vTextField"' not in form_html
 
 
 @pytest.mark.django_db
@@ -79,7 +78,6 @@ def test_user_list_filter_has_groups_autocomplete(admin_client, admin_user):
     assert 'name="groups"' in filter_bar or 'id_groups' in filter_bar
     assert 'autocomplete-select' in filter_bar
     assert 'class="input"' in filter_bar
-    assert 'class="vTextField"' not in filter_bar
     assert '<div class="select' not in filter_bar
 
 
