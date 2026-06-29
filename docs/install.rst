@@ -289,6 +289,9 @@ Continue with the :doc:`tutorial/index`.
 Regenerate documentation screenshots
 ====================================
 
+See :doc:`contributing` for the full development workflow (tests, docs, and
+JavaScript).
+
 Screenshots are committed under :file:`docs/_static/screenshots/`. After
 changing templates or navigation, refresh them (requires Firefox and geckodriver,
 same as the browser tests in CI):

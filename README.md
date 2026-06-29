@@ -52,6 +52,12 @@ registry is built.
 - [Tutorial](https://jpic.github.io/djmvc/tutorial/)
 - [Reference](https://jpic.github.io/djmvc/reference/)
 
+## Contributing
+
+See the [contributing guide](https://jpic.github.io/djmvc/contributing.html)
+for development setup, running tests, updating documentation screenshots, and
+JavaScript conventions. Source: [`docs/contributing.rst`](docs/contributing.rst).
+
 ## License
 
 MIT

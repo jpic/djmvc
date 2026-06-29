@@ -12,6 +12,7 @@ hand-wiring ``urls.py``, with secure defaults and Bulma templates out of the box
    install
    tutorial/index
    reference/index
+   contributing
 
 Indices and tables
 ==================

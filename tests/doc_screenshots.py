@@ -15,6 +15,7 @@ DOC_SCREENSHOTS = (
     "article-detail",
     "list-action-bar",
     "set-category-modal",
+    "site-search",
 )
 
 
