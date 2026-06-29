@@ -55,7 +55,7 @@ def get_deleted_objects(view, objs):
             except NoReverseMatch:
                 return f'{label}: {obj}'
             return format_html(
-                '{}: <a href="{}" up-layer="new modal" up-size="large">{}</a>',
+                '{}: <a href="{}" up-layer="new modal" up-size="large" up-history="false">{}</a>',
                 label,
                 url,
                 obj,

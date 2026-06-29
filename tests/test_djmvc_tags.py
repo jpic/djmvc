@@ -42,6 +42,7 @@ def test_unpoly_attributes_filter_for_form_view():
     view = type(create_route)(request=request)
     attrs = unpoly_attributes(view, 'model_menu')
     assert attrs['up-layer'] == 'new modal'
+    assert attrs['up-history'] is False
     assert attrs['up-accept-location'] == '/item/'
 
 

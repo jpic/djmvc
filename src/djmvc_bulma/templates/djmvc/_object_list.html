@@ -7,7 +7,8 @@
         {% if view.detail_urlname %}
         <a href="{% url view.detail_urlname pk=object.pk %}"
            up-layer="new modal"
-           up-size="large">{{ object }}</a>
+           up-size="large"
+           up-history="false">{{ object }}</a>
         {% else %}
         {{ object }}
         {% endif %}

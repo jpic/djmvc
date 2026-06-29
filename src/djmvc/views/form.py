@@ -33,6 +33,7 @@ class FormMixin:
         attrs = {
             'up-layer': 'new modal',
             'up-size': 'medium',
+            'up-history': False,
         }
         if request := getattr(self, 'request', None):
             attrs['up-accept-location'] = request.path

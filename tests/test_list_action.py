@@ -110,6 +110,7 @@ def test_unpoly_attributes_list_action_bar(rf, admin_user):
     attrs = view.unpoly_attributes('list_action_bar')
     assert attrs['data-list-action'] == 'urlupdate'
     assert attrs['up-layer'] == 'new modal'
+    assert attrs['up-history'] is False
     assert attrs['up-on-accepted'] == (
         'djmvcClearListActionSelections(); up.visit(response.url)'
     )
