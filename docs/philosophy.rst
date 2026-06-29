@@ -67,6 +67,22 @@ Policy concentrates on the **model controller**:
 - :py:meth:`~djmvc.ModelController.has_permission` — who can do what
 - :py:meth:`~djmvc.ModelController.get_queryset` — what rows exist for this user
 
+If you already use ``django.contrib.auth.Permission``, you are in familiar
+territory — the same model as the admin. Users with ``view_<model>`` can list
+and open every row; ``add`` / ``change`` / ``delete`` gate writes. Groups and
+per-user permission assignments in the database decide who gets which codename.
+That is secure by default: permissions can come from the database already.
+
+In practice, this is fine until you need per-object permissions. So, the first
+customization is usually :py:meth:`~djmvc.ModelController.get_queryset`, the
+djmvc analogue of ``ModelAdmin.get_queryset`` — filter rows by tenant, owner,
+or role while leaving permission checks on the default path. That is enough for
+most apps.  When you need **per-object** rules (this user may change *this*
+document but not another), override
+:py:meth:`~djmvc.ModelController.has_permission` on the controller or
+:py:meth:`~djmvc.view.ViewMixin.has_permission` on individual views — the same
+escape hatch Django's permission backends provide.
+
 Lists, object views, and bulk actions all share that queryset. PKs outside it →
 404, not a leak.
 
