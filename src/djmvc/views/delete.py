@@ -10,7 +10,10 @@ from django.views import generic
 
 from .action import ActionMixin
 from .form import FormView
+from .json import JsonDeleteMixin, json_method_not_allowed
+
 from .list_action import ListActionMixin
+from .swagger import swagger_json_operation
 from .log import DELETION, LogMixin
 from .template import TemplateViewMixin
 from .objectform import ObjectFormMixin
@@ -163,10 +166,18 @@ class DeleteMixin(ActionMixin, LogMixin):
         return response
 
 
-class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.DeleteView):
+class DeleteView(
+    DeleteMixin,
+    JsonDeleteMixin,
+    ObjectFormMixin,
+    TemplateViewMixin,
+    generic.DeleteView,
+):
     """Confirm and delete a single object."""
 
     tags = ['object']
+    http_method_names = ['get', 'post', 'delete', 'head', 'options']
+    json_method_names = ('delete',)
 
     @property
     def title(self):
@@ -192,6 +203,19 @@ class DeleteView(DeleteMixin, ObjectFormMixin, TemplateViewMixin, generic.Delete
             return self.form_invalid(form)
         self.log_objects = [self.object]
         return super().form_valid(form)
+
+    def json_post(self, request, *args, **kwargs):
+        return json_method_not_allowed(self.json_method_names)
+
+    def get_swagger_delete(self):
+        return swagger_json_operation(
+            self,
+            str(self.title),
+            responses={
+                '200': {'description': 'Deleted'},
+                '409': {'description': 'Protected related objects'},
+            },
+        )
 
 
 class DeleteObjectsView(DeleteMixin, ListActionMixin, FormView):

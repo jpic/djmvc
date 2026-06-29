@@ -62,6 +62,11 @@ route registry is built.
     Superuser-only route introspection at ``/debug/controller/`` and
     ``/debug/url/``.
 
+``djmvc_api`` (optional)
+    JSON API on existing CRUD URLs, Bearer tokens, Swagger schema/UI, login, and
+    token management — all under ``/api/``. Requires Bearer middleware in
+    ``MIDDLEWARE`` — see :ref:`install-djmvc-api`.
+
 Minimal ``INSTALLED_APPS`` for a new project:
 
 .. code-block:: python
@@ -109,6 +114,79 @@ extend — ``dal`` stays first so DAL loads before ``django.contrib.admin``:
        "django.contrib.staticfiles",
        # "myapp",
    ]
+
+.. _install-djmvc-api:
+
+djmvc_api — JSON API, Bearer tokens, and Swagger
+================================================
+
+``djmvc_api`` adds a REST JSON layer on top of the same URLs as the Bulma
+HTML CRUD views, plus optional Bearer token auth and Swagger 2.0 discovery.
+
+What you get
+------------
+
+* **JSON CRUD** on every :class:`~djmvc.ModelController` route (``GET`` list/detail
+  with ``Accept: application/json``; ``POST``/``PUT``/``PATCH``/``DELETE`` for
+  writes).
+* **``POST /api/login/``** — exchange username/password for a **1-hour** Bearer
+  token (no CSRF, no session).
+* **``/api/token/``** — HTML UI to create named tokens with optional custom expiry;
+  list and revoke tokens.
+* **``GET /api/schema/``** and **``GET /api/``** — Swagger 2.0 schema and Swagger UI.
+
+Enable the app and middleware
+-----------------------------
+
+Add ``djmvc_api`` to ``INSTALLED_APPS`` (the example project includes it).
+You **must** add both Bearer middleware classes — token auth and CSRF exemption
+depend on them:
+
+.. code-block:: python
+
+   INSTALLED_APPS = [
+       # ...
+       "djmvc_api",
+   ]
+
+   MIDDLEWARE = [
+       "django.middleware.security.SecurityMiddleware",
+       "django.contrib.sessions.middleware.SessionMiddleware",
+       "djmvc_api.middleware.BearerCsrfMiddleware",
+       "django.middleware.locale.LocaleMiddleware",
+       "django.middleware.common.CommonMiddleware",
+       "django.middleware.csrf.CsrfViewMiddleware",
+       "django.contrib.auth.middleware.AuthenticationMiddleware",
+       "djmvc_api.middleware.BearerUserMiddleware",
+       "django.middleware.messages.middleware.MessageMiddleware",
+       "django.middleware.clickjacking.XFrameOptionsMiddleware",
+   ]
+
+Then migrate:
+
+.. code-block:: bash
+
+   python manage.py migrate
+
+Quick start with curl
+---------------------
+
+Obtain a token and list items:
+
+.. code-block:: bash
+
+   TOKEN=$(curl -s -X POST http://localhost:8000/api/login/ \
+     -H 'Content-Type: application/json' \
+     -d '{"username":"su","password":"su"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+   curl -s http://localhost:8000/item/ \
+     -H 'Accept: application/json' \
+     -H "Authorization: Bearer $TOKEN"
+
+All routes are registered on a single :class:`~djmvc_api.views.ApiController`
+at ``/api/`` (Swagger UI, schema, login, and token management).
+
+Full reference: :doc:`reference/djmvc_api/index`.
 
 .. _install-djmvc-dal:
 

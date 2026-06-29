@@ -64,20 +64,7 @@ class RouteCollection(list):
         return type(self[0])
 
 
-def compute_fullurlpath(route):
-    try:
-        return route.url
-    except Exception:
-        parts = []
-        current = route
-        while current is not None:
-            segment = getattr(current, 'urlpath', '')
-            if segment:
-                parts.insert(0, segment.strip('/'))
-            current = getattr(current, 'controller', None)
-        if not parts:
-            return '/'
-        return '/' + '/'.join(parts) + '/'
+from djmvc.introspection import compute_fullurlpath
 
 
 def controller_pk(route, parent_pk=''):

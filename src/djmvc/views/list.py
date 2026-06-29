@@ -5,8 +5,12 @@ from django import forms
 from django.utils.translation import gettext as _, ngettext
 from django.views import generic
 
+from django.http import JsonResponse
+
 from ..model import ModelMixin
 from .filter import FilterMixin
+from .json import JsonMixin
+from .swagger import swagger_json_operation, swagger_list_response
 from .object import ObjectMixin
 from .pagination import PaginationMixin
 from .search import SearchMixin
@@ -86,6 +90,7 @@ class ListMixin:
 
 class ListView(
     ListMixin,
+    JsonMixin,
     SearchMixin,
     FilterMixin,
     PaginationMixin,
@@ -186,6 +191,39 @@ class ListView(
         qs.pop(page_kwarg, None)
         path = self.request.path
         return f'{path}?{qs.urlencode()}' if qs else path
+
+    def json_get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        paginate_by = self.get_paginate_by(queryset)
+        if paginate_by:
+            paginator, page, object_list, _is_paginated = self.paginate_queryset(
+                queryset,
+                paginate_by,
+            )
+            self.object_list = object_list
+            paginator_data = {
+                'page_number': page.number,
+                'per_page': paginator.per_page,
+                'total_pages': paginator.num_pages,
+                'total_objects': paginator.count,
+                'has_next': page.has_next(),
+                'has_previous': page.has_previous(),
+            }
+        else:
+            self.object_list = list(queryset)
+            paginator_data = None
+        return JsonResponse({
+            'results': [self.serialize(obj) for obj in self.object_list],
+            'paginator': paginator_data,
+        })
+
+    def get_swagger_get(self):
+        return swagger_json_operation(
+            self,
+            str(self.title),
+            parameters=[],
+            responses=swagger_list_response(self.model),
+        )
 
 
 class DetailListView(ObjectMixin, ListView):

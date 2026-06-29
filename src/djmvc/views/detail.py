@@ -1,12 +1,22 @@
 from django.views import generic
 from django.utils.html import mark_safe
 
+from django.http import JsonResponse
+
 from ..model import ModelMixin
 from .object import ObjectMixin
+from .json import JsonMixin
+from .swagger import swagger_json_operation, swagger_read_response
 from .template import TemplateViewMixin
 
 
-class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView):
+class DetailView(
+    ObjectMixin,
+    JsonMixin,
+    ModelMixin,
+    TemplateViewMixin,
+    generic.DetailView,
+):
     """Read-only object page.
 
     Attributes:
@@ -43,6 +53,9 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
                 if f.name not in self.exclude
             ]
         return [name for name in self.fields if name not in self.exclude]
+
+    def get_json_fields(self):
+        return self.visible_fields
 
     @property
     def display_fields(self):
@@ -86,3 +99,16 @@ class DetailView(ObjectMixin, ModelMixin, TemplateViewMixin, generic.DetailView)
             }
             for row in self.display_fields
         ]
+
+    def json_get(self, request, *args, **kwargs):
+        return JsonResponse(self.serialize(self.object))
+
+    def get_swagger_get(self):
+        return swagger_json_operation(
+            self,
+            f'{self.model.__name__} detail',
+            responses={
+                **swagger_read_response(self.model),
+                '404': {'description': 'Not found'},
+            },
+        )

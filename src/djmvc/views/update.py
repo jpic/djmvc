@@ -3,12 +3,15 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from .action import ActionMixin
+from .json import JsonFormMixin, json_method_not_allowed
+from .swagger import swagger_write_operation
 from .template import TemplateViewMixin
 from .objectform import ObjectModelFormMixin
 
 
 class UpdateView(
     ActionMixin,
+    JsonFormMixin,
     ObjectModelFormMixin,
     TemplateViewMixin,
     generic.UpdateView,
@@ -30,9 +33,22 @@ class UpdateView(
     default_template_name = 'form.html'
     icon = 'pencil'
     color = 'warning'
+    http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
+    json_method_names = ('put', 'patch')
 
     @property
     def title(self):
         return _('Change %(name)s') % {
             'name': capfirst(self.model._meta.verbose_name),
         }
+
+    def json_post(self, request, *args, **kwargs):
+        return json_method_not_allowed(self.json_method_names)
+
+    def get_swagger_put(self):
+        return swagger_write_operation(self, str(self.title))
+
+    def get_swagger_patch(self):
+        operation = swagger_write_operation(self, str(self.title))
+        operation['summary'] = f'Partial update: {self.title}'
+        return operation

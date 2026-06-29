@@ -57,6 +57,9 @@ INSTALLED_APPS = [
     # routing introspection for superusers at /debug/controller/ and /debug/url/
     "djmvc_debug",
 
+    # JSON API at /api/ (schema, Swagger UI, login, tokens)
+    "djmvc_api",
+
     # template pack
     "djmvc_bulma",
     # used by djmvc_bulma:
@@ -79,10 +82,12 @@ AUTH_USER_MODEL = "djmvc_example.User"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "djmvc_api.middleware.BearerCsrfMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "djmvc_api.middleware.BearerUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

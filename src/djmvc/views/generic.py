@@ -2,6 +2,7 @@ from .action import ActionMixin
 from .filter import FilterMixin
 from .search import SearchMixin
 from .form import FormMixin, FormView
+from .json import JsonMixin, JsonFormMixin, JsonDeleteMixin
 from .modelform import ModelFormMixin
 from .object import ObjectMixin, ObjectTemplateView
 from .objectform import ObjectFormMixin, ObjectModelFormMixin

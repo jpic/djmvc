@@ -1,11 +1,14 @@
-from django.conf import settings
-from django.shortcuts import resolve_url
+from django.apps import apps
+from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from django.views import generic
 from django.urls import path
 
 from .clonable import Clonable
 from .errors import forbidden_response
 from .route import Route
+from .views.json import wants_json, json_method_not_allowed, JSON_METHODS
+from .views.swagger import SWAGGER_BEARER_SECURITY
 
 
 class ViewMixin(Clonable, Route):
@@ -38,18 +41,70 @@ class ViewMixin(Clonable, Route):
         """URL segment with the ``view`` suffix removed from the class name."""
         return super().codename.replace('view', '')
 
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         """Redirect anonymous users to login; return 403 when permission denied."""
+        if wants_json(request, method=request.method.lower()):
+            if not self.has_permission():
+                if not request.user.is_authenticated:
+                    return JsonResponse(
+                        {'detail': _('Authentication required')},
+                        status=401,
+                    )
+                return JsonResponse(
+                    {'detail': _('Permission denied')},
+                    status=403,
+                )
+            method = request.method.lower()
+            handler_name = f'json_{method}'
+            handler = getattr(self, handler_name, None)
+            if handler is not None:
+                result = handler(request, *args, **kwargs)
+                if isinstance(result, dict):
+                    return JsonResponse(result)
+                return result
+            allowed = self.get_json_method_names()
+            if allowed:
+                return json_method_not_allowed(allowed)
+            return JsonResponse({'detail': _('Method not allowed')}, status=405)
+
         if not self.has_permission():
-            if not self.request.user.is_authenticated:
+            if not request.user.is_authenticated:
                 from django.contrib.auth.views import redirect_to_login
 
-                return redirect_to_login(
-                    self.request.get_full_path(),
-                )
-            else:
-                return forbidden_response(self.request, view=self)
-        return super().dispatch(*args, **kwargs)
+                return redirect_to_login(request.get_full_path())
+            return forbidden_response(request, view=self)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_json_method_names(self):
+        """Return HTTP verbs supported by ``json_*`` handlers on this view."""
+        names = []
+        for method in JSON_METHODS:
+            if getattr(type(self), f'json_{method}', None) is not None:
+                names.append(method)
+        return names
+
+    def get_swagger_path_definition(self):
+        """Collect per-method Swagger path definitions."""
+        result = {}
+        for method in JSON_METHODS:
+            getter = getattr(self, f'get_swagger_{method}', None)
+            if getter is None:
+                continue
+            definition = getter()
+            if not definition:
+                continue
+            if 'security' not in definition and apps.is_installed('djmvc_api'):
+                definition = dict(definition)
+                definition['security'] = SWAGGER_BEARER_SECURITY
+            result[method] = definition
+        return result
+
+    @property
+    def swagger_tags(self):
+        model = self._permission_model()
+        if model is not None:
+            return [model.__name__]
+        return []
 
     @property
     def permission_shortcode(self):

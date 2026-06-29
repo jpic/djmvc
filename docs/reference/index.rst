@@ -19,3 +19,4 @@ API reference
    djmvc_dal_topbar/index
    djmvc_history/index
    djmvc_debug/index
+   djmvc_api/index
