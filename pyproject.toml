@@ -45,6 +45,7 @@ dev = [
     "pytest-splinter>=3.3",
     "pytest-cov>=4.0",
     "pytest-xdist",
+    "tox>=4",
     "black>=23.0",
     "ruff>=0.1",
 ]

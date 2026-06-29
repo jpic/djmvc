@@ -26,7 +26,7 @@ jobs:
           pip install -e ".[dev,bulma]"
 
       - name: Run unit and integration tests
-        run: pytest -m "not splinter"
+        run: pytest -m "not splinter" -n auto
 
       - name: Run browser tests
         run: pytest -m splinter -n 0 --splinter-headless
