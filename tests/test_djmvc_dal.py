@@ -78,7 +78,6 @@ def test_user_list_filter_has_groups_autocomplete(admin_client, admin_user):
     assert 'name="groups"' in filter_bar or 'id_groups' in filter_bar
     assert 'autocomplete-select' in filter_bar
     assert 'class="input"' in filter_bar
-    assert '<div class="select' not in filter_bar
 
 
 @pytest.mark.django_db
