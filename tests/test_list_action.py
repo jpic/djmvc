@@ -171,11 +171,69 @@ def _visit_stage0_list(browser, live_server):
     assert browser.is_element_present_by_css('input[type="checkbox"][data-pk]', wait_time=5)
 
 
+def _row_checkbox_count(browser):
+    return browser.execute_script(
+        'return document.querySelectorAll('
+        '".djmvc-list input[type=\\"checkbox\\"][data-pk]"'
+        ').length;',
+    )
+
+
+def _wait_for_at_least_row_checkboxes(browser, minimum, timeout=10):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        count = _row_checkbox_count(browser)
+        if count >= minimum:
+            return count
+        time.sleep(0.1)
+    raise AssertionError(
+        f'Expected at least {minimum} row checkboxes in .djmvc-list, got {count}',
+    )
+
+
+def _wait_for_row_checkboxes(browser, expected, timeout=10):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        count = _row_checkbox_count(browser)
+        if count == expected:
+            return count
+        time.sleep(0.1)
+    raise AssertionError(
+        f'Expected {expected} row checkboxes in .djmvc-list, got {count}',
+    )
+
+
+def _selection_count_text(browser):
+    return browser.execute_script(
+        """
+        const el = document.querySelector('list-action-bar [data-role="count"]');
+        return el ? el.textContent.trim() : '';
+        """,
+    )
+
+
+def _wait_for_selection_count(browser, count, timeout=10):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        text = _selection_count_text(browser)
+        if text and str(count) in text and 'selected' in text:
+            return text
+        time.sleep(0.1)
+    raise AssertionError(
+        f'Selection count did not reach {count!r}, last label: {text!r}',
+    )
+
+
 def _check_row(browser, index=0):
     browser.execute_script(
         """
-        const boxes = document.querySelectorAll('input[type="checkbox"][data-pk]');
+        const boxes = document.querySelectorAll(
+            '.djmvc-list input[type="checkbox"][data-pk]',
+        );
         const cb = boxes[arguments[0]];
+        if (!cb) {
+            throw new Error(`No checkbox at index ${arguments[0]}`);
+        }
         cb.checked = true;
         cb.dispatchEvent(new Event('change', {bubbles: true}));
         """,
@@ -184,13 +242,18 @@ def _check_row(browser, index=0):
 
 
 def _select_rows(browser, indices):
+    _wait_for_at_least_row_checkboxes(browser, max(indices) + 1)
     for index in indices:
         _check_row(browser, index)
+    _wait_for_selection_count(browser, len(indices))
 
 
 def _assert_bar_shows_count(browser, count):
-    label = '1 selected' if count == 1 else f'All {count} selected'
-    assert browser.is_text_present(label, wait_time=5)
+    text = _wait_for_selection_count(browser, count)
+    if count == 1:
+        assert text == '1 selected'
+    else:
+        assert text == f'All {count} selected'
 
 
 def _assert_bar_hidden(browser, timeout=5):
@@ -240,6 +303,37 @@ def _wait_modal_closed(browser, timeout=5):
             return
         time.sleep(0.1)
     raise AssertionError('Delete modal did not close')
+
+
+def _wait_delete_accepted(browser, *, expected_rows=None, timeout=15):
+    """Wait for modal close and list-action-bar state to clear after bulk delete."""
+    _wait_modal_closed(browser, timeout)
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        state = browser.execute_script(
+            """
+            return {
+                barHidden: document.querySelector('list-action-bar')?.hidden ?? true,
+                keys: Object.keys(sessionStorage).filter(
+                    (key) => key.startsWith('djmvc:list-action:'),
+                ),
+                rows: document.querySelectorAll(
+                    '.djmvc-list input[type="checkbox"][data-pk]',
+                ).length,
+            };
+            """,
+        )
+        rows_ok = (
+            expected_rows is None
+            or state['rows'] == expected_rows
+        )
+        if state['barHidden'] and state['keys'] == [] and rows_ok:
+            return
+        time.sleep(0.1)
+    raise AssertionError(
+        'Bulk delete did not finish updating list-action-bar state: '
+        f'{state!r}',
+    )
 
 
 @pytest.mark.splinter(screenshot_dir='./screenshots')
@@ -296,7 +390,7 @@ def test_bulk_delete_twice_clears_selection(
     _open_bulk_delete_modal(browser)
     _assert_delete_modal(browser, 2, ['item-0', 'item-1'])
     _submit_delete_modal(browser)
-    _wait_modal_closed(browser)
+    _wait_delete_accepted(browser, expected_rows=2)
     _assert_bar_hidden(browser)
     assert browser.is_text_not_present('item-0', wait_time=5)
     assert browser.is_text_not_present('item-1', wait_time=2)
@@ -308,9 +402,10 @@ def test_bulk_delete_twice_clears_selection(
     _open_bulk_delete_modal(browser)
     _assert_delete_modal(browser, 2, ['item-2', 'item-3'])
     _submit_delete_modal(browser)
-    _wait_modal_closed(browser)
+    _wait_delete_accepted(browser, expected_rows=0)
     _assert_bar_hidden(browser)
+    _wait_for_row_checkboxes(browser, 0)
     assert not browser.is_element_present_by_css(
-        'input[type="checkbox"][data-pk]', wait_time=5,
+        '.djmvc-list input[type="checkbox"][data-pk]', wait_time=5,
     )
     assert Item.objects.count() == 0

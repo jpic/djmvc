@@ -1,11 +1,28 @@
+import time
+
 import pytest
 from django.contrib.auth import get_user_model
 
-from alight_helpers import open_autocomplete, type_and_select, wait_alight_ready
+from alight_helpers import (
+    ensure_navbar_menu_visible,
+    type_and_select,
+    type_autocomplete_query,
+    wait_alight_ready,
+    wait_input_interactable,
+)
 from doc_screenshots import capture as capture_doc
 from topbar_screenshots import capture, prepare_browser
 
 User = get_user_model()
+
+
+def _wait_for_url_contains(browser, substring, timeout=10):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if substring in browser.url:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f'{substring!r} not in {browser.url!r}')
 
 
 @pytest.fixture
@@ -26,16 +43,17 @@ def test_site_search_navigates_to_user_detail(
 ):
     member, _ = grouped_users
     browser_login()
+    prepare_browser(browser)
     browser.visit(f'{live_server.url}/auth/user/')
 
     wait_alight_ready(browser)
     assert browser.is_element_present_by_css('.djmvc-site-search', wait_time=5)
+    ensure_navbar_menu_visible(browser)
+    wait_input_interactable(browser, '.djmvc-site-search input')
 
-    prepare_browser(browser)
     capture(browser, 'site-search-initial')
 
-    open_autocomplete(browser, '.djmvc-site-search input')
-    browser.find_by_css('.djmvc-site-search input').first.type('member')
+    type_autocomplete_query(browser, 'member', input_css='.djmvc-site-search input')
     assert browser.is_element_present_by_css(
         '.autocomplete-light-box [data-value]',
         wait_time=5,
@@ -50,7 +68,8 @@ def test_site_search_navigates_to_user_detail(
         input_css='.djmvc-site-search input',
     )
 
+    detail_path = f'/auth/user/{member.pk}/detail/'
+    _wait_for_url_contains(browser, detail_path)
     assert browser.is_element_present_by_css('[up-main]', wait_time=5)
-    assert f'/auth/user/{member.pk}/detail/' in browser.url
     assert browser.is_text_present('member', wait_time=5)
     capture(browser, 'site-search-detail')

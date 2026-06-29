@@ -132,6 +132,11 @@ export class ListActionBar extends HTMLElement {
         if (!table) {
             return;
         }
+        if (this._boundTable === table) {
+            this.restoreCheckboxes();
+            this.updateMasterCheckbox();
+            return;
+        }
         table.addEventListener('change', this._onTableChange, true);
         this._boundTable = table;
         this.restoreCheckboxes();
