@@ -120,19 +120,18 @@ autocomplete-light {
     max-width: none;
 }
 
-.djmvc-filter-form .field.is-grouped > .control.is-expanded {
-    flex-grow: 1;
-    min-width: 10rem;
-}
-
-.djmvc-filter-form .control:has(input[name="search"]) {
+.djmvc-filter-form .field.is-grouped > .control {
     flex-grow: 0;
-    width: 14rem;
-    max-width: 40%;
 }
 
-.djmvc-filter-form .field.is-grouped > .control:not(.is-expanded) autocomplete-select {
-    min-width: 12rem;
+.djmvc-filter-form .control:has(input[name="search"]),
+.djmvc-filter-form .control:has(autocomplete-select) {
+    width: 14rem;
+    max-width: min(14rem, 40vw);
+}
+
+.djmvc-filter-form .control:has(autocomplete-select) autocomplete-select {
+    width: 100%;
 }
 
 .djmvc-listaction-bar {
