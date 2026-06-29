@@ -26,7 +26,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install package and doc dependencies
-        run: pip install -e ".[dev,bulma,docs]" -r docs/requirements.txt
+        run: pip install --pre -e ".[dev,docs]" -r docs/requirements.txt
 
       - name: Validate tutorial example apps
         run: pytest -m tutorial -n 0

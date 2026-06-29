@@ -8,6 +8,7 @@ INSTALLED_APPS = [
     "djmvc_dal_topbar",
     "djmvc_auth",
     "djmvc_history",
+    "djmvc_api",
     "djmvc_bulma",
     "crispy_forms",
     "crispy_bulma",

@@ -28,7 +28,7 @@ jobs:
         run: |
           pip install -U pip
           pip install -U django
-          pip install -e ".[dev,bulma]"
+          pip install --pre -e ".[dev]"
 
       - name: Run unit and integration tests
         run: pytest -m "not splinter" -n auto

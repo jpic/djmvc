@@ -12,11 +12,14 @@ full rationale.
 ## Install
 
 ```bash
-pip install djmvc[bulma]
+pip install --pre djmvc
 ```
 
-See [installation](https://jpic.github.io/djmvc/install.html) for apps and
-settings.
+Note: The `--pre` flag is required for pre-release dependency versions.
+
+See [installation](https://jpic.github.io/djmvc/install.html) for setup, or
+try the [demo](https://jpic.github.io/djmvc/demo.html) to explore the example
+project.
 
 ## Quick start
 
@@ -49,6 +52,7 @@ registry is built.
 
 - [Philosophy](https://jpic.github.io/djmvc/philosophy.html)
 - [Install](https://jpic.github.io/djmvc/install.html)
+- [Demo](https://jpic.github.io/djmvc/demo.html) — Try the example project
 - [Tutorial](https://jpic.github.io/djmvc/tutorial/)
 - [Reference](https://jpic.github.io/djmvc/reference/)
 

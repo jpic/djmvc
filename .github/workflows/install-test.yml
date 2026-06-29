@@ -1,0 +1,81 @@
+name: Installation Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install djmvc
+        run: |
+          pip install -U pip
+          pip install --pre .
+
+      - name: Create test Django project
+        run: |
+          mkdir -p /tmp/djmvc-test
+          cd /tmp/djmvc-test
+          django-admin startproject testproject
+          cd testproject
+
+      - name: Configure settings
+        run: |
+          cd /tmp/djmvc-test/testproject
+          cat >> testproject/settings.py << 'EOF'
+
+          # djmvc configuration
+          import djmvc.settings
+
+          INSTALLED_APPS = djmvc.settings.INSTALLED_APPS + [
+              "django.contrib.admin",
+              "django.contrib.auth",
+              "django.contrib.contenttypes",
+              "django.contrib.sessions",
+              "django.contrib.messages",
+              "django.contrib.staticfiles",
+          ]
+
+          MIDDLEWARE = [
+              "django.middleware.security.SecurityMiddleware",
+              "django.contrib.sessions.middleware.SessionMiddleware",
+              "djmvc_api.middleware.BearerCsrfMiddleware",
+              "django.middleware.locale.LocaleMiddleware",
+              "django.middleware.common.CommonMiddleware",
+              "django.middleware.csrf.CsrfViewMiddleware",
+              "django.contrib.auth.middleware.AuthenticationMiddleware",
+              "djmvc_api.middleware.BearerUserMiddleware",
+              "django.middleware.messages.middleware.MessageMiddleware",
+              "django.middleware.clickjacking.XFrameOptionsMiddleware",
+          ]
+          EOF
+
+      - name: Configure URLs
+        run: |
+          cd /tmp/djmvc-test/testproject
+          cat > testproject/urls.py << 'EOF'
+          from django.contrib import admin
+          from django.urls import path
+          import djmvc
+
+          urlpatterns = djmvc.site.build().urlpatterns + [
+              path("admin/", admin.site.urls),
+          ]
+          EOF
+
+      - name: Run migrations
+        run: |
+          cd /tmp/djmvc-test/testproject
+          python manage.py migrate --no-input
+
+      - name: Verify installation
+        run: |
+          cd /tmp/djmvc-test/testproject
+          python manage.py check

@@ -10,6 +10,7 @@ hand-wiring ``urls.py``, with secure defaults and Bulma templates out of the box
 
    philosophy
    install
+   demo
    tutorial/index
    reference/index
    contributing

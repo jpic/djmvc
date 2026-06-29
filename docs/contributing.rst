@@ -19,7 +19,7 @@ Development setup
 
    git clone https://github.com/jpic/djmvc.git
    cd djmvc
-   pip install -e ".[bulma,dev,docs]"
+   pip install --pre -e ".[dev,docs]"
    npm ci   # only needed for JavaScript unit tests
 
 **Browser tests** require Firefox and geckodriver on your ``PATH`` (CI installs
