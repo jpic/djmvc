@@ -15,8 +15,12 @@ class ActionsColumn(django_tables2.Column):
     exclude_from_export = True
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('verbose_name', _('Action:'))
+        kwargs.setdefault('verbose_name', _('Actions'))
         kwargs.setdefault('orderable', False)
+        kwargs.setdefault('attrs', {
+            'th': {'class': 'has-text-right'},
+            'td': {'class': 'has-text-right'},
+        })
         super().__init__(*args, **kwargs)
 
     def render(self, record, table):

@@ -2,7 +2,7 @@
 
 {% if actions %}
 {# Desktop/Tablet: Icon buttons with tooltips #}
-<div class="is-hidden-mobile">
+<div class="is-hidden-mobile is-flex is-justify-content-flex-end">
     {% for action in actions %}
     <a href="{% url action.urlfullname pk=record.pk %}"
        class="button is-small is-{{ action.color|default:'primary' }} is-rounded"
@@ -17,7 +17,7 @@
 {# Mobile: Dropdown menu #}
 <bulma-dropdown class="dropdown is-right is-hidden-tablet actions-dropdown">
     <div class="dropdown-trigger">
-        <button class="button is-small is-outlined" aria-haspopup="true" aria-controls="dropdown-menu" aria-label="{% trans 'Action:' %}">
+        <button class="button is-small is-outlined" aria-haspopup="true" aria-controls="dropdown-menu" aria-label="{% trans 'Actions' %}">
             <span class="icon is-small">
                 <i class="bi bi-list"></i>
             </span>

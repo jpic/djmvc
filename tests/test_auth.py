@@ -225,6 +225,16 @@ def test_become_user_link_disables_unpoly(client, admin_user, target_user):
 
 
 @pytest.mark.django_db
+def test_actions_column_aligns_right(client, admin_user):
+    client.force_login(admin_user)
+    response = client.get(reverse('site:auth:user:list'))
+    content = response.content.decode()
+    assert 'Actions' in content
+    assert 'has-text-right' in content
+    assert content.index('has-text-right') < content.index('Actions')
+
+
+@pytest.mark.django_db
 def test_become_user_object_menu(rf, admin_user, target_user):
     djmvc.site.build()
     user_controller = djmvc.site.routes['auth'].routes['user']
