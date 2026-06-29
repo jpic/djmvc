@@ -74,7 +74,8 @@ def test_user_list_filter_has_groups_autocomplete(admin_client, admin_user):
     assert response.status_code == 200
     content = response.content.decode()
     assert 'djmvc-filter-form' in content
-    assert 'placeholder="Search words…"' in content
+    assert 'djmvc-filter-sidebar' in content
+    assert 'filter-sidebar-toggle' in content
     filter_bar = content.split('djmvc-filter-form', 1)[1].split('</form>', 1)[0]
     assert 'name="groups"' in filter_bar or 'id_groups' in filter_bar
     assert 'autocomplete-select' in filter_bar

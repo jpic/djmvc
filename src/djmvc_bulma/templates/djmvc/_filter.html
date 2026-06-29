@@ -1,1 +1,26 @@
-{% include "djmvc/_horizontal_form.html" with form=view.filter_form form_method="get" attrs=view.filter_attributes css_class="djmvc-filter-form" submit_icon="search" submit_label=view.filter_submit_label show_clear=view.has_active_filters clear_url=view.clear_filter_url target=view.filter_target only %}
+{% load crispy_forms_tags djmvc i18n %}
+{% if view.filter_form %}
+<aside class="djmvc-filter-sidebar{% if not view.has_active_filters %} is-hidden{% endif %}"
+       id="djmvc-filter-sidebar">
+    <form method="get" class="djmvc-filter-form"
+          {{ view.filter_attributes|html_attributes }}>
+        {{ view.filter_form|crispy }}
+        <div class="field">
+            <p class="control">
+                <button type="submit" class="button is-primary is-fullwidth">
+                    {{ view.filter_submit_label }}
+                </button>
+            </p>
+        </div>
+        {% if view.has_active_filters %}
+        <div class="field">
+            <p class="control">
+                <a href="{{ view.clear_filter_url }}" class="button is-fullwidth djmvc-filter-clear"
+                   up-follow up-target="{{ view.filter_target }}" up-history>{% trans "Clear" %}</a>
+            </p>
+        </div>
+        {% endif %}
+    </form>
+    {{ view.filter_form.media }}
+</aside>
+{% endif %}

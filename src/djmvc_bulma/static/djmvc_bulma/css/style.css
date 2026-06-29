@@ -89,9 +89,39 @@ body {
     overflow-x: auto;
 }
 
-.djmvc-horizontal-form,
-.djmvc-filter-form {
+.djmvc-list-toolbar {
     margin-bottom: 1rem;
+}
+
+.djmvc-list-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.djmvc-filter-sidebar {
+    width: 16rem;
+    min-width: 16rem;
+    flex-shrink: 0;
+    padding: 1rem;
+    border-right: 1px solid #dbdbdb;
+}
+
+.djmvc-filter-sidebar.is-hidden {
+    display: none;
+}
+
+.djmvc-list-content {
+    flex: 1;
+    min-width: 0;
+}
+
+filter-sidebar-toggle {
+    display: inline-block;
+}
+
+.djmvc-filter-form .field {
+    margin-bottom: 0.75rem;
 }
 
 autocomplete-select,
@@ -100,37 +130,7 @@ autocomplete-light {
     width: 100%;
 }
 
-/* Horizontal filter bar: search + FK autocomplete + submit on one row */
-.djmvc-filter-form .field.is-grouped {
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.djmvc-filter-form .field.is-grouped > .control > .field {
-    margin-bottom: 0;
-}
-
-.djmvc-filter-form .field.is-grouped > .control > .field > .label {
-    display: none;
-}
-
-.djmvc-filter-form .field.is-grouped .select.is-multiple {
-    height: auto;
-    max-width: none;
-}
-
-.djmvc-filter-form .field.is-grouped > .control {
-    flex-grow: 0;
-}
-
-.djmvc-filter-form .control:has(input[name="search"]),
-.djmvc-filter-form .control:has(autocomplete-select) {
-    width: 14rem;
-    max-width: min(14rem, 40vw);
-}
-
-.djmvc-filter-form .control:has(autocomplete-select) autocomplete-select {
+.djmvc-filter-form autocomplete-select {
     width: 100%;
 }
 

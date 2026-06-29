@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: src/djmvc_bulma/templates/djmvc/_actions_column.html:20
-msgid "Action:"
+msgid "Actions"
 msgstr ""
 
 #: src/djmvc_bulma/templates/djmvc/_deletion_preview.html:13
@@ -39,12 +39,12 @@ msgstr ""
 msgid "dismiss"
 msgstr ""
 
-#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:2
-msgid "Apply"
+#: src/djmvc_bulma/templates/djmvc/_filter.html:19
+msgid "Clear"
 msgstr ""
 
-#: src/djmvc_bulma/templates/djmvc/_horizontal_form.html:24
-msgid "Clear"
+#: src/djmvc_bulma/templates/djmvc/_tables2.html:9
+msgid "Filters"
 msgstr ""
 
 #: src/djmvc_bulma/templates/djmvc/_pagination.html:11

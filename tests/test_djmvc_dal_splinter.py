@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 
 from alight_helpers import type_and_select, wait_alight_ready
 from dal_screenshots import capture, prepare_browser
+from test_filter import _open_filter_sidebar
 
 User = get_user_model()
 
@@ -27,11 +28,11 @@ def grouped_users(db, editors_group):
 
 
 def _assert_filter_form_layout(browser):
-    """Filter bar: search + FK autocomplete on one Bulma grouped row."""
+    """Filter sidebar: vertical crispy fields with search + FK autocomplete."""
     form = browser.find_by_css('form.djmvc-filter-form').first
     assert form['method'] == 'get'
     assert browser.is_element_present_by_css(
-        'form.djmvc-filter-form .field.is-grouped',
+        '#djmvc-filter-sidebar form.djmvc-filter-form',
         wait_time=2,
     )
     assert browser.is_element_present_by_css(
@@ -43,11 +44,11 @@ def _assert_filter_form_layout(browser):
         wait_time=2,
     )
     assert browser.is_element_present_by_css(
-        'form.djmvc-filter-form input[name="search"][placeholder="Search words…"]',
+        'form.djmvc-filter-form label',
         wait_time=2,
     )
     assert not browser.is_element_present_by_css(
-        'form.djmvc-filter-form .control.is-expanded',
+        'form.djmvc-filter-form .field.is-grouped',
         wait_time=0,
     )
 
@@ -101,7 +102,11 @@ def test_user_list_filter_groups_autocomplete(
 ):
     member, outsider = grouped_users
     browser_login()
+    browser.execute_script('sessionStorage.clear()')
     browser.visit(f'{live_server.url}/auth/user/')
+
+    assert browser.is_element_present_by_css('filter-sidebar-toggle', wait_time=5)
+    _open_filter_sidebar(browser)
 
     filter_groups_css = 'form.djmvc-filter-form autocomplete-select'
     assert browser.is_element_present_by_css(filter_groups_css, wait_time=5)

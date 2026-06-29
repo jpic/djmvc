@@ -136,8 +136,12 @@ msgstr ""
 msgid "Page is not “last”, nor can it be converted to an int."
 msgstr ""
 
+#: src/djmvc/views/search.py:38
+msgid "Search"
+msgstr ""
+
 #: src/djmvc/views/tables2.py:18
-msgid "Action:"
+msgid "Actions"
 msgstr ""
 
 #: src/djmvc/views/update.py:17

@@ -1,8 +1,21 @@
 {% load djmvc django_tables2 i18n l10n %}
 {% block table-wrapper %}
 <div class="djmvc-list" up-list>
-    {% include "djmvc/_filter.html" with view=table.view %}
+    {% if table.view.filter_form %}
+    <div class="djmvc-list-toolbar">
+        <filter-sidebar-toggle target="#djmvc-filter-sidebar"
+                               class="button{% if table.view.has_active_filters %} is-primary{% endif %}">
+            <span class="icon"><i class="bi bi-funnel"></i></span>
+            <span>{% trans "Filters" %}</span>
+        </filter-sidebar-toggle>
+    </div>
+    <div class="djmvc-list-body">
+        {% include "djmvc/_filter.html" with view=table.view %}
+        <div class="djmvc-list-content">
+            <div class="table-container" up-table>
+    {% else %}
     <div class="table-container" up-table>
+    {% endif %}
         {% block table %}
         <table class="table is-striped is-hoverable is-fullwidth"{% if table.attrs %}{{ table.attrs.as_html }}{% endif %}>
             {% block table.thead %}
@@ -60,5 +73,9 @@
         {% include "djmvc/_pagination.html" with view=table.view %}
         {% endblock pagination %}
     </div>
+    {% if table.view.filter_form %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock table-wrapper %}

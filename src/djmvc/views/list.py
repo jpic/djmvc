@@ -125,9 +125,7 @@ class ListView(
             if name == self.search_param:
                 form_fields[name] = self.search_form_field()
             elif self.filterset is not None:
-                field = self.filterset.form.fields[name]
-                field.label = ''
-                form_fields[name] = field
+                form_fields[name] = self.filterset.form.fields[name]
 
         def __init__(form_self, *args, view=None, **kwargs):
             forms.Form.__init__(form_self, *args, **kwargs)
@@ -135,7 +133,7 @@ class ListView(
             form_self.helper.form_method = 'get'
             form_self.helper.form_tag = False
             form_self.helper.disable_csrf = True
-            form_self.helper.form_show_labels = False
+            form_self.helper.form_show_labels = True
             if view is not None:
                 page_kwarg = getattr(view, 'page_kwarg', 'page')
                 for key, value in view.request.GET.items():

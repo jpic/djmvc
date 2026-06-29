@@ -25,6 +25,16 @@ def _wait_for_url_without(browser, substring, timeout=5):
     raise AssertionError(f'{substring!r} still in {browser.url!r}')
 
 
+def _open_filter_sidebar(browser):
+    sidebar = browser.find_by_css('#djmvc-filter-sidebar').first
+    if 'is-hidden' in (sidebar['class'] or ''):
+        browser.find_by_css('filter-sidebar-toggle button').first.click()
+    assert browser.is_element_present_by_css(
+        '#djmvc-filter-sidebar:not(.is-hidden)',
+        wait_time=2,
+    )
+
+
 class _MockController:
     model = Item
     codename = 'item'
@@ -161,42 +171,65 @@ def test_filter_submit_label_on_filter_mixin(rf, admin_user, mock_controller):
 
 
 @pytest.mark.django_db
-def test_horizontal_form_default_submit_label(rf, admin_user, mock_controller):
+def test_filter_form_renders_in_sidebar(rf, admin_user, mock_controller):
     view_cls = _build_filter_view()
     request = rf.get('/')
     request.user = admin_user
     view = view_cls()
     view.controller = mock_controller
     view.setup(request)
+    view.object_list = view.get_queryset()
 
     template = Template('''
-    {% load djmvc crispy_forms_tags %}
-    {% include "djmvc/_horizontal_form.html" with form=view.filter_form only %}
+    {% load djmvc crispy_forms_tags django_tables2 %}
+    {% render_table view.table 'djmvc/_tables2.html' %}
     ''')
     output = template.render(Context({'view': view, 'request': request}))
-    assert 'aria-label="Apply"' in output
-
-
-@pytest.mark.django_db
-def test_filter_form_renders_horizontally(rf, admin_user, mock_controller):
-    view_cls = _build_filter_view()
-    request = rf.get('/')
-    request.user = admin_user
-    view = view_cls()
-    view.controller = mock_controller
-    view.setup(request)
-
-    template = Template('''
-    {% load djmvc crispy_forms_tags %}
-    {% include "djmvc/_filter.html" %}
-    ''')
-    output = template.render(Context({'view': view, 'request': request}))
-    assert 'field is-grouped' in output
+    assert 'djmvc-filter-sidebar' in output
+    assert 'filter-sidebar-toggle' in output
     assert 'method="get"' in output
     assert 'name="search"' in output
     assert 'type="submit"' in output
-    assert 'aria-label="Apply"' in output
+    assert 'Apply' in output
     assert 'method="undefined"' not in output
+    assert 'field is-grouped' not in output
+
+
+@pytest.mark.django_db
+def test_filter_sidebar_hidden_without_active_filters(rf, admin_user, mock_controller):
+    view_cls = _build_filter_view()
+    request = rf.get('/')
+    request.user = admin_user
+    view = view_cls()
+    view.controller = mock_controller
+    view.setup(request)
+    view.object_list = view.get_queryset()
+
+    template = Template('''
+    {% load djmvc crispy_forms_tags django_tables2 %}
+    {% render_table view.table 'djmvc/_tables2.html' %}
+    ''')
+    output = template.render(Context({'view': view, 'request': request}))
+    assert 'djmvc-filter-sidebar is-hidden' in output
+
+
+@pytest.mark.django_db
+def test_filter_sidebar_open_with_active_filters(rf, admin_user, mock_controller):
+    view_cls = _build_filter_view()
+    request = rf.get('/?search=foo')
+    request.user = admin_user
+    view = view_cls()
+    view.controller = mock_controller
+    view.setup(request)
+    view.object_list = view.get_queryset()
+
+    template = Template('''
+    {% load djmvc crispy_forms_tags django_tables2 %}
+    {% render_table view.table 'djmvc/_tables2.html' %}
+    ''')
+    output = template.render(Context({'view': view, 'request': request}))
+    assert 'djmvc-filter-sidebar is-hidden' not in output
+    assert 'id="djmvc-filter-sidebar"' in output
 
 
 @pytest.mark.django_db
@@ -258,7 +291,11 @@ def test_filter_search_on_user_list(
     browser, live_server, browser_login, admin_user, many_users,
 ):
     browser_login()
+    browser.execute_script('sessionStorage.clear()')
     browser.visit(f'{live_server.url}/auth/user/')
+
+    assert browser.is_element_present_by_css('filter-sidebar-toggle', wait_time=5)
+    _open_filter_sidebar(browser)
 
     form = browser.find_by_css('form.djmvc-filter-form').first
     assert form['method'] == 'get'
@@ -301,3 +338,27 @@ def test_filter_clear_on_user_list(
     _wait_for_url_without(browser, 'search=')
     assert browser.is_text_present('user0', wait_time=5)
     assert browser.find_by_css('input[name="search"]').first.value == ''
+
+
+@pytest.mark.splinter(screenshot_dir='./screenshots')
+@pytest.mark.django_db
+def test_filter_sidebar_toggle(
+    browser, live_server, browser_login, admin_user, many_users,
+):
+    browser_login()
+    browser.execute_script('sessionStorage.clear()')
+    browser.visit(f'{live_server.url}/auth/user/')
+
+    assert browser.is_element_present_by_css('#djmvc-filter-sidebar.is-hidden', wait_time=5)
+
+    browser.find_by_css('filter-sidebar-toggle button').first.click()
+    assert browser.is_element_present_by_css(
+        '#djmvc-filter-sidebar:not(.is-hidden)',
+        wait_time=2,
+    )
+
+    browser.find_by_css('filter-sidebar-toggle button').first.click()
+    assert browser.is_element_present_by_css(
+        '#djmvc-filter-sidebar.is-hidden',
+        wait_time=2,
+    )
