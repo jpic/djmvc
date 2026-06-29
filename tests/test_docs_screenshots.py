@@ -55,6 +55,9 @@ def test_capture_doc_screenshots(browser, live_server, browser_login, admin_user
 
     browser.visit(f"{live_server.url}{reverse('site:item:list')}")
     assert browser.is_element_present_by_css("[up-table]", wait_time=5)
+    sidebar = browser.find_by_css("#sidebar .menu-list").first.text
+    assert sidebar.count("Items") == 1
+    assert "Inventory" in sidebar
     capture(browser, "item-list")
 
     browser.find_by_css('a[href$="/item/create/"]').first.click()
@@ -67,8 +70,12 @@ def test_capture_doc_screenshots(browser, live_server, browser_login, admin_user
     )
     capture(browser, "success-toast")
 
-    browser.visit(f"{live_server.url}{reverse('site:article:list')}")
+    browser.visit(f"{live_server.url}{reverse('site:article:list')}?category=news")
     assert browser.is_element_present_by_css("form.djmvc-filter-form", wait_time=5)
+    assert browser.is_element_present_by_css(
+        "#djmvc-filter-sidebar:not(.is-hidden)",
+        wait_time=5,
+    )
     capture(browser, "article-list")
 
     article = Article.objects.get(title="Article 0")
