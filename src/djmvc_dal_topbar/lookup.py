@@ -31,7 +31,7 @@ def iter_model_controllers(controller):
 
 
 def iter_searchable_list_views(request):
-    """Yield list views the user may search (permission + search_fields)."""
+    """Yield list views the user may search (permission + site_search + search_fields)."""
     site = djmvc.site
     if not getattr(site, 'registry', None):
         return
@@ -41,6 +41,8 @@ def iter_searchable_list_views(request):
             continue
         list_view = type(list_route)(request=request)
         if not list_view.has_permission():
+            continue
+        if not list_view.site_search:
             continue
         if not list_view.search_fields:
             continue

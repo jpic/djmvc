@@ -14,9 +14,12 @@ class SearchMixin:
     Attributes:
         search_param (str): GET parameter for the search input. Default
             ``'search'``.
+        site_search (bool): When ``True``, include this list view in navbar
+            site search (:mod:`djmvc_dal_topbar`). Default ``False``.
     """
 
     search_param = 'search'
+    site_search = False
 
     @functools.cached_property
     def search_fields(self):
@@ -30,14 +33,10 @@ class SearchMixin:
         ]
 
     def search_form_field(self):
-        """Unlabeled optional CharField for the horizontal filter bar."""
+        """Optional CharField for the list filter sidebar."""
         return forms.CharField(
-            label='',
+            label=_('Search'),
             required=False,
-            widget=forms.TextInput(attrs={
-                'placeholder': _('Search words…'),
-                'aria-label': _('Search'),
-            }),
         )
 
     def search_filter(self, qs):

@@ -253,7 +253,10 @@ class GroupController(djmvc.ModelController.clone(
     model=Group,
     icon='collection',
     routes=djmvc.ModelController.routes + [
-        djmvc.generic.ListView.clone(table_fields=['id', 'name']),
+        djmvc.generic.ListView.clone(
+            table_fields=['id', 'name'],
+            site_search=True,
+        ),
     ],
 )):
     """CRUD for auth groups; autocomplete endpoint used by User form filters."""
@@ -291,6 +294,7 @@ class AuthController(djmvc.Controller):
                         'actions',
                     ],
                     filter_fields=['groups'],
+                    site_search=True,
                 ),
                 UserCreateView,
                 UserUpdateView,

@@ -50,7 +50,7 @@ class SiteSearchView(ViewMixin, AlightQuerySetSequenceView):
         html = []
         for model, results in groups.items():
             html.append(format_html(
-                '<div class="autocomplete-light-group">{}</div>',
+                '<div class="autocomplete-light-group djmvc-site-search-group">{}</div>',
                 model._meta.verbose_name,
             ))
             for result in results:
